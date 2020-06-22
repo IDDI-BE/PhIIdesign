@@ -1,7 +1,7 @@
 Package: PhIIdesign
 Type: Package
 Title: Different phase II designs
-Version: 0.1.0
+Version: 0.2.0
 Author: Koenraad D'Hollander and Elisabeth Coart
 Maintainer: Koenraad D'Hollander <koenraad.dhollander@iddi.com>
 Description: This function calculates sample sizes for different PhII designs.
@@ -13,3 +13,5 @@ Imports:
     data.table,
     OneArmPhaseTwoStudy,
     multichull
+Suggests:
+    tinytest
