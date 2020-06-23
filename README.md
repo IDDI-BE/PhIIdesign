@@ -1,5 +1,8 @@
 # PhIIdesign 
 
+![R-CMD-check](https://github.com/IDDI-BE/PhIIdesign/workflows/R-CMD-check/badge.svg)
+![pkgdown](https://github.com/IDDI-BE/PhIIdesign/workflows/pkgdown/badge.svg)
+
 Sample size calculations for Phase II clinical trials. With functionalities for
 
 - Fleming stage 1 sample size calculation
