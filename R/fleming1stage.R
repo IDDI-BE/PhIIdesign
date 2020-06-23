@@ -11,9 +11,9 @@
 #' @return a data.frame with elements
 #' \itemize{
 #' \item n: total number of patients
-#' \item r: quantile function of \code{1 - (alpha + eps)} at \code{n} under \code{p0}. Note if \code{n <= r} --> futility.
-#' \item alpha: the actual alpha value where your provided \code{alpha_param <= alpha + eps}
-#' \item beta: the actual beta value where your provided \code{beta_param <= beta + eps}
+#' \item r: quantile function of \code{1 - (alpha + eps)} at \code{n} under \code{p0}. Note if \code{n <= r} --> futility
+#' \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
+#' \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
 #' \item p0: your provided \code{p0} value
 #' \item pa: your provided \code{pa} value
 #' \item alpha_param: your provided \code{alpha} value
