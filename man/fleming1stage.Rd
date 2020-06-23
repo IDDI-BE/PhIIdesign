@@ -4,27 +4,64 @@
 \alias{fleming1stage}
 \title{The Fleming 1-stage function}
 \usage{
-fleming1stage(p0, pa, alpha, beta, eps = 0.005)
+fleming1stage(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005)
 }
 \arguments{
-\item{p0}{uninteresting response (null hypothesis H0)}
+\item{p0}{probability of the uninteresting response (null hypothesis H0)}
 
-\item{pa}{interesting response (alternative hypothesis Ha)}
+\item{pa}{probability of the interesting response (alternative hypothesis Ha)}
 
-\item{alpha}{P(reject H0|H0)}
+\item{alpha}{Type I error rate \eqn{P(reject H0|H0)}}
 
-\item{beta}{P(reject Ha|Ha)}
+\item{beta}{Type II error rate \eqn{P(reject Ha|Ha)}}
 
-\item{eps}{tolerance (actual alpha<=alpha+eps; actual beta<=beta+eps; actual eta>=eta-eps; actual p>=pi-eps); default value = 0.005}
+\item{eps}{tolerance  default value = 0.005}
+}
+\value{
+a data.frame with elements
+\itemize{
+\item n: total number of patients
+\item r: quantile function of \code{1 - (alpha + eps)} at \code{n} under \code{p0}. Note if \code{n <= r} --> futility.
+\item alpha: the actual alpha value where your provided \code{alpha_param <= alpha + eps}
+\item beta: the actual beta value where your provided \code{beta_param <= beta + eps}
+\item p0: your provided \code{p0} value
+\item pa: your provided \code{pa} value
+\item alpha_param: your provided \code{alpha} value
+\item beta_param: your provided \code{beta} value
+}
 }
 \description{
-This function calculates sample sizes of the Fleming 1-stage design, for p0<pa
+Therapeutic efficacy in clinical trials is often evaluated principally on the basis of the probability p that
+an eligible patient receiving the treatment regimen will experience a regression (like a tumor e.g.).\cr
+This function calculates sample sizes of the Fleming single-stage design, for \eqn{p_0 < p_a} for the requested Type I (alpha) and Type II error (beta).
 }
 \details{
-n= total number of patients
-
-if x<=r --> futility
+TODO:
+actual eta>=eta-eps\cr
+actual p>=pi-eps
 }
 \examples{
-fleming1stage(p0=0.45,pa=0.7,alpha=0.05,beta=0.2)
+fleming1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2)
+fleming1stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1, eps = 0.005)
+fleming1stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1, eps = 0.00001)
+
+## For several combinations of p0 and pa
+## not it is important that p0 is not equal to pa
+test <- expand.grid(p0 = seq(0, 0.95, by = 0.05),
+                    pa = seq(0, 0.95, by = 0.05))
+test <- subset(test, (pa - p0) > 0.00001)
+samplesize <- fleming1stage(p0 = test$p0, pa = test$pa, alpha = 0.05, beta = 0.2, eps = 0.0005)
+samplesize <- fleming1stage(p0 = test$p0, pa = test$pa, alpha = 0.05, beta = 0.1, eps = 0.0005)
+samplesize <- fleming1stage(p0 = test$p0, pa = test$pa, alpha = 0.01, beta = 0.2, eps = 0.0005)
+samplesize <- fleming1stage(p0 = test$p0, pa = test$pa, alpha = 0.01, beta = 0.1, eps = 0.0005)
+
+## these 2 are the same
+samplesize <- fleming1stage(p0 = test$p0, pa = test$pa, alpha = 0.05, beta = 0.2)
+samplesize <- mapply(p0 = test$p0, pa = test$pa, FUN=function(p0, pa){
+  fleming1stage(p0 = p0, pa = pa, alpha = 0.05, beta = 0.2)
+}, SIMPLIFY = FALSE)
+samplesize <- do.call(rbind, samplesize)
+}
+\references{
+Fleming TR. One-sample multiple testing procedure for phase II clinical trials. Biometrics. 1982;38(1):143-151.
 }
