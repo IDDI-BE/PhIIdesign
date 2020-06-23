@@ -1,0 +1,56 @@
+---
+title: "Benchmarking improvements"
+author: "Jan Wijffels"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    fig_caption: false
+    toc: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(PhIIdesign)
+library(benchr)
+library(ggplot2)
+```
+
+## Fleming
+
+### One setting
+
+- note that main speedup is due to use of lists and no checks on input
+
+```{r}
+comparison <- benchmark(
+  fleming1stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1, eps = 0.00001),
+  PhIIdesign:::fleming_single_stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1, eps = 0.00001)
+)
+comparison
+boxplot(comparison) + coord_flip()
+```
+
+### Fleming - several
+
+```{r}
+test <- expand.grid(p0 = seq(0, 0.95, by = 0.05),
+                    pa = seq(0, 0.95, by = 0.05))
+test <- subset(test, (pa - p0) > 0.00001)
+fleming1stage_multiple <- function(p0, pa, alpha = 0.05, beta = 0.1, eps = 0.00001){
+  samplesize <- mapply(p0 = p0, pa = pa, FUN=function(p0, pa, alpha, beta, eps){
+    fleming1stage(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps)
+  }, SIMPLIFY = FALSE, alpha = alpha, beta = beta, eps = eps)
+  samplesize <- do.call(rbind, samplesize)
+  samplesize
+}
+comparison <- benchmark(
+  fleming1stage_multiple(p0 = test$p0, pa = test$pa, alpha = 0.05, beta = 0.1, eps = 0.00001),
+  fleming1stage(p0 = test$p0, pa = test$pa, alpha = 0.05, beta = 0.1, eps = 0.00001),
+  times = 100
+)
+comparison
+boxplot(comparison) + coord_flip()
+```
