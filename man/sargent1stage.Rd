@@ -7,32 +7,64 @@
 sargent1stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max)
 }
 \arguments{
-\item{p0}{uninteresting response (null hypothesis H0)}
+\item{p0}{probability of the uninteresting response (null hypothesis \eqn{H0})}
 
-\item{pa}{interesting response (alternative hypothesis Ha)}
+\item{pa}{probability of the interesting response (alternative hypothesis Ha)}
 
-\item{alpha}{P(reject H0|H0)}
+\item{alpha}{Type I error rate \eqn{P(reject H0|H0)}}
 
-\item{beta}{P(reject Ha|Ha)}
+\item{beta}{Type II error rate \eqn{P(reject Ha|Ha)}}
 
-\item{eta}{P(reject Ha|H0)}
+\item{eta}{\eqn{P(reject Ha|H0)}}
 
-\item{pi}{P(reject H0|Ha)}
+\item{pi}{\eqn{P(reject H0|Ha)}}
 
-\item{eps}{tolerance (actual alpha<=alpha+eps; actual beta<=beta+eps; actual eta>=eta-eps; actual p>=pi-eps); default value = 0.005}
+\item{eps}{tolerance default value = 0.005}
 
 \item{N_min}{minimum sample size value for grid search}
 
 \item{N_max}{maximum sample size value for grid search}
 }
-\description{
-This function calculates sample sizes of the sargent 1-stage design.
+\value{
+a data.frame with elements
+\itemize{
+\item n: total number of patients
+\item r: TODO. Note if \code{n <= r} --> futility.
+\item s: TODO. Note if \code{n >= s} --> efficacy.
+\item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
+\item beta: the actual beta value where which is smaller than \code{beta_param + eps}
+\item eta: the actual eta value which is smaller than \code{eta_param - eps}
+\item pi: the actual pi value which is smaller than \code{pi_param - eps}
+\item p0: your provided \code{p0} value
+\item pa: your provided \code{pa} value
+\item alpha_param: your provided \code{alpha} value
+\item beta_param: your provided \code{beta} value
+\item eta_param: your provided \code{eta} value
+\item pi_param: your provided \code{pi} value
 }
-\details{
-if x<=r --> stop futility
-
-if x>=s --> efficacy
+}
+\description{
+The goal of a phase II trial is to make a preliminary determination regarding the activity and
+tolerability of a new treatment and thus to determine whether the treatment warrants
+further study in the phase III setting. \cr
+This function calculates the sample size needed in a Sargent 1-stage design which is a
+three-outcome design that allows for three outcomes: reject \eqn{H(0)}, reject \eqn{H(a)}, or reject neither.
 }
 \examples{
-sargent1stage(p0=0.5,pa=0.65,alpha=0.1,beta=0.1,eta=0.8,pi=0.8,eps = 0.005,N_min=0,N_max=100)
+sargent1stage(p0 = 0.5, pa = 0.65, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8, eps = 0.005, N_min = 0, N_max = 100)
+sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8, eps = 0.005, N_min = 35, N_max = 50)
+
+test <- data.frame(p0 = c(0.05,0.1,0.2,0.3,0.4,0.5),
+                   pa = c(0.05,0.1,0.2,0.3,0.4,0.5) + 0.15)
+test <- merge(test,
+              expand.grid(alpha = c(0.1,0.05), beta = 0.1, eta = 0.8, pi = 0.8))
+samplesize <- lapply(seq_len(nrow(test)), FUN=function(i){
+  setting <- test[i, ]
+  sargent1stage(p0 = setting$p0, pa = setting$pa,
+                alpha = setting$alpha, beta = setting$beta, eta = setting$eta, pi = setting$pi,
+                eps = 0.005, N_min = 20, N_max = 70)
+})
+}
+\references{
+Sargent DJ, Chan V, Goldberg RM. A three-outcome design for phase II clinical trials. Control Clin Trials. 2001;22(2):117-125. doi:10.1016/s0197-2456(00)00115-x
 }
