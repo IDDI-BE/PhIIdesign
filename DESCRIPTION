@@ -1,10 +1,11 @@
 Package: PhIIdesign
 Type: Package
-Title: Different phase II designs
+Title: Sample Size Calculation for Phase II Designs
 Version: 0.2.0
 Author: Koenraad D'Hollander and Elisabeth Coart
 Maintainer: Koenraad D'Hollander <koenraad.dhollander@iddi.com>
-Description: This function calculates sample sizes for different PhII designs.
+Description: Sample size calculations for designs of Phase II clinical trials. 
+    In particular stage 1 calculations by Fleming and Sargent and stage 2 sample size calculations by Simon and Sargent. 
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
