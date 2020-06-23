@@ -7,11 +7,7 @@
 #' @param pa probability of the interesting response (alternative hypothesis Ha)
 #' @param alpha Type I error rate \eqn{P(reject H0|H0)}
 #' @param beta Type II error rate \eqn{P(reject Ha|Ha)}
-#' @param eps tolerance  default value = 0.005
-#' @details
-#' TODO:
-#' actual eta>=eta-eps\cr
-#' actual p>=pi-eps
+#' @param eps tolerance default value = 0.005
 #' @return a data.frame with elements
 #' \itemize{
 #' \item n: total number of patients

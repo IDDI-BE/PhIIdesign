@@ -15,7 +15,7 @@ fleming1stage(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005)
 
 \item{beta}{Type II error rate \eqn{P(reject Ha|Ha)}}
 
-\item{eps}{tolerance  default value = 0.005}
+\item{eps}{tolerance default value = 0.005}
 }
 \value{
 a data.frame with elements
@@ -34,11 +34,6 @@ a data.frame with elements
 Therapeutic efficacy in clinical trials is often evaluated principally on the basis of the probability p that
 an eligible patient receiving the treatment regimen will experience a regression (like a tumor e.g.).\cr
 This function calculates sample sizes of the Fleming single-stage design, for \eqn{p_0 < p_a} for the requested Type I (alpha) and Type II error (beta).
-}
-\details{
-TODO:
-actual eta>=eta-eps\cr
-actual p>=pi-eps
 }
 \examples{
 fleming1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2)
