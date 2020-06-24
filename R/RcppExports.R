@@ -5,3 +5,11 @@ fleming_single_stage <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005) 
     .Call('_PhIIdesign_fleming_single_stage', PACKAGE = 'PhIIdesign', p0, pa, alpha, beta, eps)
 }
 
+sargent1stage_N_r <- function(N_min, N_max) {
+    .Call('_PhIIdesign_sargent1stage_N_r', PACKAGE = 'PhIIdesign', N_min, N_max)
+}
+
+sargent1stage_N_r_s <- function(N, r, beta_temp, eta_temp) {
+    .Call('_PhIIdesign_sargent1stage_N_r_s', PACKAGE = 'PhIIdesign', N, r, beta_temp, eta_temp)
+}
+

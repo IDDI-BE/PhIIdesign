@@ -4,7 +4,7 @@
 \alias{sargent1stage}
 \title{The Sargent 1-stage function}
 \usage{
-sargent1stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max)
+sargent1stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, ...)
 }
 \arguments{
 \item{p0}{probability of the uninteresting response (null hypothesis \eqn{H0})}
@@ -24,6 +24,8 @@ sargent1stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max)
 \item{N_min}{minimum sample size value for grid search}
 
 \item{N_max}{maximum sample size value for grid search}
+
+\item{...}{further arguments passed on to the methods}
 }
 \value{
 a data.frame with elements
@@ -58,12 +60,17 @@ test <- data.frame(p0 = c(0.05,0.1,0.2,0.3,0.4,0.5),
                    pa = c(0.05,0.1,0.2,0.3,0.4,0.5) + 0.15)
 test <- merge(test,
               expand.grid(alpha = c(0.1,0.05), beta = 0.1, eta = 0.8, pi = 0.8))
+samplesize <- sargent1stage(p0 = test$p0, pa = test$pa,
+                            alpha = test$alpha, beta = test$beta,
+                            eta = test$eta, pi = test$pi,
+                            eps = 0.005, N_min = 20, N_max = 70)
 samplesize <- lapply(seq_len(nrow(test)), FUN=function(i){
   setting <- test[i, ]
   sargent1stage(p0 = setting$p0, pa = setting$pa,
                 alpha = setting$alpha, beta = setting$beta, eta = setting$eta, pi = setting$pi,
                 eps = 0.005, N_min = 20, N_max = 70)
 })
+samplesize <- do.call(rbind, samplesize)
 }
 \references{
 Sargent DJ, Chan V, Goldberg RM. A three-outcome design for phase II clinical trials. Control Clin Trials. 2001;22(2):117-125. doi:10.1016/s0197-2456(00)00115-x

@@ -42,5 +42,5 @@ Variable of interest: diff=E-C
 alloc is assumed >=1 (more patients in the experimental arm)
 }
 \examples{
-exact1stage(p0=0.45,pa=0.7,alpha=0.05,beta=0.2,alloc=1,type="normal")
+exact1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2, alloc = 1, type = "normal")
 }

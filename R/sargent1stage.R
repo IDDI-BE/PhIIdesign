@@ -14,6 +14,7 @@
 #' @param eps tolerance default value = 0.005
 #' @param N_min minimum sample size value for grid search
 #' @param N_max maximum sample size value for grid search
+#' @param ... further arguments passed on to the methods
 #' @return a data.frame with elements
 #' \itemize{
 #' \item n: total number of patients
@@ -40,26 +41,53 @@
 #'                    pa = c(0.05,0.1,0.2,0.3,0.4,0.5) + 0.15)
 #' test <- merge(test,
 #'               expand.grid(alpha = c(0.1,0.05), beta = 0.1, eta = 0.8, pi = 0.8))
+#' samplesize <- sargent1stage(p0 = test$p0, pa = test$pa,
+#'                             alpha = test$alpha, beta = test$beta,
+#'                             eta = test$eta, pi = test$pi,
+#'                             eps = 0.005, N_min = 20, N_max = 70)
 #' samplesize <- lapply(seq_len(nrow(test)), FUN=function(i){
 #'   setting <- test[i, ]
 #'   sargent1stage(p0 = setting$p0, pa = setting$pa,
 #'                 alpha = setting$alpha, beta = setting$beta, eta = setting$eta, pi = setting$pi,
 #'                 eps = 0.005, N_min = 20, N_max = 70)
 #' })
-sargent1stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max) {
+#' samplesize <- do.call(rbind, samplesize)
+sargent1stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, ...) {
+  if(length(p0) > 1 && length(pa) > 1){
+    ## Use Rcpp implementation
+    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eta = eta, pi = pi,
+                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max){
+                        sargent1stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, rcpp = TRUE)
+                      }, eps = eps, N_min = N_min, N_max = N_max,
+                      SIMPLIFY = FALSE)
+    results <- data.table::rbindlist(results)
+    results <- data.table::setDF(results)
+  }else{
+    ## Use plain R implementation
+    results <- sargent1stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, ...)
+  }
+  results
+}
+
+sargent1stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, rcpp = TRUE) {
+  # R CMD check happiness
+  N <- NULL
   if (pa < p0) {
     stop("p0 should be smaller than pa")
   }
 
-  # Define variables as a NULL value (to avoid 'notes' in devtools package check)
-
-  N <- NULL
-
   # Get for all N's, all possible r's (0:N-2) and select where beta_temp=P(X<=r|Ha)<=beta+eps
   #------------------------------------------------------------------------------------------
-  res0 <- lapply(N_min:N_max, FUN = function(a) cbind(N = a, r = 0:(a - 2)))
-  res0 <- do.call(rbind, res0)
-  res0 <- data.frame(res0)
+  if(rcpp){
+    res0 <- sargent1stage_N_r(N_min, N_max)
+    res0 <- cbind(N = res0$N, r = res0$r)
+    res0 <- data.frame(res0)
+  }else{
+    res0 <- lapply(N_min:N_max, FUN = function(a) cbind(N = a, r = 0:(a - 2)))
+    res0 <- do.call(rbind, res0)
+    res0 <- data.frame(res0)
+  }
+
   res0$beta_temp <- pbinom(q = res0$r, size = res0$N, prob = pa, lower.tail = T)
   res1 <- res0[res0$beta_temp <= (beta + eps), ]
   names(res1) <- c("N", "r", "beta_temp")
@@ -72,16 +100,22 @@ sargent1stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_ma
 
   # Get for selected N's, r's: s's ((r+2):n), and calculate pi
   #----------------------------------------------------------
-  res3 <- mapply(
-    FUN = function(a, b, c, d, e, f, g){
-      cbind(N = a, r = b, beta_temp = c, eta_temp = d, s = (b + 2):a)
+  if(rcpp){
+    res3 <- sargent1stage_N_r_s(N = res2$N, r = res2$r, beta_temp = res2$beta_temp, eta_temp = res2$eta_temp)
+    res3 <- cbind(N = res3$N, r = res3$r, beta_temp = res3$beta_temp, eta_temp = res3$eta_temp, s = res3$s)
+    res3 <- data.frame(res3)
+  }else{
+    res3 <- mapply(
+      FUN = function(N, r, beta_temp, eta_temp){
+        cbind(N = N, r = r, beta_temp = beta_temp, eta_temp = eta_temp, s = (r + 2):N)
       },
-    a = res2$N,
-    b = res2$r,
-    c = res2$beta_temp,
-    d = res2$eta_temp)
-  res3 <- do.call(rbind, res3)
-  res3 <- data.frame(res3)
+      N = res2$N,
+      r = res2$r,
+      beta_temp = res2$beta_temp,
+      eta_temp = res2$eta_temp)
+    res3 <- do.call(rbind, res3)
+    res3 <- data.frame(res3)
+  }
 
   # Calculate pi all scenarios (s needed)
   #--------------------------------------
@@ -103,24 +137,19 @@ sargent1stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_ma
   res5 <- data.table::setDT(res5)
   res5 <- res5[, N_min := min(N)]
   res <- res5[which(N == N_min), ]
-
-  names(res)[names(res) == "alpha"] <- "alpha_param"
-  names(res)[names(res) == "beta"] <- "beta_param"
-  names(res)[names(res) == "eta"] <- "eta_param"
-  names(res)[names(res) == "pi"] <- "pi_param"
-
-  names(res)[names(res) == "alpha_temp"] <- "alpha"
-  names(res)[names(res) == "beta_temp"] <- "beta"
-  names(res)[names(res) == "eta_temp"] <- "eta"
-  names(res)[names(res) == "pi_temp"] <- "pi"
-
-  res <- res[, -c("diff_pi", "diff_alpha", "N_min")]
+  res <- setDF(res)
+  res <- data.table::setnames(res,
+                              old = c("alpha", "beta", "eta", "pi"),
+                              new = c("alpha_param", "beta_param", "eta_param", "pi_param"))
+  res <- data.table::setnames(res,
+                              old = c("alpha_temp", "beta_temp", "eta_temp", "pi_temp"),
+                              new = c("alpha", "beta", "eta", "pi"))
   res <- cbind(res[, c("r", "s", "N", "alpha", "beta", "eta", "pi")],
                p0 = p0,
                pa = pa,
                res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])
 
-  return(res)
+  res
 }
 
 # TEST (Sargent DJ, Goldberg RM. A Three-Outcome Design for Phase II Clinical Trials. Controlled Clinical Trials 22:117-125

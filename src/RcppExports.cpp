@@ -20,9 +20,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sargent1stage_N_r
+Rcpp::List sargent1stage_N_r(int N_min, int N_max);
+RcppExport SEXP _PhIIdesign_sargent1stage_N_r(SEXP N_minSEXP, SEXP N_maxSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type N_min(N_minSEXP);
+    Rcpp::traits::input_parameter< int >::type N_max(N_maxSEXP);
+    rcpp_result_gen = Rcpp::wrap(sargent1stage_N_r(N_min, N_max));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sargent1stage_N_r_s
+Rcpp::List sargent1stage_N_r_s(Rcpp::IntegerVector N, Rcpp::IntegerVector r, Rcpp::NumericVector beta_temp, Rcpp::NumericVector eta_temp);
+RcppExport SEXP _PhIIdesign_sargent1stage_N_r_s(SEXP NSEXP, SEXP rSEXP, SEXP beta_tempSEXP, SEXP eta_tempSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type N(NSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type r(rSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type beta_temp(beta_tempSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type eta_temp(eta_tempSEXP);
+    rcpp_result_gen = Rcpp::wrap(sargent1stage_N_r_s(N, r, beta_temp, eta_temp));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_PhIIdesign_fleming_single_stage", (DL_FUNC) &_PhIIdesign_fleming_single_stage, 5},
+    {"_PhIIdesign_sargent1stage_N_r", (DL_FUNC) &_PhIIdesign_sargent1stage_N_r, 2},
+    {"_PhIIdesign_sargent1stage_N_r_s", (DL_FUNC) &_PhIIdesign_sargent1stage_N_r_s, 4},
     {NULL, NULL, 0}
 };
 

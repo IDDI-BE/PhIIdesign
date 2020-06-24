@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output:
   html_document:
     fig_caption: false
-    toc: false
+    toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -50,6 +50,51 @@ comparison <- benchmark(
   fleming1stage_multiple(p0 = test$p0, pa = test$pa, alpha = 0.05, beta = 0.1, eps = 0.00001),
   fleming1stage(p0 = test$p0, pa = test$pa, alpha = 0.05, beta = 0.1, eps = 0.00001),
   times = 100
+)
+comparison
+boxplot(comparison) + coord_flip()
+```
+
+
+## Sargent 1 stage
+
+### One setting
+
+```{r}
+comparison <- benchmark(
+  sargent1stage(p0=0.5, pa=0.65, alpha=0.1, beta=0.1, eta=0.8, pi=0.8, eps = 0.005, N_min=0, N_max=200, rcpp=FALSE),
+  sargent1stage(p0=0.5, pa=0.65, alpha=0.1, beta=0.1, eta=0.8, pi=0.8, eps = 0.005, N_min=0, N_max=200, rcpp=TRUE),
+  times = 50
+)
+comparison
+boxplot(comparison) + coord_flip()
+```
+
+### Sargent setting - several
+
+```{r}
+test <- data.frame(p0 = c(0.05,0.1,0.2,0.3,0.4,0.5),
+                   pa = c(0.05,0.1,0.2,0.3,0.4,0.5) + 0.15)
+test <- merge(test,
+              expand.grid(alpha = c(0.1,0.05), beta = 0.1, eta = 0.8, pi = 0.8))
+
+sargent1stage_multiple <- function(p0, pa, alpha, beta, eta, pi, eps, N_min, N_max){
+  samplesize <- mapply(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, FUN=function(p0, pa, alpha, beta, eta, pi, eps, N_min, N_max){
+    sargent1stage(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, rcpp = FALSE)
+  }, SIMPLIFY = FALSE, eps = eps, N_min = N_min, N_max = N_max)
+  samplesize <- do.call(rbind, samplesize)
+  samplesize
+}
+comparison <- benchmark(
+  sargent1stage_multiple(p0 = test$p0, pa = test$pa,
+                         alpha = test$alpha, beta = test$beta,
+                         eta = test$eta, pi = test$pi,
+                         eps = 0.005, N_min = 20, N_max = 70),
+  sargent1stage(p0 = test$p0, pa = test$pa,
+                         alpha = test$alpha, beta = test$beta,
+                         eta = test$eta, pi = test$pi,
+                         eps = 0.005, N_min = 20, N_max = 70),
+  times = 25
 )
 comparison
 boxplot(comparison) + coord_flip()
