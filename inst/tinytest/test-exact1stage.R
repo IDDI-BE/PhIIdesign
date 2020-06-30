@@ -9,6 +9,36 @@ expect_equivalent(
 expect_equivalent(
   current = exact1stage(p0=0.45,pa=0.7,alpha=0.05,beta=0.2,alloc=1,type="normal"),
   target = data.frame(PhIIdesign:::rcpp_exact1stage(p0=0.45,pa=0.7,alpha=0.05,beta=0.2,alloc=1,type="normal")))
+expect_equivalent(
+  current = exact1stage(p0=0.45,pa=0.7,alpha=0.05,beta=0.2,alloc=1,type="exact"),
+  target = data.frame(PhIIdesign:::rcpp_exact1stage(p0=0.45,pa=0.7,alpha=0.05,beta=0.2,alloc=1,type="exact")))
+
+test <- rbind(
+  data.frame(p0 = c(0.1, 0.2, 0.3, 0.4),
+             pa = c(0.1, 0.2, 0.3, 0.4) + 0.2),
+  data.frame(p0 = c(0.1, 0.2, 0.3, 0.4),
+             pa = c(0.1, 0.2, 0.3, 0.4) + 0.15))
+test <- merge(test,
+              expand.grid(alpha = c(0.05, 0.1), beta = 0.1))
+
+expect_equivalent(
+  current = do.call(rbind, mapply(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta,
+                                  FUN=function(p0, pa, alpha, beta){
+                                    exact1stage(p0 = p0, pa = pa, alpha = alpha, beta = beta,
+                                                eps = 0.005, alloc = 1, type = "normal")
+                                  }, SIMPLIFY = FALSE)),
+  target = exact1stage(p0 = test$p0, pa = test$pa,
+                       alpha = test$alpha, beta = test$beta,
+                       eps = 0.005, alloc = 1, type = "normal"))
+expect_equivalent(
+  current = do.call(rbind, mapply(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta,
+                                  FUN=function(p0, pa, alpha, beta){
+                                    exact1stage(p0 = p0, pa = pa, alpha = alpha, beta = beta,
+                                                eps = 0.1, alloc = 1, type = "exact")
+                                  }, SIMPLIFY = FALSE)),
+  target = exact1stage(p0 = test$p0, pa = test$pa,
+                       alpha = test$alpha, beta = test$beta,
+                       eps = 0.1, alloc = 1, type = "exact"))
 
 
 expect_equivalent(
@@ -20,3 +50,5 @@ expect_equivalent(
 expect_equivalent(
   current = PhIIdesign:::bin_dif_cdf(0.1, 90, 100, 0.1, 0.05, type="exact"),
   target = PhIIdesign:::rcpp_bin_dif_cdf(0.1, 90, 100, 0.1, 0.05, type="exact"))
+
+

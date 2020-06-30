@@ -27,7 +27,7 @@ bin_dif_cdf <- function(z, n1, n2, p1, p2, type = c("exact", "normal")) { # z=cu
 #' @param beta Type II error rate \eqn{P(reject Ha|Ha)}
 #' @param eps tolerance default value = 0.005
 #' @param alloc allocation ratio (e.g. 2 for 2:1). alloc is assumed >=1 (more patients in the experimental arm)
-#' @param ... refers to type="exact" or "normal" for pdf and cdf difference of two binomial variables
+#' @param type character string, either "exact" or "normal" for pdf and cdf difference of two binomial variables
 #' @return a data.frame with elements
 #' \itemize{
 #' \item n: total number of patients
@@ -48,7 +48,50 @@ bin_dif_cdf <- function(z, n1, n2, p1, p2, type = c("exact", "normal")) { # z=cu
 #' @examples
 #' exact1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2, alloc = 1, type = "normal")
 #' exact1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2, alloc = 1, type = "exact")
-exact1stage <- function(p0, pa, alpha, beta, eps = 0.005, alloc = 1, ...) {
+#'
+#' test <- rbind(
+#'   data.frame(p0 = c(0.1, 0.2, 0.3, 0.4),
+#'              pa = c(0.1, 0.2, 0.3, 0.4) + 0.2),
+#'   data.frame(p0 = c(0.1, 0.2, 0.3, 0.4),
+#'              pa = c(0.1, 0.2, 0.3, 0.4) + 0.15))
+#' test <- merge(test,
+#'               expand.grid(alpha = c(0.05, 0.1), beta = 0.1))
+#' samplesize <- exact1stage(p0 = test$p0, pa = test$pa,
+#'                           alpha = test$alpha, beta = test$beta,
+#'                           eps = 0.005, alloc = 1, type = "normal")
+#' samplesize <- exact1stage(p0 = test$p0, pa = test$pa,
+#'                           alpha = test$alpha, beta = test$beta,
+#'                           eps = 0.2, alloc = 1, type = "exact")
+#' ## these 2 are the same
+#' samplesize <- exact1stage(p0 = test$p0, pa = test$pa,
+#'                           alpha = test$alpha, beta = test$beta,
+#'                           eps = 0.005, alloc = 1, type = "normal")
+#' \donttest{
+#' samplesize <- mapply(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta,
+#'   FUN=function(p0, pa, alpha, beta){
+#'     exact1stage(p0 = p0, pa = pa, alpha = alpha, beta = beta,
+#'                 eps = 0.005, alloc = 1, type = "normal")
+#'   }, SIMPLIFY = FALSE)
+#' samplesize <- do.call(rbind, samplesize)
+#' }
+exact1stage <- function(p0, pa, alpha, beta, eps = 0.005, alloc = 1, type = "exact") {
+  if(length(p0) > 1 && length(pa) > 1){
+    ## Use Rcpp implementation
+    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta,
+                      FUN = function(null, alternative, alpha, beta, eps, alloc, type){
+                        rcpp_exact1stage(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, alloc = alloc, type = type)
+                      }, eps = eps, alloc = alloc, type = type,
+                      SIMPLIFY = FALSE)
+    results <- data.table::rbindlist(results)
+    results <- data.table::setDF(results)
+  }else{
+    ## Use plain R implementation
+    results <- exact1stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, type = type)
+  }
+  results
+}
+
+exact1stage.default <- function(p0, pa, alpha, beta, eps = 0.005, alloc = 1, type = "exact") {
   stopifnot(alloc >= 1)
   if (pa < p0) {
     stop("p0 should be smaller than pa")
@@ -66,9 +109,9 @@ exact1stage <- function(p0, pa, alpha, beta, eps = 0.005, alloc = 1, ...) {
 
     while (alpha_temp > alpha + eps & r_temp <= n_E - 1) {
       r_temp <- r_temp + 1
-      alpha_temp <- 1 - bin_dif_cdf(z = r_temp, n1 = n_E, n2 = n_C, p1 = (p0 + pa) / 2, p2 = (p0 + pa) / 2, ...)
+      alpha_temp <- 1 - bin_dif_cdf(z = r_temp, n1 = n_E, n2 = n_C, p1 = (p0 + pa) / 2, p2 = (p0 + pa) / 2, type = type)
     }
-    beta_temp <- bin_dif_cdf(z = r_temp, n1 = n_E, n2 = n_C, p1 = pa, p2 = p0, ...)
+    beta_temp <- bin_dif_cdf(z = r_temp, n1 = n_E, n2 = n_C, p1 = pa, p2 = p0, type = type)
   }
 
   n <- n_E + n_C

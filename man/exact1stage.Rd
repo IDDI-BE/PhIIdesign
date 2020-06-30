@@ -4,7 +4,7 @@
 \alias{exact1stage}
 \title{The exact 1-stage function, randomized}
 \usage{
-exact1stage(p0, pa, alpha, beta, eps = 0.005, alloc = 1, ...)
+exact1stage(p0, pa, alpha, beta, eps = 0.005, alloc = 1, type = "exact")
 }
 \arguments{
 \item{p0}{probability of the uninteresting response (null hypothesis H0)}
@@ -19,7 +19,7 @@ exact1stage(p0, pa, alpha, beta, eps = 0.005, alloc = 1, ...)
 
 \item{alloc}{allocation ratio (e.g. 2 for 2:1). alloc is assumed >=1 (more patients in the experimental arm)}
 
-\item{...}{refers to type="exact" or "normal" for pdf and cdf difference of two binomial variables}
+\item{type}{character string, either "exact" or "normal" for pdf and cdf difference of two binomial variables}
 }
 \value{
 a data.frame with elements
@@ -46,4 +46,30 @@ Note that all sample sizes can be entered, but only calculations for sample size
 \examples{
 exact1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2, alloc = 1, type = "normal")
 exact1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2, alloc = 1, type = "exact")
+
+test <- rbind(
+  data.frame(p0 = c(0.1, 0.2, 0.3, 0.4),
+             pa = c(0.1, 0.2, 0.3, 0.4) + 0.2),
+  data.frame(p0 = c(0.1, 0.2, 0.3, 0.4),
+             pa = c(0.1, 0.2, 0.3, 0.4) + 0.15))
+test <- merge(test,
+              expand.grid(alpha = c(0.05, 0.1), beta = 0.1))
+samplesize <- exact1stage(p0 = test$p0, pa = test$pa,
+                          alpha = test$alpha, beta = test$beta,
+                          eps = 0.005, alloc = 1, type = "normal")
+samplesize <- exact1stage(p0 = test$p0, pa = test$pa,
+                          alpha = test$alpha, beta = test$beta,
+                          eps = 0.2, alloc = 1, type = "exact")
+## these 2 are the same
+samplesize <- exact1stage(p0 = test$p0, pa = test$pa,
+                          alpha = test$alpha, beta = test$beta,
+                          eps = 0.005, alloc = 1, type = "normal")
+\donttest{
+samplesize <- mapply(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta,
+  FUN=function(p0, pa, alpha, beta){
+    exact1stage(p0 = p0, pa = pa, alpha = alpha, beta = beta,
+                eps = 0.005, alloc = 1, type = "normal")
+  }, SIMPLIFY = FALSE)
+samplesize <- do.call(rbind, samplesize)
+}
 }

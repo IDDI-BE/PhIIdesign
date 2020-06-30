@@ -62,8 +62,10 @@ boxplot(comparison) + coord_flip()
 
 ```{r}
 comparison <- benchmark(
-  sargent1stage(p0=0.5, pa=0.65, alpha=0.1, beta=0.1, eta=0.8, pi=0.8, eps = 0.005, N_min=0, N_max=200, rcpp=FALSE),
-  sargent1stage(p0=0.5, pa=0.65, alpha=0.1, beta=0.1, eta=0.8, pi=0.8, eps = 0.005, N_min=0, N_max=200, rcpp=TRUE),
+  sargent1stage(p0=0.5, pa=0.65, alpha=0.1, beta=0.1, 
+                eta=0.8, pi=0.8, eps = 0.005, N_min=0, N_max=200, rcpp=FALSE),
+  sargent1stage(p0=0.5, pa=0.65, alpha=0.1, beta=0.1, 
+                eta=0.8, pi=0.8, eps = 0.005, N_min=0, N_max=200, rcpp=TRUE),
   times = 50
 )
 comparison
@@ -95,6 +97,64 @@ comparison <- benchmark(
                          eta = test$eta, pi = test$pi,
                          eps = 0.005, N_min = 20, N_max = 70),
   times = 25
+)
+comparison
+boxplot(comparison) + coord_flip()
+```
+
+## Exact 1 stage
+
+```{r}
+comparison <- benchmark(
+  PhIIdesign:::bin_dif_cdf(0.1, 90, 100, 0.1, 0.05, type="exact"),
+  PhIIdesign:::rcpp_bin_dif_cdf(0.1, 90, 100, 0.1, 0.05, type="exact"),
+  times = 50
+)
+comparison
+boxplot(comparison) + coord_flip()
+```
+
+### One setting
+
+```{r}
+comparison <- benchmark(
+  exact1stage(p0=0.45,pa=0.7,alpha=0.05,beta=0.2,alloc=1,type="normal"),
+  PhIIdesign:::rcpp_exact1stage(p0=0.45,pa=0.7,alpha=0.05,beta=0.2,alloc=1,type="normal"),
+  times = 50
+)
+comparison
+boxplot(comparison) + coord_flip()
+```
+
+### Exact 1 stage - several
+
+```{r}
+test <- rbind(
+  data.frame(p0 = c(0.1, 0.2, 0.3, 0.4),
+             pa = c(0.1, 0.2, 0.3, 0.4) + 0.2),
+  data.frame(p0 = c(0.1, 0.2, 0.3, 0.4),
+             pa = c(0.1, 0.2, 0.3, 0.4) + 0.15))
+test <- merge(test,
+              expand.grid(alpha = c(0.05, 0.1), beta = 0.1))
+
+exact1stage_multiple <- function(p0, pa, alpha, beta, eps, alloc, type){
+  samplesize <- mapply(p0 = p0, pa = pa, alpha = alpha, beta = beta,
+                                  FUN=function(p0, pa, alpha, beta, eps, alloc, type){
+                                    exact1stage(p0 = p0, pa = pa, alpha = alpha, beta = beta,
+                                                eps = eps, alloc = alloc, type = type)
+                                  }, eps, alloc, type, SIMPLIFY = FALSE)
+  samplesize <- do.call(rbind, samplesize)
+  samplesize
+}
+
+comparison <- benchmark(
+  exact1stage_multiple(p0 = test$p0, pa = test$pa,
+                       alpha = test$alpha, beta = test$beta,
+                       eps = 0.025, alloc = 1, type = "normal"),
+  exact1stage(p0 = test$p0, pa = test$pa,
+                       alpha = test$alpha, beta = test$beta,
+                       eps = 0.025, alloc = 1, type = "normal"),
+  times = 1
 )
 comparison
 boxplot(comparison) + coord_flip()
