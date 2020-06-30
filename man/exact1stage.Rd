@@ -4,43 +4,46 @@
 \alias{exact1stage}
 \title{The exact 1-stage function, randomized}
 \usage{
-exact1stage(p0, pa, alpha, beta, eps = 0.005, alloc, ...)
+exact1stage(p0, pa, alpha, beta, eps = 0.005, alloc = 1, ...)
 }
 \arguments{
-\item{p0}{uninteresting response (null hypothesis H0)}
+\item{p0}{probability of the uninteresting response (null hypothesis H0)}
 
-\item{pa}{interesting response (alternative hypothesis Ha)}
+\item{pa}{probability of the interesting response (alternative hypothesis Ha)}
 
-\item{alpha}{P(reject H0|H0)}
+\item{alpha}{Type I error rate \eqn{P(reject H0|H0)}}
 
-\item{beta}{P(reject Ha|Ha)}
+\item{beta}{Type II error rate \eqn{P(reject Ha|Ha)}}
 
-\item{eps}{tolerance (actual alpha<=alpha+eps; actual beta<=beta+eps; actual eta>=eta-eps; actual p>=pi-eps); default value = 0.005}
+\item{eps}{tolerance default value = 0.005}
 
-\item{alloc}{allocation ratio (e.g. 2 for 2:1)}
+\item{alloc}{allocation ratio (e.g. 2 for 2:1). alloc is assumed >=1 (more patients in the experimental arm)}
 
 \item{...}{refers to type="exact" or "normal" for pdf and cdf difference of two binomial variables}
+}
+\value{
+a data.frame with elements
+\itemize{
+\item n: total number of patients
+\item n_E: number of patients in experimental arm
+\item n_C: number of patients in control arm
+\item r: TODO. Variable of interest: diff=E-C. Note if (E-C)<=r --> futility\cr
+\item d: TODO. Variable of interest: diff=E-C. Note if if (E-C)> r --> efficacy
+\item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
+\item beta: the actual beta value where which is smaller than \code{beta_param + eps}
+\item p0: your provided \code{p0} value
+\item pa: your provided \code{pa} value
+\item alpha_param: your provided \code{alpha} value
+\item beta_param: your provided \code{beta} value
+}
 }
 \description{
 This function calculates sample sizes of an exact randomized 1-stage design, for p0<pa
 }
 \details{
-n= total number of patients
-
-n_E= number of patients in experimental arm
-
-n_C= number of patients in control arm
-
-if (E-C)<=r --> futility
-
-if (E-C)> r --> efficacy
-
 Note that all sample sizes can be entered, but only calculations for sample sizes, without any decimals (taking into account allocation ratio)
-
-Variable of interest: diff=E-C
-
-alloc is assumed >=1 (more patients in the experimental arm)
 }
 \examples{
 exact1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2, alloc = 1, type = "normal")
+exact1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2, alloc = 1, type = "exact")
 }

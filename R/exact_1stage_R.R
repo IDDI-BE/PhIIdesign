@@ -4,77 +4,80 @@
 # (allowing for unequal sample sizes in both groups)                                     #
 #----------------------------------------------------------------------------------------#
 
-bin_dif_cdf<-function(z,n1,n2,p1,p2,type){  # z=cutoff difference between two binomial variables; Z=X1-X2
+bin_dif_cdf <- function(z, n1, n2, p1, p2, type = c("exact", "normal")) { # z=cutoff difference between two binomial variables; Z=X1-X2
+  type <- match.arg(type)
+  if (type == "exact") {
+    prob <- 0
 
-  if (type=="exact"){
-    prob=0
-
-    for (diff in -n2:z){                    # Z=X1-X2, so -n2 is minimum
-      i=(0:max(n1,n2))
-      prob<-prob+sum(dbinom(x=i+diff,size=n1,prob=p1)*dbinom(x=i,size=n2,prob=p2))
+    for (diff in -n2:z) { # Z=X1-X2, so -n2 is minimum
+      i <- (0:max(n1, n2))
+      prob <- prob + sum(dbinom(x = i + diff, size = n1, prob = p1) * dbinom(x = i, size = n2, prob = p2))
     }
+  }else if (type == "normal") {
+    prob <- pnorm(q = z + 0.5, mean = (n1 * p1 - n2 * p2), sd = (n1 * p1 * (1 - p1) + n2 * p2 * (1 - p2))**0.5, lower.tail = T)
   }
-
-  if (type=="normal"){
-    prob<-pnorm(q=z+0.5,mean=(n1*p1-n2*p2),sd=(n1*p1*(1-p1)+n2*p2*(1-p2))**0.5,lower.tail=T)
-  }
-
-  return(prob)
+  prob
 }
 
 #' @title The exact 1-stage function, randomized
 #' @description This function calculates sample sizes of an exact randomized 1-stage design, for p0<pa
-#' @details n= total number of patients
-#' @details n_E= number of patients in experimental arm
-#' @details n_C= number of patients in control arm
-#' @details if (E-C)<=r --> futility
-#' @details if (E-C)> r --> efficacy
-#' @details Note that all sample sizes can be entered, but only calculations for sample sizes, without any decimals (taking into account allocation ratio)
-#' @details Variable of interest: diff=E-C
-#' @details alloc is assumed >=1 (more patients in the experimental arm)
-#'
-#' @param p0 uninteresting response (null hypothesis H0)
-#' @param pa interesting response (alternative hypothesis Ha)
-#' @param alpha P(reject H0|H0)
-#' @param beta P(reject Ha|Ha)
-#' @param eps tolerance (actual alpha<=alpha+eps; actual beta<=beta+eps; actual eta>=eta-eps; actual p>=pi-eps); default value = 0.005
-#' @param alloc allocation ratio (e.g. 2 for 2:1)
+#' @param p0 probability of the uninteresting response (null hypothesis H0)
+#' @param pa probability of the interesting response (alternative hypothesis Ha)
+#' @param alpha Type I error rate \eqn{P(reject H0|H0)}
+#' @param beta Type II error rate \eqn{P(reject Ha|Ha)}
+#' @param eps tolerance default value = 0.005
+#' @param alloc allocation ratio (e.g. 2 for 2:1). alloc is assumed >=1 (more patients in the experimental arm)
 #' @param ... refers to type="exact" or "normal" for pdf and cdf difference of two binomial variables
-#' @examples
-#' exact1stage(p0=0.45,pa=0.7,alpha=0.05,beta=0.2,alloc=1,type="normal")
+#' @return a data.frame with elements
+#' \itemize{
+#' \item n: total number of patients
+#' \item n_E: number of patients in experimental arm
+#' \item n_C: number of patients in control arm
+#' \item r: TODO. Variable of interest: diff=E-C. Note if (E-C)<=r --> futility\cr
+#' \item d: TODO. Variable of interest: diff=E-C. Note if if (E-C)> r --> efficacy
+#' \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
+#' \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
+#' \item p0: your provided \code{p0} value
+#' \item pa: your provided \code{pa} value
+#' \item alpha_param: your provided \code{alpha} value
+#' \item beta_param: your provided \code{beta} value
+#' }
+#' @details
+#' Note that all sample sizes can be entered, but only calculations for sample sizes, without any decimals (taking into account allocation ratio)
 #' @export
-#' @importFrom stats pbinom qbinom
+#' @examples
+#' exact1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2, alloc = 1, type = "normal")
+#' exact1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2, alloc = 1, type = "exact")
+exact1stage <- function(p0, pa, alpha, beta, eps = 0.005, alloc = 1, ...) {
+  stopifnot(alloc >= 1)
+  if (pa < p0) {
+    stop("p0 should be smaller than pa")
+  }
 
-exact1stage<-function (p0,pa,alpha,beta,eps=0.005,alloc,...)
-{
-  if (pa<p0) {stop('p0 should be smaller than pa')}
+  n_C <- 0
+  beta_temp <- 1
 
-  n_C        <- 0
-  beta_temp  <- 1
+  while (beta_temp > beta + eps) {
+    n_C <- n_C + 1
+    n_E <- n_C * alloc
 
-  while (beta_temp > beta+eps) {
-    n_C       <- n_C + 1
-    n_E       <- n_C*alloc
-
-    r_temp     <- -1
+    r_temp <- -1
     alpha_temp <- 1
 
-    while (alpha_temp > alpha+eps & r_temp<=n_E-1){
-      r_temp<-r_temp+1
-      alpha_temp<-1-bin_dif_cdf(z=r_temp,n1=n_E,n2=n_C,p1=(p0+pa)/2,p2=(p0+pa)/2,...)
+    while (alpha_temp > alpha + eps & r_temp <= n_E - 1) {
+      r_temp <- r_temp + 1
+      alpha_temp <- 1 - bin_dif_cdf(z = r_temp, n1 = n_E, n2 = n_C, p1 = (p0 + pa) / 2, p2 = (p0 + pa) / 2, ...)
     }
-    beta_temp <- bin_dif_cdf(z=r_temp,n1=n_E,n2=n_C,p1=pa,p2=p0,...)
+    beta_temp <- bin_dif_cdf(z = r_temp, n1 = n_E, n2 = n_C, p1 = pa, p2 = p0, ...)
   }
 
-  n<-n_E+n_C
+  n <- n_E + n_C
 
-  if (alloc==1) {
-    d<-round(100*(r_temp+1)/n_E,1)
-    res<-data.frame(n=n,n_E=n_E,n_C=n_C,r=r_temp,d=d,alpha=alpha_temp,beta=beta_temp,p0=p0,pa=pa,alpha_param=alpha,beta_param=beta)
-  }
-
-  if (alloc>1) {
-    res<-data.frame(n=n,n_E=n_E,n_C=n_C,r=r_temp,alpha=alpha_temp,beta=beta_temp,p0=p0,pa=pa,alpha_param=alpha,beta_param=beta)
+  if (alloc == 1) {
+    d <- round(100 * (r_temp + 1) / n_E, 1)
+    res <- data.frame(n = n, n_E = n_E, n_C = n_C, r = r_temp, d = d, alpha = alpha_temp, beta = beta_temp, p0 = p0, pa = pa, alpha_param = alpha, beta_param = beta)
+  }else if (alloc > 1) {
+    res <- data.frame(n = n, n_E = n_E, n_C = n_C, r = r_temp, d = NA_real_, alpha = alpha_temp, beta = beta_temp, p0 = p0, pa = pa, alpha_param = alpha, beta_param = beta)
   }
   return(res)
 }

@@ -5,6 +5,39 @@
 
 using namespace Rcpp;
 
+// rcpp_bin_dif_cdf
+double rcpp_bin_dif_cdf(double z, int n1, int n2, double p1, double p2, std::string type);
+RcppExport SEXP _PhIIdesign_rcpp_bin_dif_cdf(SEXP zSEXP, SEXP n1SEXP, SEXP n2SEXP, SEXP p1SEXP, SEXP p2SEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type z(zSEXP);
+    Rcpp::traits::input_parameter< int >::type n1(n1SEXP);
+    Rcpp::traits::input_parameter< int >::type n2(n2SEXP);
+    Rcpp::traits::input_parameter< double >::type p1(p1SEXP);
+    Rcpp::traits::input_parameter< double >::type p2(p2SEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_bin_dif_cdf(z, n1, n2, p1, p2, type));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rcpp_exact1stage
+Rcpp::List rcpp_exact1stage(double p0, double pa, double alpha, double beta, double eps, int alloc, std::string type);
+RcppExport SEXP _PhIIdesign_rcpp_exact1stage(SEXP p0SEXP, SEXP paSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP epsSEXP, SEXP allocSEXP, SEXP typeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type p0(p0SEXP);
+    Rcpp::traits::input_parameter< double >::type pa(paSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
+    Rcpp::traits::input_parameter< int >::type alloc(allocSEXP);
+    Rcpp::traits::input_parameter< std::string >::type type(typeSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_exact1stage(p0, pa, alpha, beta, eps, alloc, type));
+    return rcpp_result_gen;
+END_RCPP
+}
 // fleming_single_stage
 Rcpp::List fleming_single_stage(double p0, double pa, double alpha, double beta, double eps);
 RcppExport SEXP _PhIIdesign_fleming_single_stage(SEXP p0SEXP, SEXP paSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP epsSEXP) {
@@ -48,6 +81,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_PhIIdesign_rcpp_bin_dif_cdf", (DL_FUNC) &_PhIIdesign_rcpp_bin_dif_cdf, 6},
+    {"_PhIIdesign_rcpp_exact1stage", (DL_FUNC) &_PhIIdesign_rcpp_exact1stage, 7},
     {"_PhIIdesign_fleming_single_stage", (DL_FUNC) &_PhIIdesign_fleming_single_stage, 5},
     {"_PhIIdesign_sargent1stage_N_r", (DL_FUNC) &_PhIIdesign_sargent1stage_N_r, 2},
     {"_PhIIdesign_sargent1stage_N_r_s", (DL_FUNC) &_PhIIdesign_sargent1stage_N_r_s, 4},
