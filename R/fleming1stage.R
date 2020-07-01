@@ -46,9 +46,9 @@ fleming1stage <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005){
   stopifnot(length(eps) == 1)
   stopifnot(all(p0 >= 0) && all(p0 <= 1))
   stopifnot(all(pa >= 0) && all(pa <= 1))
-  stopifnot(alpha >= 0 && alpha <= 1)
-  stopifnot(beta >= 0 && beta <= 1)
-  stopifnot((beta + eps) <= 1)
+  stopifnot(all(alpha >= 0) && all(alpha <= 1))
+  stopifnot(all(beta >= 0) && all(beta <= 1))
+  stopifnot(all((beta + eps) <= 1))
   if (!all(p0 < pa)) {
     stop("p0 should be smaller than pa")
   }
