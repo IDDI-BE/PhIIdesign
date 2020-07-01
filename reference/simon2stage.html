@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>The Simon 2-stage function — simon2stage • PhIIdesign</title>
+<title>Simon 2-stage function — simon2stage • PhIIdesign</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,13 @@
 
 
 
-<meta property="og:title" content="The Simon 2-stage function — simon2stage" />
-<meta property="og:description" content="This function calculates sample sizes of the sargent 2-stage design." />
+<meta property="og:title" content="Simon 2-stage function — simon2stage" />
+<meta property="og:description" content="The primary objective of a phase II clinical trial of a new drug or regimen is to determine whether it has sufficient biological activity
+against the disease under study to warrant more extensive development. 
+This function calculates the sample size needed in a Simon 2-stage design which is a
+two-stage design that is optimal in the sense that the expected sample size is minimized if the
+regimen has low activity subject to constraints upon the size of the type 1 and type 2 errors. 
+Two-stage designs which minimize the maximum sample size are also determined." />
 
 
 
@@ -103,39 +108,45 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>The Simon 2-stage function</h1>
+    <h1>Simon 2-stage function</h1>
     
     <div class="hidden name"><code>simon2stage.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function calculates sample sizes of the sargent 2-stage design.</p>
+    <p>The primary objective of a phase II clinical trial of a new drug or regimen is to determine whether it has sufficient biological activity
+against the disease under study to warrant more extensive development. <br />
+This function calculates the sample size needed in a Simon 2-stage design which is a
+two-stage design that is optimal in the sense that the expected sample size is minimized if the
+regimen has low activity subject to constraints upon the size of the type 1 and type 2 errors. <br />
+Two-stage designs which minimize the maximum sample size are also determined.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>simon2stage</span>(<span class='kw'>p0</span>, <span class='kw'>pa</span>, <span class='kw'>alpha</span>, <span class='kw'>beta</span>, eps = <span class='fl'>0.005</span>, <span class='kw'>N_min</span>, <span class='kw'>N_max</span>)</pre>
+    <pre class="usage"><span class='fu'>simon2stage</span>(<span class='kw'>p0</span>, <span class='kw'>pa</span>, <span class='kw'>alpha</span>, <span class='kw'>beta</span>, eps = <span class='fl'>0.005</span>, <span class='kw'>N_min</span>, <span class='kw'>N_max</span>,
+  admissible = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"chull"</span>, <span class='st'>"CHull"</span>), <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>p0</th>
-      <td><p>uninteresting response (null hypothesis H0)</p></td>
+      <td><p>probability of the uninteresting response (null hypothesis \(H0\))</p></td>
     </tr>
     <tr>
       <th>pa</th>
-      <td><p>interesting response (alternative hypothesis Ha)</p></td>
+      <td><p>probability of the interesting response (alternative hypothesis Ha)</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>P(reject H0|H0)</p></td>
+      <td><p>Type I error rate \(P(reject H0|H0)\)</p></td>
     </tr>
     <tr>
       <th>beta</th>
-      <td><p>P(reject Ha|Ha)</p></td>
+      <td><p>Type II error rate \(P(reject Ha|Ha)\)</p></td>
     </tr>
     <tr>
       <th>eps</th>
-      <td><p>tolerance (actual alpha&lt;=alpha+eps; actual beta&lt;=beta+eps; actual eta&gt;=eta-eps; actual p&gt;=pi-eps); default value = 0.005</p></td>
+      <td><p>tolerance default value = 0.005</p></td>
     </tr>
     <tr>
       <th>N_min</th>
@@ -145,37 +156,84 @@
       <th>N_max</th>
       <td><p>maximum sample size value for grid search</p></td>
     </tr>
+    <tr>
+      <th>admissible</th>
+      <td><p>character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>arguments passed on to plot in case admissible is set to CHull</p></td>
+    </tr>
     </table>
 
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>n1= n stage1</p>
-<p>n2= n stage2</p>
-<p>total number of patients=n1+n2</p>
-<p>if x1&lt;=r1 --&gt; stop futility</p>
-<p>if (x1+x2)&lt;=r --&gt; futility</p>
-<p>if (x1+x2)&gt; s --&gt; efficacy</p>
-<p>EN.p0 = expected sample size under H0</p>
-<p>PET.p0 = probability of terminating the trial at the end of the first stage under H0</p>
-<p>Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154;</p>
+    <p>a data.frame with elements</p><ul>
+<li><p>n1: total number of patients in stage1</p></li>
+<li><p>n2: total number of patients in stage2</p></li>
+<li><p>N: total number of patients=n1+n2</p></li>
+<li><p>r1: TODO if x1&lt;=r1 --&gt; stop futility</p></li>
+<li><p>r2: TODO</p></li>
+<li><p>TODO if (x1+x2)&lt;=r --&gt; futility</p></li>
+<li><p>TODO if (x1+x2)&gt; s --&gt; efficacy</p></li>
+<li><p>eff: TODO</p></li>
+<li><p>90<!-- %CI_low: TODO - Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154; --></p></li>
+<li><p>90<!-- %CI_high: TODO - Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154; --></p></li>
+<li><p>EN.p0: expected sample size under H0</p></li>
+<li><p>PET.p0: probability of terminating the trial at the end of the first stage under H0</p></li>
+<li><p>alpha: the actual alpha value which is smaller than <code>alpha_param + eps</code></p></li>
+<li><p>beta: the actual beta value where which is smaller than <code>beta_param + eps</code></p></li>
+<li><p>p0: your provided <code>p0</code> value</p></li>
+<li><p>pa: your provided <code>pa</code> value</p></li>
+<li><p>alpha_param: your provided <code>alpha</code> value</p></li>
+<li><p>beta_param: your provided <code>beta</code> value</p></li>
+</ul>
+
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Simon R. Optimal two-stage designs for phase II clinical trials. Control Clin Trials. 1989;10(1):1-10. doi:10.1016/0197-2456(89)90015-9</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>simon2stage</span>(p0=<span class='fl'>0.1</span>,pa=<span class='fl'>0.3</span>,alpha=<span class='fl'>0.05</span>,beta=<span class='fl'>0.2</span>,eps = <span class='fl'>0.005</span>,N_min=<span class='fl'>0</span>,N_max=<span class='fl'>50</span>)</div><div class='img'><img src='simon2stage-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    r1 n1 r2 n2  N          eff 90%CI_low 90%CI_high    EN.p0    PET.p0     MIN
-#&gt; 1:  1 14  4  7 21 5/21 (23.8%)      9.94      38.71 16.90760 0.5846291 Minimax
-#&gt; 2:  2 15  4  7 22 5/22 (22.7%)      9.78      38.87 16.28843 0.8159389        
-#&gt; 3:  1 14  5 11 25   6/25 (24%)     11.09      38.00 18.56908 0.5846291        
-#&gt; 4:  1 12  5 14 26 6/26 (23.1%)     10.83      38.15 16.77397 0.6590023        
-#&gt; 5:  1 11  5 16 27 6/27 (22.2%)     10.59      38.71 15.84229 0.6973569        
-#&gt; 6:  1 11  5 17 28 6/28 (21.4%)     10.26      38.21 16.14493 0.6973569        
-#&gt; 7:  1 10  5 19 29 6/29 (20.7%)     10.16      40.07 15.01412 0.7360989        
-#&gt;        OPT     ADMISS      alpha      beta  p0  pa alpha_param beta_param
-#&gt; 1:                    0.05114121 0.2037056 0.1 0.3        0.05        0.2
-#&gt; 2:         Admissible 0.05430426 0.2008464 0.1 0.3        0.05        0.2
-#&gt; 3:                    0.03235334 0.2025770 0.1 0.3        0.05        0.2
-#&gt; 4:                    0.03596715 0.1952196 0.1 0.3        0.05        0.2
-#&gt; 5:                    0.03950052 0.1938046 0.1 0.3        0.05        0.2
-#&gt; 6:                    0.04504891 0.1777457 0.1 0.3        0.05        0.2
-#&gt; 7: Optimal            0.04708631 0.1949371 0.1 0.3        0.05        0.2</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>simon2stage</span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.2</span>,
+                          eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>0</span>, N_max = <span class='fl'>50</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>samplesize</span>)</div><div class='img'><img src='simon2stage-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># \donttest{</span>
+<span class='co'>if</span>(<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='kw'>multichull</span>, quietly = <span class='fl'>TRUE</span>)){
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'>multichull</span>)
+<span class='fu'>simon2stage</span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.2</span>,
+            eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>0</span>, N_max = <span class='fl'>200</span>, admissible = <span class='st'>"CHull"</span>)
+}</div><div class='output co'>#&gt; <span class='message'>Error: package or namespace load failed for ‘igraph’ in dyn.load(file, DLLpath = DLLpath, ...):</span>
+#&gt; <span class='message'> unable to load shared object '/home/runner/work/_temp/Library/igraph/libs/igraph.so':</span>
+#&gt; <span class='message'>  libglpk.so.36: cannot open shared object file: No such file or directory</span></div><div class='input'><span class='co'># }</span>
+
+<span class='co'># \donttest{</span>
+<span class='co'>## Example 1</span>
+<span class='kw'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(p0 = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.05</span>, <span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>, <span class='fl'>0.5</span>, <span class='fl'>0.6</span>, <span class='fl'>0.7</span>),
+                   pa = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.05</span>, <span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>, <span class='fl'>0.5</span>, <span class='fl'>0.6</span>, <span class='fl'>0.7</span>) <span class='op'>+</span> <span class='fl'>0.2</span>)
+<span class='kw'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span>(<span class='kw'>test</span>,
+              <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(alpha = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.05</span>, <span class='fl'>0.05</span>), beta = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.1</span>)))
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>, alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>)
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>simon2stage</span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>, alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>,
+                          N_min = <span class='fl'>10</span>, N_max = <span class='kw'>samplesize</span><span class='op'>$</span><span class='kw'>n</span> <span class='op'>+</span> <span class='fl'>15</span>)
+<span class='kw'>optimal_minimax</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='kw'>samplesize</span>, FUN=<span class='fu'>function</span>(<span class='kw'>x</span>){
+  <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='kw'>x</span>, <span class='kw'>OPT</span> <span class='op'>==</span> <span class='st'>"Optimal"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"r1"</span>,<span class='st'>"n1"</span>,<span class='st'>"r2"</span>,<span class='st'>"N"</span>,<span class='st'>"EN.p0"</span>,<span class='st'>"PET.p0"</span>)),
+        <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='kw'>x</span>, <span class='kw'>MIN</span> <span class='op'>==</span> <span class='st'>"Minimax"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"r1"</span>,<span class='st'>"n1"</span>,<span class='st'>"r2"</span>,<span class='st'>"N"</span>,<span class='st'>"EN.p0"</span>,<span class='st'>"PET.p0"</span>)))
+})
+<span class='kw'>optimal_minimax</span> <span class='op'>&lt;-</span> <span class='kw'>data.table</span>::<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span>(<span class='kw'>optimal_minimax</span>)
+
+<span class='co'>## Example 2</span>
+<span class='kw'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(p0 = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.05</span>, <span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>, <span class='fl'>0.5</span>, <span class='fl'>0.6</span>, <span class='fl'>0.7</span>),
+                   pa = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.05</span>, <span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>, <span class='fl'>0.5</span>, <span class='fl'>0.6</span>, <span class='fl'>0.7</span>) <span class='op'>+</span> <span class='fl'>0.15</span>)
+<span class='kw'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span>(<span class='kw'>test</span>,
+              <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(alpha = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.05</span>, <span class='fl'>0.05</span>), beta = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.1</span>)))
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>, alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>)
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>simon2stage</span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>, alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>,
+                          N_min = <span class='fl'>25</span>, N_max = <span class='kw'>samplesize</span><span class='op'>$</span><span class='kw'>n</span> <span class='op'>+</span> <span class='fl'>20</span>)
+<span class='kw'>optimal_minimax</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='kw'>samplesize</span>, FUN=<span class='fu'>function</span>(<span class='kw'>x</span>){
+  <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='kw'>x</span>, <span class='kw'>OPT</span> <span class='op'>==</span> <span class='st'>"Optimal"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"r1"</span>,<span class='st'>"n1"</span>,<span class='st'>"r2"</span>,<span class='st'>"N"</span>,<span class='st'>"EN.p0"</span>,<span class='st'>"PET.p0"</span>)),
+        <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='kw'>x</span>, <span class='kw'>MIN</span> <span class='op'>==</span> <span class='st'>"Minimax"</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"r1"</span>,<span class='st'>"n1"</span>,<span class='st'>"r2"</span>,<span class='st'>"N"</span>,<span class='st'>"EN.p0"</span>,<span class='st'>"PET.p0"</span>)))
+})
+<span class='kw'>optimal_minimax</span> <span class='op'>&lt;-</span> <span class='kw'>data.table</span>::<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span>(<span class='kw'>optimal_minimax</span>)
+<span class='co'># }</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
