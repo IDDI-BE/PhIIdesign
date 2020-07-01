@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Authors • PhIIdesign</title>
+<title>Dataset with design settings for sargent2stage — data_sargent2 • PhIIdesign</title>
 
 
 <!-- jquery -->
@@ -18,8 +18,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
-<link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script>
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
@@ -33,13 +33,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
-<link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script>
+<link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script>
 
 
 
 
-<meta property="og:title" content="Authors" />
+<meta property="og:title" content="Dataset with design settings for sargent2stage — data_sargent2" />
+<meta property="og:description" content="Dataset as displayed in the following paper:
+Sargent DJ, Goldberg RM. A Three-Outcome Design for Phase II Clinical Trials. Controlled Clinical Trials 22:117-125" />
 
 
 
@@ -58,7 +60,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-authors">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -70,7 +72,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">PhIIdesign</a>
+        <a class="navbar-link" href="../index.html">PhIIdesign</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
@@ -78,13 +80,13 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">
+  <a href="../index.html">
     <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -100,34 +102,38 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Authors</h1>
+    <h1>Dataset with design settings for sargent2stage</h1>
+    
+    <div class="hidden name"><code>data_sargent2.Rd</code></div>
     </div>
 
-    <ul class="list-unstyled">
-      <li>
-        <p><strong>Koenraad D'Hollander</strong>. Author, maintainer, copyright holder. 
-        </p>
-      </li>
-      <li>
-        <p><strong>IDDI Belgium</strong>. Copyright holder. 
-        </p>
-      </li>
-      <li>
-        <p><strong>Elisabeth Coart</strong>. Contributor, copyright holder. 
-        </p>
-      </li>
-      <li>
-        <p><strong>Jan Wijffels</strong>. Contributor, copyright holder. 
-        </p>
-      </li>
-    </ul>
+    <div class="ref-description">
+    <p>Dataset as displayed in the following paper:
+Sargent DJ, Goldberg RM. A Three-Outcome Design for Phase II Clinical Trials. Controlled Clinical Trials 22:117-125</p>
+    </div>
 
+
+
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>data_sargent2</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘data_sargent2’ not found</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='kw'>data_sargent2</span>)</div><div class='output co'>#&gt; 'data.frame':	24 obs. of  8 variables:
+#&gt;  $ p0   : num  0.05 0.05 0.1 0.1 0.2 0.2 0.3 0.3 0.4 0.4 ...
+#&gt;  $ pa   : num  0.2 0.2 0.25 0.25 0.35 0.35 0.45 0.45 0.55 0.55 ...
+#&gt;  $ alpha: num  0.1 0.05 0.1 0.05 0.1 0.05 0.1 0.05 0.1 0.05 ...
+#&gt;  $ beta : num  0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 ...
+#&gt;  $ eta  : num  0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 ...
+#&gt;  $ pi   : num  0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 0.8 ...
+#&gt;  $ N_min: num  23 23 26 31 37 47 44 58 48 64 ...
+#&gt;  $ N_max: num  31 31 37 45 52 58 58 69 56 74 ...</div></pre>
   </div>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
+  </div>
 </div>
-
 
 
       <footer>

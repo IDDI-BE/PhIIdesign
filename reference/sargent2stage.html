@@ -112,38 +112,39 @@
     <p>This function calculates sample sizes of the sargent 2-stage design.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sargent2stage</span>(<span class='kw'>p0</span>, <span class='kw'>pa</span>, <span class='kw'>alpha</span>, <span class='kw'>beta</span>, <span class='kw'>eta</span>, <span class='kw'>pi</span>, eps = <span class='fl'>0.005</span>, <span class='kw'>N_min</span>, <span class='kw'>N_max</span>)</pre>
+    <pre class="usage"><span class='fu'>sargent2stage</span>(<span class='kw'>p0</span>, <span class='kw'>pa</span>, <span class='kw'>alpha</span>, <span class='kw'>beta</span>, <span class='kw'>eta</span>, <span class='kw'>pi</span>, eps = <span class='fl'>0.005</span>, <span class='kw'>N_min</span>, <span class='kw'>N_max</span>,
+  admissible = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"chull"</span>, <span class='st'>"CHull"</span>), <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>p0</th>
-      <td><p>uninteresting response (null hypothesis H0)</p></td>
+      <td><p>probability of the uninteresting response (null hypothesis \(H0\))</p></td>
     </tr>
     <tr>
       <th>pa</th>
-      <td><p>interesting response (alternative hypothesis Ha)</p></td>
+      <td><p>probability of the interesting response (alternative hypothesis Ha)</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>P(reject H0|H0)</p></td>
+      <td><p>Type I error rate \(P(reject H0|H0)\)</p></td>
     </tr>
     <tr>
       <th>beta</th>
-      <td><p>P(reject Ha|Ha)</p></td>
+      <td><p>Type II error rate \(P(reject Ha|Ha)\)</p></td>
     </tr>
     <tr>
       <th>eta</th>
-      <td><p>P(reject Ha|H0)</p></td>
+      <td><p>\(P(reject Ha|H0)\)</p></td>
     </tr>
     <tr>
       <th>pi</th>
-      <td><p>P(reject H0|Ha)</p></td>
+      <td><p>\(P(reject H0|Ha)\)</p></td>
     </tr>
     <tr>
       <th>eps</th>
-      <td><p>tolerance (actual alpha&lt;=alpha+eps; actual beta&lt;=beta+eps; actual eta&gt;=eta-eps; actual p&gt;=pi-eps); default value = 0.005</p></td>
+      <td><p>tolerance default value = 0.005</p></td>
     </tr>
     <tr>
       <th>N_min</th>
@@ -153,30 +154,73 @@
       <th>N_max</th>
       <td><p>maximum sample size value for grid search</p></td>
     </tr>
+    <tr>
+      <th>admissible</th>
+      <td><p>character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>arguments passed on to plot in case admissible is set to CHull</p></td>
+    </tr>
     </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a data.frame with elements</p><ul>
+<li><p>n1: total number of patients in stage1</p></li>
+<li><p>n2: total number of patients in stage2</p></li>
+<li><p>N: total number of patients=n1+n2</p></li>
+<li><p>r1: critical value for the first stage</p></li>
+<li><p>r2: critical value for the second stage</p></li>
+<li><p>EN.p0: expected sample size under H0</p></li>
+<li><p>PET.p0: probability of terminating the trial at the end of the first stage under H0</p></li>
+<li><p>MIN: column indicating if the design is the minimal design</p></li>
+<li><p>OPT: column indicating if the setting is the optimal design</p></li>
+<li><p>ADMISS: column indicating if the setting is the admissible design</p></li>
+<li><p>alpha: the actual alpha value which is smaller than <code>alpha_param + eps</code></p></li>
+<li><p>beta: the actual beta value where which is smaller than <code>beta_param + eps</code></p></li>
+<li><p>eta: the actual eta value which is smaller than <code>eta_param - eps</code></p></li>
+<li><p>pi: the actual pi value which is smaller than <code>pi_param - eps</code></p></li>
+<li><p>lambda:  1-(eta+alpha)</p></li>
+<li><p>delta: 1-(beta+pi)</p></li>
+<li><p>p0: your provided <code>p0</code> value</p></li>
+<li><p>pa: your provided <code>pa</code> value</p></li>
+<li><p>alpha_param: your provided <code>alpha</code> value</p></li>
+<li><p>beta_param: your provided <code>beta</code> value</p></li>
+<li><p>eta_param: your provided <code>eta</code> value</p></li>
+<li><p>pi_param: your provided <code>pi</code> value</p></li>
+</ul>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>n1= n stage1</p>
-<p>n2= n stage2</p>
-<p>total number of patients=n1+n2</p>
-<p>if x1&lt;=r1 --&gt; stop futility</p>
-<p>if (x1+x2)&lt;=r --&gt; futility</p>
-<p>if (x1+x2)&gt;=s --&gt; efficacy</p>
+    <p>if x1&lt;=r1 --&gt; stop futility <br />
+if (x1+x2)&lt;=r --&gt; futility <br />
+if (x1+x2)&gt;=s --&gt; efficacy <br /></p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Sargent DJ, Chan V, Goldberg RM. A three-outcome design for phase II clinical trials. Control Clin Trials. 2001;22(2):117-125. doi:10.1016/s0197-2456(00)00115-x</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>sargent2stage</span>(p0=<span class='fl'>0.1</span>,pa=<span class='fl'>0.3</span>,alpha=<span class='fl'>0.05</span>,beta=<span class='fl'>0.1</span>,eta=<span class='fl'>0.8</span>,pi=<span class='fl'>0.8</span>,eps = <span class='fl'>0.005</span>,N_min=<span class='fl'>15</span>,N_max=<span class='fl'>30</span>)</div><div class='img'><img src='sargent2stage-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    r1 n1 r2 s n2  N    EN.p0    PET.p0     MIN     OPT ADMISS      alpha
-#&gt; 1:  1 14  3 5  7 21 16.90760 0.5846291 Minimax                0.05114121
-#&gt; 2:  1 14  3 6 11 25 18.56908 0.5846291                        0.03235334
-#&gt; 3:  1 12  3 6 14 26 16.77397 0.6590023         Optimal        0.03596715
-#&gt;          beta       eta        pi     lambda     delta  p0  pa alpha_param
-#&gt; 1: 0.10082244 0.8578014 0.7962944 0.09105741 0.1028832 0.1 0.3        0.05
-#&gt; 2: 0.06412676 0.7997031 0.7974230 0.16794356 0.1384502 0.1 0.3        0.05
-#&gt; 3: 0.09461670 0.8130401 0.8047804 0.15099273 0.1006029 0.1 0.3        0.05
-#&gt;    beta_param eta_param pi_param
-#&gt; 1:        0.1       0.8      0.8
-#&gt; 2:        0.1       0.8      0.8
-#&gt; 3:        0.1       0.8      0.8</div></pre>
+    <pre class="examples"><div class='input'><span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>sargent2stage</span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.1</span>,
+                            eta = <span class='fl'>0.8</span>, pi = <span class='fl'>0.8</span>,
+                            eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>15</span>, N_max = <span class='fl'>30</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>samplesize</span>)</div><div class='img'><img src='sargent2stage-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># \donttest{</span>
+<span class='co'>if</span>(<span class='fu'><a href='https://rdrr.io/r/base/library.html'>require</a></span>(<span class='kw'>multichull</span>, quietly = <span class='fl'>TRUE</span>)){
+<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='kw'>multichull</span>)
+<span class='fu'>sargent2stage</span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.1</span>,
+              eta = <span class='fl'>0.8</span>, pi = <span class='fl'>0.8</span>,
+              eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>15</span>, N_max = <span class='fl'>30</span>,
+              admissible = <span class='st'>"CHull"</span>)
+}</div><div class='output co'>#&gt; <span class='message'>Error: package or namespace load failed for ‘igraph’ in dyn.load(file, DLLpath = DLLpath, ...):</span>
+#&gt; <span class='message'> unable to load shared object '/home/runner/work/_temp/Library/igraph/libs/igraph.so':</span>
+#&gt; <span class='message'>  libglpk.so.36: cannot open shared object file: No such file or directory</span></div><div class='input'><span class='co'># }</span>
+
+<span class='co'># \donttest{</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>data_sargent2</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘data_sargent2’ not found</span></div><div class='input'><span class='kw'>test</span> <span class='op'>&lt;-</span> <span class='kw'>data_sargent2</span>
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>sargent2stage</span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>, alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>,
+                            eta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>eta</span>, pi = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pi</span>,
+                            eps = <span class='fl'>0.005</span>,
+                            N_min = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>N_min</span>, N_max = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>N_max</span>)</div><div class='output co'>#&gt; <span class='error'>Error in sargent2stage.default(p0 = null, pa = alternative, alpha = alpha,     beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min,     N_max = N_max, admissible = admissible, ...): formal argument "admissible" matched by multiple actual arguments</span></div><div class='input'><span class='kw'>optimal</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='kw'>samplesize</span>, FUN=<span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='kw'>x</span>, <span class='kw'>OPT</span> <span class='op'>==</span> <span class='st'>"Optimal"</span>))</div><div class='output co'>#&gt; <span class='error'>Error in subset.default(x, OPT == "Optimal"): object 'OPT' not found</span></div><div class='input'><span class='kw'>optimal</span> <span class='op'>&lt;-</span> <span class='kw'>data.table</span>::<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span>(<span class='kw'>optimal</span>)</div><div class='output co'>#&gt; <span class='error'>Error in data.table::rbindlist(optimal): object 'optimal' not found</span></div><div class='input'><span class='kw'>minimax</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span>(<span class='kw'>samplesize</span>, FUN=<span class='fu'>function</span>(<span class='kw'>x</span>) <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span>(<span class='kw'>x</span>, <span class='kw'>MIN</span> <span class='op'>==</span> <span class='st'>"Minimax"</span>))</div><div class='output co'>#&gt; <span class='error'>Error in subset.default(x, MIN == "Minimax"): object 'MIN' not found</span></div><div class='input'><span class='kw'>minimax</span> <span class='op'>&lt;-</span> <span class='kw'>data.table</span>::<span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span>(<span class='kw'>minimax</span>)</div><div class='output co'>#&gt; <span class='error'>Error in data.table::rbindlist(minimax): object 'minimax' not found</span></div><div class='input'><span class='co'># }</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

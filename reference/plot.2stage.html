@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Authors • PhIIdesign</title>
+<title>Plot function for 2 stage sample size calculation — plot.2stage • PhIIdesign</title>
 
 
 <!-- jquery -->
@@ -18,8 +18,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
 <!-- bootstrap-toc -->
-<link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script>
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
@@ -33,13 +33,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
-<link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script>
+<link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script>
 
 
 
 
-<meta property="og:title" content="Authors" />
+<meta property="og:title" content="Plot function for 2 stage sample size calculation — plot.2stage" />
+<meta property="og:description" content="Plots the expected sample size under H0 versus the maximum sample size" />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-authors">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -70,7 +71,7 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">PhIIdesign</a>
+        <a class="navbar-link" href="../index.html">PhIIdesign</a>
         <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.0</span>
       </span>
     </div>
@@ -78,13 +79,13 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">
+  <a href="../index.html">
     <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="../reference/index.html">Reference</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -100,34 +101,62 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Authors</h1>
+    <h1>Plot function for 2 stage sample size calculation</h1>
+    
+    <div class="hidden name"><code>plot.2stage.Rd</code></div>
     </div>
 
-    <ul class="list-unstyled">
-      <li>
-        <p><strong>Koenraad D'Hollander</strong>. Author, maintainer, copyright holder. 
-        </p>
-      </li>
-      <li>
-        <p><strong>IDDI Belgium</strong>. Copyright holder. 
-        </p>
-      </li>
-      <li>
-        <p><strong>Elisabeth Coart</strong>. Contributor, copyright holder. 
-        </p>
-      </li>
-      <li>
-        <p><strong>Jan Wijffels</strong>. Contributor, copyright holder. 
-        </p>
-      </li>
-    </ul>
+    <div class="ref-description">
+    <p>Plots the expected sample size under H0 versus the maximum sample size</p>
+    </div>
 
+    <pre class="usage"><span class='co'># S3 method for 2stage</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>x</span>, main = <span class='st'>"Two-stage Designs"</span>,
+  xlab = <span class='st'>"Maximum Sample Size N"</span>, <span class='kw'>ylab</span>, <span class='kw'>...</span>)</pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>an object returned by <code>simon2stage</code> or <code>sargent2stage</code></p></td>
+    </tr>
+    <tr>
+      <th>main</th>
+      <td><p>title of the graph, passed on to <code>plot</code></p></td>
+    </tr>
+    <tr>
+      <th>xlab</th>
+      <td><p>x-axis label of the graph, passed on to <code>plot</code></p></td>
+    </tr>
+    <tr>
+      <th>ylab</th>
+      <td><p>y-axis label of the graph, passed on to <code>plot</code></p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>other arguments passed on to <code>plot</code></p></td>
+    </tr>
+    </table>
+
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>simon2stage</span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.2</span>,
+                          eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>0</span>, N_max = <span class='fl'>50</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>samplesize</span>)</div><div class='img'><img src='plot.2stage-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>sargent2stage</span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.1</span>,
+                            eta = <span class='fl'>0.8</span>, pi = <span class='fl'>0.8</span>,
+                            eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>15</span>, N_max = <span class='fl'>30</span>)
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>samplesize</span>)</div><div class='img'><img src='plot.2stage-2.png' alt='' width='700' height='433' /></div></pre>
   </div>
-
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
+  </div>
 </div>
-
 
 
       <footer>
