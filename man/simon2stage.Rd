@@ -2,47 +2,103 @@
 % Please edit documentation in R/simon2stage.R
 \name{simon2stage}
 \alias{simon2stage}
-\title{The Simon 2-stage function}
+\title{Simon 2-stage function}
 \usage{
-simon2stage(p0, pa, alpha, beta, eps = 0.005, N_min, N_max)
+simon2stage(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
+  admissible = c("chull", "CHull"), ...)
 }
 \arguments{
-\item{p0}{uninteresting response (null hypothesis H0)}
+\item{p0}{probability of the uninteresting response (null hypothesis \eqn{H0})}
 
-\item{pa}{interesting response (alternative hypothesis Ha)}
+\item{pa}{probability of the interesting response (alternative hypothesis Ha)}
 
-\item{alpha}{P(reject H0|H0)}
+\item{alpha}{Type I error rate \eqn{P(reject H0|H0)}}
 
-\item{beta}{P(reject Ha|Ha)}
+\item{beta}{Type II error rate \eqn{P(reject Ha|Ha)}}
 
-\item{eps}{tolerance (actual alpha<=alpha+eps; actual beta<=beta+eps; actual eta>=eta-eps; actual p>=pi-eps); default value = 0.005}
+\item{eps}{tolerance default value = 0.005}
 
 \item{N_min}{minimum sample size value for grid search}
 
 \item{N_max}{maximum sample size value for grid search}
+
+\item{admissible}{character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull}
+
+\item{...}{arguments passed on to plot in case admissible is set to CHull}
+}
+\value{
+a data.frame with elements
+\itemize{
+\item n1: total number of patients in stage1
+\item n2: total number of patients in stage2
+\item N: total number of patients=n1+n2
+\item r1: TODO if x1<=r1 --> stop futility
+\item r2: TODO
+\item TODO if (x1+x2)<=r --> futility
+\item TODO if (x1+x2)> s --> efficacy
+\item eff: TODO
+\item 90%CI_low: TODO - Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154;
+\item 90%CI_high: TODO - Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154;
+\item EN.p0: expected sample size under H0
+\item PET.p0: probability of terminating the trial at the end of the first stage under H0
+\item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
+\item beta: the actual beta value where which is smaller than \code{beta_param + eps}
+\item p0: your provided \code{p0} value
+\item pa: your provided \code{pa} value
+\item alpha_param: your provided \code{alpha} value
+\item beta_param: your provided \code{beta} value
+}
 }
 \description{
-This function calculates sample sizes of the sargent 2-stage design.
-}
-\details{
-n1= n stage1
-
-n2= n stage2
-
-total number of patients=n1+n2
-
-if x1<=r1 --> stop futility
-
-if (x1+x2)<=r --> futility
-
-if (x1+x2)> s --> efficacy
-
-EN.p0 = expected sample size under H0
-
-PET.p0 = probability of terminating the trial at the end of the first stage under H0
-
-Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154;
+The primary objective of a phase II clinical trial of a new drug or regimen is to determine whether it has sufficient biological activity
+against the disease under study to warrant more extensive development. \cr
+This function calculates the sample size needed in a Simon 2-stage design which is a
+two-stage design that is optimal in the sense that the expected sample size is minimized if the
+regimen has low activity subject to constraints upon the size of the type 1 and type 2 errors. \cr
+Two-stage designs which minimize the maximum sample size are also determined.
 }
 \examples{
-simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50)
+samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
+                          eps = 0.005, N_min = 0, N_max = 50)
+plot(samplesize)
+\donttest{
+if(require(multichull, quietly = TRUE)){
+library(multichull)
+simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
+            eps = 0.005, N_min = 0, N_max = 200, admissible = "CHull")
+}
+}
+
+\donttest{
+## Example 1
+test <- data.frame(p0 = c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+                   pa = c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7) + 0.2)
+test <- merge(test,
+              data.frame(alpha = c(0.1, 0.05, 0.05), beta = c(0.1, 0.2, 0.1)))
+samplesize <- fleming1stage(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta)
+samplesize <- simon2stage(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta,
+                          N_min = 10, N_max = samplesize$n + 15)
+optimal_minimax <- lapply(samplesize, FUN=function(x){
+  cbind(subset(x, OPT == "Optimal", c("r1","n1","r2","N","EN.p0","PET.p0")),
+        subset(x, MIN == "Minimax", c("r1","n1","r2","N","EN.p0","PET.p0")))
+})
+optimal_minimax <- data.table::rbindlist(optimal_minimax)
+
+## Example 2
+test <- data.frame(p0 = c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+                   pa = c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7) + 0.15)
+test <- merge(test,
+              data.frame(alpha = c(0.1, 0.05, 0.05), beta = c(0.1, 0.2, 0.1)))
+samplesize <- fleming1stage(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta)
+samplesize <- simon2stage(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta,
+                          N_min = 25, N_max = samplesize$n + 20)
+optimal_minimax <- lapply(samplesize, FUN=function(x){
+  cbind(subset(x, OPT == "Optimal", c("r1","n1","r2","N","EN.p0","PET.p0")),
+        subset(x, MIN == "Minimax", c("r1","n1","r2","N","EN.p0","PET.p0")))
+})
+optimal_minimax <- data.table::rbindlist(optimal_minimax)
+}
+}
+\references{
+Simon R. Optimal two-stage designs for phase II clinical trials. Control Clin Trials. 1989;10(1):1-10. doi:10.1016/0197-2456(89)90015-9
 }

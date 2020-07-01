@@ -13,8 +13,8 @@ RoxygenNote: 7.1.0
 Imports:
     Rcpp,
     data.table,
-    OneArmPhaseTwoStudy,
-    multichull
+    OneArmPhaseTwoStudy
 LinkingTo: Rcpp
 Suggests:
+    multichull,
     tinytest
