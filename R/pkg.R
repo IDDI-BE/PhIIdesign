@@ -1,6 +1,6 @@
 
-#' @importFrom stats pbinom qbinom aggregate dbinom
-#' @importFrom data.table setDT rbindlist
+#' @importFrom stats pbinom qbinom aggregate dbinom pnorm
+#' @importFrom data.table setDT rbindlist ":=" setDF
 #' @importFrom Rcpp evalCpp
 #' @importFrom grDevices chull
 #' @importFrom graphics plot points lines

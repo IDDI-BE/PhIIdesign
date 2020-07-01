@@ -4,43 +4,95 @@
 \alias{sargent2stage}
 \title{The Sargent 2-stage function}
 \usage{
-sargent2stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max)
+sargent2stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max,
+  admissible = c("chull", "CHull"), ...)
 }
 \arguments{
-\item{p0}{uninteresting response (null hypothesis H0)}
+\item{p0}{probability of the uninteresting response (null hypothesis \eqn{H0})}
 
-\item{pa}{interesting response (alternative hypothesis Ha)}
+\item{pa}{probability of the interesting response (alternative hypothesis Ha)}
 
-\item{alpha}{P(reject H0|H0)}
+\item{alpha}{Type I error rate \eqn{P(reject H0|H0)}}
 
-\item{beta}{P(reject Ha|Ha)}
+\item{beta}{Type II error rate \eqn{P(reject Ha|Ha)}}
 
-\item{eta}{P(reject Ha|H0)}
+\item{eta}{\eqn{P(reject Ha|H0)}}
 
-\item{pi}{P(reject H0|Ha)}
+\item{pi}{\eqn{P(reject H0|Ha)}}
 
-\item{eps}{tolerance (actual alpha<=alpha+eps; actual beta<=beta+eps; actual eta>=eta-eps; actual p>=pi-eps); default value = 0.005}
+\item{eps}{tolerance default value = 0.005}
 
 \item{N_min}{minimum sample size value for grid search}
 
 \item{N_max}{maximum sample size value for grid search}
+
+\item{admissible}{character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull}
+
+\item{...}{arguments passed on to plot in case admissible is set to CHull}
+}
+\value{
+a data.frame with elements
+\itemize{
+\item n1: total number of patients in stage1
+\item n2: total number of patients in stage2
+\item N: total number of patients=n1+n2
+\item r1: critical value for the first stage
+\item r2: critical value for the second stage
+\item EN.p0: expected sample size under H0
+\item PET.p0: probability of terminating the trial at the end of the first stage under H0
+\item MIN: column indicating if the design is the minimal design
+\item OPT: column indicating if the setting is the optimal design
+\item ADMISS: column indicating if the setting is the admissible design
+\item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
+\item beta: the actual beta value where which is smaller than \code{beta_param + eps}
+\item eta: the actual eta value which is smaller than \code{eta_param - eps}
+\item pi: the actual pi value which is smaller than \code{pi_param - eps}
+\item lambda:  1-(eta+alpha)
+\item delta: 1-(beta+pi)
+\item p0: your provided \code{p0} value
+\item pa: your provided \code{pa} value
+\item alpha_param: your provided \code{alpha} value
+\item beta_param: your provided \code{beta} value
+\item eta_param: your provided \code{eta} value
+\item pi_param: your provided \code{pi} value
+}
 }
 \description{
 This function calculates sample sizes of the sargent 2-stage design.
 }
 \details{
-n1= n stage1
-
-n2= n stage2
-
-total number of patients=n1+n2
-
-if x1<=r1 --> stop futility
-
-if (x1+x2)<=r --> futility
-
-if (x1+x2)>=s --> efficacy
+if x1<=r1 --> stop futility \cr
+if (x1+x2)<=r --> futility \cr
+if (x1+x2)>=s --> efficacy \cr
 }
 \examples{
-sargent2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.1,eta=0.8,pi=0.8,eps = 0.005,N_min=15,N_max=30)
+samplesize <- sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
+                            eta = 0.8, pi = 0.8,
+                            eps = 0.005, N_min = 15, N_max = 30)
+plot(samplesize)
+\donttest{
+if(require(multichull, quietly = TRUE)){
+library(multichull)
+sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
+              eta = 0.8, pi = 0.8,
+              eps = 0.005, N_min = 15, N_max = 30,
+              admissible = "CHull")
+}
+}
+
+\donttest{
+data(data_sargent2)
+test <- data_sargent2
+samplesize <- sargent2stage(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta,
+                            eta = test$eta, pi = test$pi,
+                            eps = 0.005,
+                            N_min = test$N_min, N_max = test$N_max)
+optimal <- lapply(samplesize, FUN=function(x) subset(x, OPT == "Optimal"))
+optimal <- data.table::rbindlist(optimal)
+minimax <- lapply(samplesize, FUN=function(x) subset(x, MIN == "Minimax"))
+minimax <- data.table::rbindlist(minimax)
+}
+}
+\references{
+Sargent DJ, Chan V, Goldberg RM. A three-outcome design for phase II clinical trials. Control Clin Trials. 2001;22(2):117-125. doi:10.1016/s0197-2456(00)00115-x
 }
