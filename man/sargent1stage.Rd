@@ -53,8 +53,10 @@ This function calculates the sample size needed in a Sargent 1-stage design whic
 three-outcome design that allows for three outcomes: reject \eqn{H(0)}, reject \eqn{H(a)}, or reject neither.
 }
 \examples{
-sargent1stage(p0 = 0.5, pa = 0.65, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8, eps = 0.005, N_min = 0, N_max = 100)
-sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8, eps = 0.005, N_min = 35, N_max = 50)
+sargent1stage(p0 = 0.5, pa = 0.65, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
+              eps = 0.005, N_min = 0, N_max = 100)
+sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
+              eps = 0.005, N_min = 35, N_max = 50)
 
 test <- data.frame(p0 = c(0.05,0.1,0.2,0.3,0.4,0.5),
                    pa = c(0.05,0.1,0.2,0.3,0.4,0.5) + 0.15)

@@ -34,8 +34,10 @@
 #' @references Sargent DJ, Chan V, Goldberg RM. A three-outcome design for phase II clinical trials. Control Clin Trials. 2001;22(2):117-125. doi:10.1016/s0197-2456(00)00115-x
 #' @export
 #' @examples
-#' sargent1stage(p0 = 0.5, pa = 0.65, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8, eps = 0.005, N_min = 0, N_max = 100)
-#' sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8, eps = 0.005, N_min = 35, N_max = 50)
+#' sargent1stage(p0 = 0.5, pa = 0.65, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
+#'               eps = 0.005, N_min = 0, N_max = 100)
+#' sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
+#'               eps = 0.005, N_min = 35, N_max = 50)
 #'
 #' test <- data.frame(p0 = c(0.05,0.1,0.2,0.3,0.4,0.5),
 #'                    pa = c(0.05,0.1,0.2,0.3,0.4,0.5) + 0.15)
