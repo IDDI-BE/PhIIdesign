@@ -43,7 +43,7 @@
 #' }, SIMPLIFY = FALSE)
 #' samplesize <- do.call(rbind, samplesize)
 fleming1stage <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005){
-  stopifnot(length(alpha) == 1 && length(beta) == 1 && length(eps) == 1)
+  stopifnot(length(eps) == 1)
   stopifnot(all(p0 >= 0) && all(p0 <= 1))
   stopifnot(all(pa >= 0) && all(pa <= 1))
   stopifnot(alpha >= 0 && alpha <= 1)
@@ -54,10 +54,10 @@ fleming1stage <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005){
   }
   if(length(p0) > 1 && length(pa) > 1){
     ## Use Rcpp implementation
-    results <- mapply(null = p0, alternative = pa,
+    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta,
                       FUN = function(null, alternative, alpha, beta, eps){
                         fleming_single_stage(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps)
-                        }, alpha = alpha, beta = beta, eps = eps,
+                        }, eps = eps,
                       SIMPLIFY = FALSE)
     results <- data.table::rbindlist(results)
     results <- data.table::setDF(results)
