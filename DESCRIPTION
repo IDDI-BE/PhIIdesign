@@ -2,10 +2,17 @@ Package: PhIIdesign
 Type: Package
 Title: Sample Size Calculation for Phase II Designs
 Version: 0.2.0
-Author: Koenraad D'Hollander and Elisabeth Coart
 Maintainer: Koenraad D'Hollander <koenraad.dhollander@iddi.com>
-Description: Sample size calculations for designs of Phase II clinical trials. 
-    In particular stage 1 calculations by Fleming and Sargent and stage 2 sample size calculations by Simon and Sargent. 
+Authors@R: c(
+    person("Koenraad", "D'Hollander", role = c("aut", "cre", "cph"), email = "koenraad.dhollander@iddi.com"), 
+    person("IDDI Belgium", role = "cph"), 
+    person("Elisabeth", "Coart", role = c("ctb", "cph")),
+    person("Jan", "Wijffels", role = c("ctb", "cph")))
+Description: Sample size calculations for designs of Phase II clinical trials. In particular techniques described in the following papers:
+    'One-sample Multiple Testing Procedure for Phase II Clinical Trials' by Fleming (1982) <doi:10.2307/2530297>.
+    'A Three-Outcome Design for Phase II Clinical Trials' by Sargent et al (2001) <doi:10.1016/s0197-2456(00)00115-x>.
+    'Optimal Two-Stage Designs for Phase II Clinical Trials' by Simon et al (1989) <doi:10.1016/0197-2456(89)90015-9>.
+    'Admissible Two-Stage Designs for Phase II Cancer Clinical Trials' by Jung et al (2004) <doi:10.1002/sim.1600>.
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
