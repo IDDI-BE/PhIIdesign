@@ -206,7 +206,8 @@ if (x1+x2)&gt;=s --&gt; efficacy <br /></p>
                             eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>15</span>, N_max = <span class='fl'>30</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>samplesize</span>)</div><div class='img'><img src='sargent2stage-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># \donttest{</span>
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>data_sargent2</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: data set ‘data_sargent2’ not found</span></div><div class='input'><span class='kw'>test</span> <span class='op'>&lt;-</span> <span class='kw'>data_sargent2</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='kw'>data_sargent2</span>)
+<span class='kw'>test</span> <span class='op'>&lt;-</span> <span class='kw'>data_sargent2</span>
 <span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>sargent2stage</span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>, alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>,
                             eta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>eta</span>, pi = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pi</span>,
                             eps = <span class='fl'>0.005</span>,
