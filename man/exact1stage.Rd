@@ -27,8 +27,8 @@ a data.frame with elements
 \item n: total number of patients
 \item n_E: number of patients in experimental arm
 \item n_C: number of patients in control arm
-\item r: TODO. Variable of interest: diff=E-C. Note if (E-C)<=r --> futility\cr
-\item d: TODO. Variable of interest: diff=E-C. Note if if (E-C)> r --> efficacy
+\item r: number of reponses seen. Variable of interest: diff=E-C. Note if (E-C)<=r --> futility, diff=E-C. Note if if (E-C)> r --> efficacy\cr
+\item d: percentage (r + 1) / n_E
 \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
 \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
 \item p0: your provided \code{p0} value
