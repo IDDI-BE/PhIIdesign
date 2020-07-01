@@ -112,55 +112,90 @@
     <p>This function calculates sample sizes of an exact randomized 1-stage design, for p0&lt;pa</p>
     </div>
 
-    <pre class="usage"><span class='fu'>exact1stage</span>(<span class='kw'>p0</span>, <span class='kw'>pa</span>, <span class='kw'>alpha</span>, <span class='kw'>beta</span>, eps = <span class='fl'>0.005</span>, <span class='kw'>alloc</span>, <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>exact1stage</span>(<span class='kw'>p0</span>, <span class='kw'>pa</span>, <span class='kw'>alpha</span>, <span class='kw'>beta</span>, eps = <span class='fl'>0.005</span>, alloc = <span class='fl'>1</span>, type = <span class='st'>"exact"</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>p0</th>
-      <td><p>uninteresting response (null hypothesis H0)</p></td>
+      <td><p>probability of the uninteresting response (null hypothesis H0)</p></td>
     </tr>
     <tr>
       <th>pa</th>
-      <td><p>interesting response (alternative hypothesis Ha)</p></td>
+      <td><p>probability of the interesting response (alternative hypothesis Ha)</p></td>
     </tr>
     <tr>
       <th>alpha</th>
-      <td><p>P(reject H0|H0)</p></td>
+      <td><p>Type I error rate \(P(reject H0|H0)\)</p></td>
     </tr>
     <tr>
       <th>beta</th>
-      <td><p>P(reject Ha|Ha)</p></td>
+      <td><p>Type II error rate \(P(reject Ha|Ha)\)</p></td>
     </tr>
     <tr>
       <th>eps</th>
-      <td><p>tolerance (actual alpha&lt;=alpha+eps; actual beta&lt;=beta+eps; actual eta&gt;=eta-eps; actual p&gt;=pi-eps); default value = 0.005</p></td>
+      <td><p>tolerance default value = 0.005</p></td>
     </tr>
     <tr>
       <th>alloc</th>
-      <td><p>allocation ratio (e.g. 2 for 2:1)</p></td>
+      <td><p>allocation ratio (e.g. 2 for 2:1). alloc is assumed &gt;=1 (more patients in the experimental arm)</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>refers to type="exact" or "normal" for pdf and cdf difference of two binomial variables</p></td>
+      <th>type</th>
+      <td><p>character string, either "exact" or "normal" for pdf and cdf difference of two binomial variables</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a data.frame with elements</p><ul>
+<li><p>n: total number of patients</p></li>
+<li><p>n_E: number of patients in experimental arm</p></li>
+<li><p>n_C: number of patients in control arm</p></li>
+<li><p>r: TODO. Variable of interest: diff=E-C. Note if (E-C)&lt;=r --&gt; futility<br /></p></li>
+<li><p>d: TODO. Variable of interest: diff=E-C. Note if if (E-C)&gt; r --&gt; efficacy</p></li>
+<li><p>alpha: the actual alpha value which is smaller than <code>alpha_param + eps</code></p></li>
+<li><p>beta: the actual beta value where which is smaller than <code>beta_param + eps</code></p></li>
+<li><p>p0: your provided <code>p0</code> value</p></li>
+<li><p>pa: your provided <code>pa</code> value</p></li>
+<li><p>alpha_param: your provided <code>alpha</code> value</p></li>
+<li><p>beta_param: your provided <code>beta</code> value</p></li>
+</ul>
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>n= total number of patients</p>
-<p>n_E= number of patients in experimental arm</p>
-<p>n_C= number of patients in control arm</p>
-<p>if (E-C)&lt;=r --&gt; futility</p>
-<p>if (E-C)&gt; r --&gt; efficacy</p>
-<p>Note that all sample sizes can be entered, but only calculations for sample sizes, without any decimals (taking into account allocation ratio)</p>
-<p>Variable of interest: diff=E-C</p>
-<p>alloc is assumed &gt;=1 (more patients in the experimental arm)</p>
+    <p>Note that all sample sizes can be entered, but only calculations for sample sizes, without any decimals (taking into account allocation ratio)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>exact1stage</span>(p0 = <span class='fl'>0.45</span>, pa = <span class='fl'>0.7</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.2</span>, alloc = <span class='fl'>1</span>, type = <span class='st'>"normal"</span>)</div><div class='output co'>#&gt;    n n_E n_C r    d      alpha      beta   p0  pa alpha_param beta_param
-#&gt; 1 90  45  45 7 17.8 0.05488447 0.2042675 0.45 0.7        0.05        0.2</div></pre>
+#&gt; 1 90  45  45 7 17.8 0.05488447 0.2042675 0.45 0.7        0.05        0.2</div><div class='input'><span class='fu'>exact1stage</span>(p0 = <span class='fl'>0.45</span>, pa = <span class='fl'>0.7</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.2</span>, alloc = <span class='fl'>1</span>, type = <span class='st'>"exact"</span>)</div><div class='output co'>#&gt;    n n_E n_C r    d      alpha     beta   p0  pa alpha_param beta_param
+#&gt; 1 90  45  45 7 17.8 0.05461729 0.203498 0.45 0.7        0.05        0.2</div><div class='input'>
+<span class='kw'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>rbind</a></span>(
+  <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(p0 = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>),
+             pa = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>) <span class='op'>+</span> <span class='fl'>0.2</span>),
+  <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span>(p0 = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>),
+             pa = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>) <span class='op'>+</span> <span class='fl'>0.15</span>))
+<span class='kw'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/merge.html'>merge</a></span>(<span class='kw'>test</span>,
+              <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span>(alpha = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0.05</span>, <span class='fl'>0.1</span>), beta = <span class='fl'>0.1</span>))
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>exact1stage</span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>,
+                          alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>,
+                          eps = <span class='fl'>0.005</span>, alloc = <span class='fl'>1</span>, type = <span class='st'>"normal"</span>)
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>exact1stage</span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>,
+                          alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>,
+                          eps = <span class='fl'>0.2</span>, alloc = <span class='fl'>1</span>, type = <span class='st'>"exact"</span>)
+<span class='co'>## these 2 are the same</span>
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>exact1stage</span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>,
+                          alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>,
+                          eps = <span class='fl'>0.005</span>, alloc = <span class='fl'>1</span>, type = <span class='st'>"normal"</span>)
+<span class='co'># \donttest{</span>
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mapply.html'>mapply</a></span>(p0 = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>p0</span>, pa = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>pa</span>, alpha = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>alpha</span>, beta = <span class='kw'>test</span><span class='op'>$</span><span class='kw'>beta</span>,
+  FUN=<span class='fu'>function</span>(<span class='kw'>p0</span>, <span class='kw'>pa</span>, <span class='kw'>alpha</span>, <span class='kw'>beta</span>){
+    <span class='fu'>exact1stage</span>(p0 = <span class='kw'>p0</span>, pa = <span class='kw'>pa</span>, alpha = <span class='kw'>alpha</span>, beta = <span class='kw'>beta</span>,
+                eps = <span class='fl'>0.005</span>, alloc = <span class='fl'>1</span>, type = <span class='st'>"normal"</span>)
+  }, SIMPLIFY = <span class='fl'>FALSE</span>)
+<span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/do.call.html'>do.call</a></span>(<span class='kw'>rbind</span>, <span class='kw'>samplesize</span>)
+<span class='co'># }</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
