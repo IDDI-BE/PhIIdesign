@@ -70,15 +70,6 @@ samplesize <- sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
                             eta = 0.8, pi = 0.8,
                             eps = 0.005, N_min = 15, N_max = 30)
 plot(samplesize)
-\donttest{
-if(require(multichull, quietly = TRUE)){
-library(multichull)
-sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
-              eta = 0.8, pi = 0.8,
-              eps = 0.005, N_min = 15, N_max = 30,
-              admissible = "CHull")
-}
-}
 
 \donttest{
 data(data_sargent2)

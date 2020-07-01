@@ -64,15 +64,6 @@ probha <- function(n1, n2, r1, s, p) {
 #'                             eta = 0.8, pi = 0.8,
 #'                             eps = 0.005, N_min = 15, N_max = 30)
 #' plot(samplesize)
-#' \donttest{
-#' if(require(multichull, quietly = TRUE)){
-#' library(multichull)
-#' sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
-#'               eta = 0.8, pi = 0.8,
-#'               eps = 0.005, N_min = 15, N_max = 30,
-#'               admissible = "CHull")
-#' }
-#' }
 #'
 #' \donttest{
 #' data(data_sargent2)
@@ -210,10 +201,14 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   y <- res6[, c("N", "EN.p0")]
   if(admissible == "CHull" && requireNamespace("multichull", quietly = TRUE)){
     chull_result <- multichull::CHull(y, bound = "lower")
-    chull_result <- data.frame(chull_result$Hull)
-    con.ind <- as.numeric(rownames(y[y$N %in% chull_result$complexity,]))
-    plot(y$N, y$EN.p0, ...)
-    lines(y$N[con.ind], y$EN.p0[con.ind])
+    if(inherits(chull_result, "CHull")){
+      chull_result <- data.frame(chull_result$Hull)
+      con.ind <- as.numeric(rownames(y[y$N %in% chull_result$complexity,]))
+      plot(y$N, y$EN.p0, ...)
+      lines(y$N[con.ind], y$EN.p0[con.ind])
+    }else{
+      con.ind <- chull(y)[chull((y)) == cummin(chull((y)))]
+    }
   }else{
     con.ind <- chull(y)[chull((y)) == cummin(chull((y)))]
   }
@@ -229,7 +224,7 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
                               new = c("alpha", "beta", "eta", "pi"))
   res$lambda <- 1 - (res$eta + res$alpha)
   res$delta  <- 1 - (res$beta + res$pi)
-
+  res <- data.table::setDF(res)
   res <- cbind(res[, c("r1", "n1", "r2", "s", "n2", "N", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta", "eta", "pi", "lambda", "delta")],
                p0 = p0, pa = pa,
                res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])

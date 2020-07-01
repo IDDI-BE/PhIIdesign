@@ -194,10 +194,14 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
   y <- res6[, c("N", "EN.p0")]
   if(admissible == "CHull" && requireNamespace("multichull", quietly = TRUE)){
     chull_result <- multichull::CHull(y, bound = "lower")
-    chull_result <- data.frame(chull_result$Hull)
-    con.ind <- as.numeric(rownames(y[y$N %in% chull_result$complexity,]))
-    plot(y$N, y$EN.p0, ...)
-    lines(y$N[con.ind], y$EN.p0[con.ind])
+    if(inherits(chull_result, "CHull")){
+      chull_result <- data.frame(chull_result$Hull)
+      con.ind <- as.numeric(rownames(y[y$N %in% chull_result$complexity,]))
+      plot(y$N, y$EN.p0, ...)
+      lines(y$N[con.ind], y$EN.p0[con.ind])
+    }else{
+      con.ind <- chull(y)[chull((y)) == cummin(chull((y)))]
+    }
   }else{
     con.ind <- chull(y)[chull((y)) == cummin(chull((y)))]
   }
