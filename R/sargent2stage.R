@@ -80,7 +80,7 @@ probha <- function(n1, n2, r1, s, p) {
 sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), ...){
   if(length(p0) > 1 && length(pa) > 1){
     results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max,
-                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max, ...){
+                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max, admissible, ...){
                         sargent2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, ...)
                       }, admissible = admissible, ...,
                       SIMPLIFY = FALSE)
