@@ -4,19 +4,8 @@
 \alias{sargent2stage_R}
 \title{The sargent 2-stage function for two randomized arms}
 \usage{
-sargent2stage_R(
-  p0,
-  pa,
-  alpha,
-  beta,
-  eta,
-  pi,
-  eps = 0.005,
-  N_min,
-  N_max,
-  alloc,
-  ...
-)
+sargent2stage_R(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max,
+  alloc, ...)
 }
 \arguments{
 \item{p0}{uninteresting response (null hypothesis H0)}
@@ -105,8 +94,10 @@ Variable of interest: Z=E-C, so always in this direction
 alloc >=1 (more patients in the experimental arm)
 }
 \examples{
-\dontrun{
-sargent2stage_R(p0=0.1,pa=0.3,alpha=0.05,beta=0.15,eta=0.8,pi=0.8,eps = 0.005,
-    N_min=88,N_max=90,alloc=1,type="normal")
+\donttest{
+sargent2stage_R(
+  p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.15, eta = 0.8, pi = 0.8, eps = 0.005,
+  N_min = 88, N_max = 90, alloc = 1, type = "normal"
+)
 }
 }
