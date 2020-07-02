@@ -96,7 +96,7 @@ simon2stage <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
                         admissible = c("chull", "CHull"), ...){
   if(length(p0) > 1 && length(pa) > 1){
     results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max,
-                      FUN = function(null, alternative, alpha, beta, eps, N_min, N_max, ...){
+                      FUN = function(null, alternative, alpha, beta, eps, N_min, N_max, admissible, ...){
                         simon2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, ...)
                       }, admissible = admissible, ...,
                       SIMPLIFY = FALSE)
