@@ -4,8 +4,18 @@
 \alias{simon2stage}
 \title{Simon 2-stage function}
 \usage{
-simon2stage(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
-  admissible = c("chull", "CHull"), ...)
+simon2stage(
+  p0,
+  pa,
+  alpha,
+  beta,
+  eps = 0.005,
+  N_min,
+  N_max,
+  admissible = c("chull", "CHull"),
+  method = c("speedup", "original"),
+  ...
+)
 }
 \arguments{
 \item{p0}{probability of the uninteresting response (null hypothesis \eqn{H0})}
@@ -23,6 +33,8 @@ simon2stage(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
 \item{N_max}{maximum sample size value for grid search}
 
 \item{admissible}{character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull}
+
+\item{method}{either 'original' or 'speedup' for the original implementation or a more speedier version}
 
 \item{...}{arguments passed on to plot in case admissible is set to CHull}
 }

@@ -20,5 +20,10 @@ x <- list(r1 = c(1, 2, 1, 1, 1, 1, 1),
           beta_param = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2))
 
 expect_equivalent(
-  current = as.list(simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50)),
+  current = as.list(simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "original")),
   target = x)
+
+
+expect_equivalent(
+  current = simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "original"),
+  target = simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "speedup"))
