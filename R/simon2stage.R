@@ -107,7 +107,7 @@ simon2stage <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
   }
 }
 simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
-                                admissible = c("chull", "CHull"), method = c("original", "speedup"), ...) {
+                                admissible = c("chull", "CHull"), method = c("speedup", "original"), ...) {
   method <- match.arg(method)
   admissible <- match.arg(admissible)
   if (pa < p0) {
