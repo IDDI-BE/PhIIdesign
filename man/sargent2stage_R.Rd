@@ -4,8 +4,19 @@
 \alias{sargent2stage_R}
 \title{The sargent 2-stage function for two randomized arms}
 \usage{
-sargent2stage_R(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max,
-  alloc, ...)
+sargent2stage_R(
+  p0,
+  pa,
+  alpha,
+  beta,
+  eta,
+  pi,
+  eps = 0.005,
+  N_min,
+  N_max,
+  alloc,
+  ...
+)
 }
 \arguments{
 \item{p0}{uninteresting response (null hypothesis H0)}

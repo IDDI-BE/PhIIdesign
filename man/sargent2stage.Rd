@@ -4,8 +4,19 @@
 \alias{sargent2stage}
 \title{The Sargent 2-stage function}
 \usage{
-sargent2stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max,
-  admissible = c("chull", "CHull"), ...)
+sargent2stage(
+  p0,
+  pa,
+  alpha,
+  beta,
+  eta,
+  pi,
+  eps = 0.005,
+  N_min,
+  N_max,
+  admissible = c("chull", "CHull"),
+  ...
+)
 }
 \arguments{
 \item{p0}{probability of the uninteresting response (null hypothesis \eqn{H0})}

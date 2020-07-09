@@ -4,8 +4,7 @@
 \alias{plot.2stage}
 \title{Plot function for 2 stage sample size calculation}
 \usage{
-\method{plot}{2stage}(x, main = "Two-stage Designs",
-  xlab = "Maximum Sample Size N", ylab, ...)
+\method{plot}{`2stage`}(x, main = "Two-stage Designs", xlab = "Maximum Sample Size N", ylab, ...)
 }
 \arguments{
 \item{x}{an object returned by \code{\link{simon2stage}} or \code{\link{sargent2stage}}}
