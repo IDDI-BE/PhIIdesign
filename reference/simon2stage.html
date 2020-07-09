@@ -122,8 +122,18 @@ regimen has low activity subject to constraints upon the size of the type 1 and 
 Two-stage designs which minimize the maximum sample size are also determined.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>simon2stage</span>(<span class='kw'>p0</span>, <span class='kw'>pa</span>, <span class='kw'>alpha</span>, <span class='kw'>beta</span>, eps = <span class='fl'>0.005</span>, <span class='kw'>N_min</span>, <span class='kw'>N_max</span>,
-  admissible = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"chull"</span>, <span class='st'>"CHull"</span>), <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>simon2stage</span>(
+  <span class='kw'>p0</span>,
+  <span class='kw'>pa</span>,
+  <span class='kw'>alpha</span>,
+  <span class='kw'>beta</span>,
+  eps = <span class='fl'>0.005</span>,
+  <span class='kw'>N_min</span>,
+  <span class='kw'>N_max</span>,
+  admissible = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"chull"</span>, <span class='st'>"CHull"</span>),
+  method = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"speedup"</span>, <span class='st'>"original"</span>),
+  <span class='kw'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -159,6 +169,10 @@ Two-stage designs which minimize the maximum sample size are also determined.</p
     <tr>
       <th>admissible</th>
       <td><p>character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull</p></td>
+    </tr>
+    <tr>
+      <th>method</th>
+      <td><p>either 'original' or 'speedup' for the original implementation or a more speedier version</p></td>
     </tr>
     <tr>
       <th>...</th>
