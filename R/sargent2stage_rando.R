@@ -163,7 +163,7 @@ probha_R <- function(n1_E_, n1_C_, n2_E_, n2_C_, r1_, s_, p_E_, p_C_, ...) { # R
 #' }
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' sargent2stage_R(
 #'   p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.15, eta = 0.8, pi = 0.8, eps = 0.005,
 #'   N_min = 88, N_max = 90, alloc = 1, type = "normal"
