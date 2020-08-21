@@ -159,3 +159,34 @@ comparison <- benchmark(
 comparison
 boxplot(comparison) + coord_flip()
 ```
+
+
+## Simon 2-stage
+
+### One setting
+
+```{r}
+data.table::setDTthreads(1L)
+comparison <- benchmark(
+  simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "original"),
+  simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "speedup"),
+  times = 1
+)
+comparison
+boxplot(comparison) + coord_flip()
+```  
+
+## Sargent 2-stage
+
+### One setting
+
+```{r}
+data.table::setDTthreads(1L)
+comparison <- benchmark(
+  sargent2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.1,eta=0.8,pi=0.8,eps = 0.005,N_min=15,N_max=50, method = "original"),
+  sargent2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.1,eta=0.8,pi=0.8,eps = 0.005,N_min=15,N_max=50, method = "speedup"),
+  times = 1
+)
+comparison
+boxplot(comparison) + coord_flip()
+```  
