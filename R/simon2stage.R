@@ -6,6 +6,28 @@ probsimon <- function(n1, n2, r1, r, p) {
 }
 
 
+probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
+  ## r is the total number of seen cases on both n1 and n2 together, original implementation used r2=r
+  ## we use r for consistency with the formula in the paper
+  ## Calculate alpha/beta for all values up to r (see formula (1) paper Simon)
+  r_1 <- 0:(min(n1, r)-1)
+  x   <- r_1 + 1
+  ## note the n1+1 and n2+1 due to how R handles indexing B[[1]] is in fact the value of B for n = 0. Same for the 1 + in the vectors
+  # alpha
+  B_p0_r1    <- B_p0[[n1 + 1]][1 + r_1]
+  b_p0_x     <- b_p0[[n1 + 1]][1 + x]
+  B_p0_r2    <- B_p0[[n2 + 1]][1 + (r-x)]
+  alpha_temp <- B_p0_r1 + rev(cumsum(rev(b_p0_x * B_p0_r2)))
+  # beta
+  B_pa_r1    <- B_pa[[n1 + 1]][1 + r_1]
+  b_pa_x     <- b_pa[[n1 + 1]][1 + x]
+  B_pa_r2    <- B_pa[[n2 + 1]][1 + (r-x)]
+  beta_temp  <- B_pa_r1 + rev(cumsum(rev(b_pa_x * B_pa_r2)))
+  list(N = n1 + n2, n1 = n1, r1 = r_1, n2 = n2, #r2 = r-r_1, #r2 = (min(n1, r) - x) + 1,
+       r2 = r,
+       alpha_temp = 1 - alpha_temp, beta_temp = beta_temp)
+}
+
 #' @title Simon 2-stage function
 #' @description
 #' The primary objective of a phase II clinical trial of a new drug or regimen is to determine whether it has sufficient biological activity
@@ -96,6 +118,7 @@ probsimon <- function(n1, n2, r1, r, p) {
 simon2stage <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
                         admissible = c("chull", "CHull"), method = c("speedup", "original"), ...){
   method <- match.arg(method)
+  admissible <- match.arg(admissible)
   if(length(p0) > 1 && length(pa) > 1){
     results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max,
                       FUN = function(null, alternative, alpha, beta, eps, N_min, N_max, admissible, method, ...){
@@ -198,27 +221,7 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
     b_pa <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = pa))
     B_p0 <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = p0))
     B_pa <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = pa))
-    probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
-      ## r is the total number of seen cases on both n1 and n2 together, original implementation used r2=r
-      ## we use r for consistency with the formula in the paper
-      ## Calculate alpha/beta for all values up to r (see formula (1) paper Simon)
-      r_1 <- 0:(min(n1, r)-1)
-      x   <- r_1 + 1
-      ## note the n1+1 and n2+1 due to how R handles indexing B[[1]] is in fact the value of B for n = 0. Same for the 1 + in the vectors
-      # alpha
-      B_p0_r1    <- B_p0[[n1 + 1]][1 + r_1]
-      b_p0_x     <- b_p0[[n1 + 1]][1 + x]
-      B_p0_r2    <- B_p0[[n2 + 1]][1 + (r-x)]
-      alpha_temp <- B_p0_r1 + rev(cumsum(rev(b_p0_x * B_p0_r2)))
-      # beta
-      B_pa_r1    <- B_pa[[n1 + 1]][1 + r_1]
-      b_pa_x     <- b_pa[[n1 + 1]][1 + x]
-      B_pa_r2    <- B_pa[[n2 + 1]][1 + (r-x)]
-      beta_temp  <- B_pa_r1 + rev(cumsum(rev(b_pa_x * B_pa_r2)))
-      list(N = n1 + n2, n1 = n1, r1 = r_1, n2 = n2, #r2 = r-r_1, #r2 = (min(n1, r) - x) + 1,
-           r2 = r,
-           alpha_temp = 1 - alpha_temp, beta_temp = beta_temp)
-    }
+
     res3 <- data.table::setDT(res3)
     settings <- res3[, list(r = unique(r2)), by = list(N, n1, n2)]
     settings$rowid <- seq_len(nrow(settings))
