@@ -173,12 +173,12 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
     # res3$diff_eta <- eta - res3$eta_temp
     # res3 <- res3[res3$diff_eta <= eps, ]
 
-    ## NOTE: probho is exactly the same as probsimon so we can copy the speedup logic implemented from simon
+    ## NOTE: probho is exactly the same as probsimon so we can copy the speedup logic implemented from simon2stage
     nmax <- N_max
     b_p0 <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = p0))
     b_pa <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = pa))
-    B_p0 <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = p0))
-    B_pa <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = pa))
+    B_p0 <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = p0, lower.tail = TRUE))
+    B_pa <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = pa, lower.tail = TRUE))
 
     res3 <- data.table::setDT(res3)
     settings <- res3[, list(r = unique(r2)), by = list(N, n1, n2)]
