@@ -38,6 +38,10 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
+      - name: Install lib dependencies
+        run: |
+          apt-get install libcurl4-openssl-dev
+
       - name: Install dependencies
         run: |
           install.packages("remotes")
@@ -52,4 +56,4 @@ jobs:
         run: |
           git config --global user.name "jwijffels"
           git config --global user.email "jwijffels@bnosac.be"
-          Rscript -e "pkgdown::deploy_to_branch(new_process = FALSE)" 
+          Rscript -e "pkgdown::deploy_to_branch(new_process = FALSE)"
