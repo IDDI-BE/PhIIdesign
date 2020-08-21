@@ -105,7 +105,7 @@ Variable of interest: Z=E-C, so always in this direction
 alloc >=1 (more patients in the experimental arm)
 }
 \examples{
-\donttest{
+\dontrun{
 sargent2stage_R(
   p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.15, eta = 0.8, pi = 0.8, eps = 0.005,
   N_min = 88, N_max = 90, alloc = 1, type = "normal"
