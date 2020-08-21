@@ -15,6 +15,7 @@ sargent2stage(
   N_min,
   N_max,
   admissible = c("chull", "CHull"),
+  method = c("original", "speedup"),
   ...
 )
 }
@@ -38,6 +39,8 @@ sargent2stage(
 \item{N_max}{maximum sample size value for grid search}
 
 \item{admissible}{character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull}
+
+\item{method}{either 'original' or 'speedup' for the original implementation or a more speedier version}
 
 \item{...}{arguments passed on to plot in case admissible is set to CHull}
 }

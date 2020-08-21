@@ -6,12 +6,14 @@
 
 probho <- function(n1, n2, r1, r, p) {
   i <- seq(r1 + 1, min(n1, r))
-  pbinom(q = r1, size = n1, prob = p, lower.tail = T) + sum(pbinom(q = r - i, size = n2, prob = p, lower.tail = T) * dbinom(i, size = n1, prob = p))
+  pbinom(q = r1, size = n1, prob = p, lower.tail = T) +
+    sum(pbinom(q = r - i, size = n2, prob = p, lower.tail = T) * dbinom(i, size = n1, prob = p))
 }
 
 probha <- function(n1, n2, r1, s, p) {
   i <- seq(r1 + 1, min(n1, s))
-  sum(pbinom(q = s - i - 1, size = n2, prob = p, lower.tail = F) * dbinom(i, size = n1, prob = p)) + as.numeric(n1 > s) * pbinom(q = s, size = n1, prob = p, lower.tail = F)
+  sum(pbinom(q = s - i - 1, size = n2, prob = p, lower.tail = F) * dbinom(i, size = n1, prob = p)) +
+    as.numeric(n1 > s) * pbinom(q = s, size = n1, prob = p, lower.tail = F)
 }
 
 
@@ -27,6 +29,7 @@ probha <- function(n1, n2, r1, s, p) {
 #' @param N_min minimum sample size value for grid search
 #' @param N_max maximum sample size value for grid search
 #' @param admissible character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull
+#' @param method either 'original' or 'speedup' for the original implementation or a more speedier version
 #' @param ... arguments passed on to plot in case admissible is set to CHull
 #' @return a data.frame with elements
 #' \itemize{
@@ -77,19 +80,22 @@ probha <- function(n1, n2, r1, s, p) {
 #' minimax <- lapply(samplesize, FUN=function(x) subset(x, MIN == "Minimax"))
 #' minimax <- data.table::rbindlist(minimax)
 #' }
-sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), ...){
+sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), method = c("original", "speedup"), ...){
+  admissible <- match.arg(admissible)
+  method <- match.arg(method)
   if(length(p0) > 1 && length(pa) > 1){
     results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max,
-                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max, admissible, ...){
-                        sargent2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, ...)
-                      }, admissible = admissible, ...,
+                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max, admissible, method, ...){
+                        sargent2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, method = method, ...)
+                      }, MoreArgs = list(admissible = admissible, method = method), ...,
                       SIMPLIFY = FALSE)
   }else{
-    results <- sargent2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, ...)
+    results <- sargent2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, method = method, ...)
   }
 }
 
-sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), ...) {
+sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), method = c("original", "speedup"), ...) {
+  method <- match.arg(method)
   admissible <- match.arg(admissible)
   if (pa < p0) {
     stop("p0 should be smaller than pa")
@@ -148,14 +154,52 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   #----------------------------------------------------------#
   # Calculate beta and eta for all scenarios (only r needed) #
   #----------------------------------------------------------#
-  res3$beta_temp <- mapply(a = res3$n1, b = res3$n2, c = res3$r1, d = res3$r2,
+  if(method == "original"){
+    res3$beta_temp <- mapply(a = res3$n1, b = res3$n2, c = res3$r1, d = res3$r2,
                            FUN = function(a, b, c, d) probho(n1 = a, n2 = b, r1 = c, r = d, p = pa))
-  res3$diff_beta <- res3$beta_temp - beta
-  res3 <- res3[res3$diff_beta <= eps, ]
-  res3$eta_temp <- mapply(a = res3$n1, b = res3$n2, c = res3$r1, d = res3$r2,
-                          FUN = function(a, b, c, d) probho(n1 = a, n2 = b, r1 = c, r = d, p = p0))
-  res3$diff_eta <- eta - res3$eta_temp
-  res3 <- res3[res3$diff_eta <= eps, ]
+    res3$diff_beta <- res3$beta_temp - beta
+    res3 <- res3[res3$diff_beta <= eps, ]
+    res3$eta_temp <- mapply(a = res3$n1, b = res3$n2, c = res3$r1, d = res3$r2,
+                            FUN = function(a, b, c, d) probho(n1 = a, n2 = b, r1 = c, r = d, p = p0))
+    res3$diff_eta <- eta - res3$eta_temp
+    res3 <- res3[res3$diff_eta <= eps, ]
+  }else if(method == "speedup"){
+    # res3$beta_temp <- mapply(n1 = res3$n1, n2 = res3$n2, r1 = res3$r1, r2 = res3$r2,
+    #                          FUN = function(n1, n2, r1, r2) probho(n1 = n1, n2 = n2, r1 = r1, r = r2, p = pa))
+    # res3$diff_beta <- res3$beta_temp - beta
+    # res3 <- res3[res3$diff_beta <= eps, ]
+    # res3$eta_temp <- mapply(n1 = res3$n1, n2 = res3$n2, r1 = res3$r1, r2 = res3$r2,
+    #                         FUN = function(n1, n2, r1, r2) probho(n1 = n1, n2 = n2, r1 = r1, r = r2, p = p0))
+    # res3$diff_eta <- eta - res3$eta_temp
+    # res3 <- res3[res3$diff_eta <= eps, ]
+
+    ## NOTE: probho is exactly the same as probsimon so we can copy the speedup logic implemented from simon
+    nmax <- N_max
+    b_p0 <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = p0))
+    b_pa <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = pa))
+    B_p0 <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = p0))
+    B_pa <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = pa))
+
+    res3 <- data.table::setDT(res3)
+    settings <- res3[, list(r = unique(r2)), by = list(N, n1, n2)]
+    settings$rowid <- seq_len(nrow(settings))
+    res5 <- settings[, probsimonAllR(n1 = n1, n2 = n2, r = r, b_p0 = b_p0, B_p0 = B_p0, b_pa = b_pa, B_pa = B_pa), by = list(rowid)]
+    res5 <- data.table::setnames(res5, old = c("alpha_temp", "beta_temp"), new = c("eta_temp", "beta_temp"))
+    res5 <- merge(res5, res3[, c("N", "n1", "n2", "r1", "r2")], all.x = FALSE, all.y = FALSE, by = c("N", "n1", "n2", "r1", "r2"))
+    res5 <- data.table::setDF(res5)
+    res5$eta_temp <- 1 - res5$eta_temp ## DIFFERENCE WITH REGARDS TO SIMON2
+    # datacheck <- merge(res5, OLD, all.x = FALSE, all.y = TRUE, by = c("N", "n1", "n2", "r1", "r2"))
+    # table(datacheck$eta_temp.x - datacheck$eta_temp.y)
+    # table(datacheck$beta_temp.x - datacheck$beta_temp.y)
+    # subset(datacheck, eta_temp.x != eta_temp.y)
+    # subset(datacheck, beta_temp.x != beta_temp.y)
+    res5 <- res5[!is.na(res5$eta_temp) & !is.na(res5$beta_temp), ]
+    res5$diff_beta <- res5$beta_temp - beta
+    res5 <- res5[res5$diff_beta <= eps, ]
+    res5$diff_eta <- eta - res5$eta_temp
+    res5 <- res5[res5$diff_eta <= eps, ]
+    res3 <- res5
+  }
 
   # Get for selected N's, n1's, r1's and r1's: s's ((r2+2):n)
   #----------------------------------------------------------
@@ -167,15 +211,27 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   #----------------------------------------------------------#
   # Calculate pi and alpha for all scenarios (s needed)      #
   #----------------------------------------------------------#
-  res4$pi_temp <- mapply(a = res4$n1, b = res4$n2, c = res4$r1, d = res4$s,
-                         FUN = function(a, b, c, d) probha(n1 = a, n2 = b, r1 = c, s = d, p = pa))
-  res4$diff_pi <- pi - res4$pi_temp
-  res4 <- res4[res4$diff_pi <= eps, ]
+  if(method == "original"){
+    res4$pi_temp <- mapply(a = res4$n1, b = res4$n2, c = res4$r1, d = res4$s,
+                           FUN = function(a, b, c, d) probha(n1 = a, n2 = b, r1 = c, s = d, p = pa))
+    res4$diff_pi <- pi - res4$pi_temp
+    res4 <- res4[res4$diff_pi <= eps, ]
 
-  res4$alpha_temp <- mapply(a = res4$n1, b = res4$n2, c = res4$r1, d = res4$s,
-                            FUN = function(a, b, c, d) probha(n1 = a, n2 = b, r1 = c, s = d, p = p0))
-  res4$diff_alpha <- res4$alpha_temp - alpha
-  res5 <- res4[res4$diff_alpha <= eps, ]
+    res4$alpha_temp <- mapply(a = res4$n1, b = res4$n2, c = res4$r1, d = res4$s,
+                              FUN = function(a, b, c, d) probha(n1 = a, n2 = b, r1 = c, s = d, p = p0))
+    res4$diff_alpha <- res4$alpha_temp - alpha
+    res5 <- res4[res4$diff_alpha <= eps, ]
+  }else if(method == "speedup"){
+    ## TODO: either lookup or Rcpp
+    res4$pi_temp <- mapply(n1 = res4$n1, n2 = res4$n2, r1 = res4$r1, s = res4$s,
+                           FUN = function(n1, n2, r1, s) probha(n1 = n1, n2 = n2, r1 = r1, s = s, p = pa))
+    res4$diff_pi <- pi - res4$pi_temp
+    res4 <- res4[res4$diff_pi <= eps, ]
+    res4$alpha_temp <- mapply(n1 = res4$n1, n2 = res4$n2, r1 = res4$r1, s = res4$s,
+                              FUN = function(n1, n2, r1, s) probha(n1 = n1, n2 = n2, r1 = r1, s = s, p = p0))
+    res4$diff_alpha <- res4$alpha_temp - alpha
+    res5 <- res4[res4$diff_alpha <= eps, ]
+  }
 
   res5$alpha <- alpha
   res5$beta <- beta
