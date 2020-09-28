@@ -40,7 +40,12 @@
 
 
 <meta property="og:title" content="The Sargent 2-stage function — sargent2stage" />
-<meta property="og:description" content="This function calculates sample sizes of the sargent 2-stage design." />
+<meta property="og:description" content="This function calculates sample sizes of the Sargent 2-stage design.
+The goal of a phase II trial is to make a preliminary determination regarding the activity and
+tolerability of a new treatment and thus to determine whether the treatment warrants
+further study in the phase III setting. 
+This function calculates the sample size needed in a Sargent 2-stage design which is a
+three-outcome design that allows for three outcomes: reject \(H(0)\), reject \(H(a)\), or reject neither." />
 
 
 
@@ -81,6 +86,9 @@
         <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         
@@ -103,7 +111,12 @@
     </div>
 
     <div class="ref-description">
-    <p>This function calculates sample sizes of the sargent 2-stage design.</p>
+    <p>This function calculates sample sizes of the Sargent 2-stage design.</p>
+<p>The goal of a phase II trial is to make a preliminary determination regarding the activity and
+tolerability of a new treatment and thus to determine whether the treatment warrants
+further study in the phase III setting. <br />
+This function calculates the sample size needed in a Sargent 2-stage design which is a
+three-outcome design that allows for three outcomes: reject \(H(0)\), reject \(H(a)\), or reject neither.</p>
     </div>
 
     <pre class="usage"><span class='fu'>sargent2stage</span>(
@@ -117,7 +130,7 @@
   <span class='kw'>N_min</span>,
   <span class='kw'>N_max</span>,
   admissible = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"chull"</span>, <span class='st'>"CHull"</span>),
-  method = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"original"</span>, <span class='st'>"speedup"</span>),
+  method = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"speedup"</span>, <span class='st'>"original"</span>),
   <span class='kw'>...</span>
 )</pre>
 
@@ -213,7 +226,7 @@ if (x1+x2)&gt;=s --&gt; efficacy <br /></p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>sargent2stage</span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.1</span>,
                             eta = <span class='fl'>0.8</span>, pi = <span class='fl'>0.8</span>,
-                            eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>15</span>, N_max = <span class='fl'>30</span>)
+                            eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>15</span>, N_max = <span class='fl'>30</span>, method = <span class='st'>"speedup"</span>)
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span>(<span class='kw'>samplesize</span>)
 </div><div class='img'><img src='sargent2stage-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'># \donttest{</span>
