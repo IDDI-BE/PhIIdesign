@@ -2,7 +2,8 @@
 
 probsimon <- function(n1, n2, r1, r, p) {
   i <- seq(r1 + 1, min(n1, r))
-  pbinom(q = r1, size = n1, prob = p, lower.tail = TRUE) + sum(dbinom(i, size = n1, prob = p) * pbinom(q = r - i, size = n2, prob = p, lower.tail = TRUE))
+  pbinom(q = r1, size = n1, prob = p, lower.tail = TRUE) +
+    sum(dbinom(i, size = n1, prob = p) * pbinom(q = r - i, size = n2, prob = p, lower.tail = TRUE))
 }
 
 
