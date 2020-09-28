@@ -15,7 +15,7 @@ sargent2stage(
   N_min,
   N_max,
   admissible = c("chull", "CHull"),
-  method = c("original", "speedup"),
+  method = c("speedup", "original"),
   ...
 )
 }
@@ -72,7 +72,13 @@ a data.frame with elements
 }
 }
 \description{
-This function calculates sample sizes of the sargent 2-stage design.
+This function calculates sample sizes of the Sargent 2-stage design.
+
+The goal of a phase II trial is to make a preliminary determination regarding the activity and
+tolerability of a new treatment and thus to determine whether the treatment warrants
+further study in the phase III setting. \cr
+This function calculates the sample size needed in a Sargent 2-stage design which is a
+three-outcome design that allows for three outcomes: reject \eqn{H(0)}, reject \eqn{H(a)}, or reject neither.
 }
 \details{
 if x1<=r1 --> stop futility \cr
@@ -82,7 +88,7 @@ if (x1+x2)>=s --> efficacy \cr
 \examples{
 samplesize <- sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
                             eta = 0.8, pi = 0.8,
-                            eps = 0.005, N_min = 15, N_max = 30)
+                            eps = 0.005, N_min = 15, N_max = 30, method = "speedup")
 plot(samplesize)
 
 \donttest{

@@ -6,19 +6,60 @@
 
 probho <- function(n1, n2, r1, r, p) {
   i <- seq(r1 + 1, min(n1, r))
-  pbinom(q = r1, size = n1, prob = p, lower.tail = T) +
-    sum(pbinom(q = r - i, size = n2, prob = p, lower.tail = T) * dbinom(i, size = n1, prob = p))
+  pbinom(q = r1, size = n1, prob = p, lower.tail = TRUE) +
+    sum(pbinom(q = r - i,     size = n2, prob = p, lower.tail = TRUE) *  dbinom(i, size = n1, prob = p))
 }
 
-probha <- function(n1, n2, r1, s, p) {
+
+probha <- function(n1, n2, r1, s, p, type = "original") {
+  ## Equation 4 page 122 Sargent et. Al
   i <- seq(r1 + 1, min(n1, s))
-  sum(pbinom(q = s - i - 1, size = n2, prob = p, lower.tail = F) * dbinom(i, size = n1, prob = p)) +
-    as.numeric(n1 > s) * pbinom(q = s, size = n1, prob = p, lower.tail = F)
+  if(type == "original"){
+    pbinom(q = s, size = n1, prob = p, lower.tail = FALSE) * as.numeric(n1 > s) +
+      sum(pbinom(q = s - i - 1, size = n2, prob = p, lower.tail = FALSE) * dbinom(i, size = n1, prob = p))
+  }else if(type == "speedup"){
+    # same but more consistent with speedup logic implemented as in probsimon as we need P(X2>=s-i)
+    # lower.tail=TRUE: P(X<=x|p)
+    # lower.tail=FALSE:P(X >x|p)
+    pbinom(q = s, size = n1, prob = p, lower.tail = FALSE) * as.numeric(n1 > s) +
+      sum((1 - pbinom(q = s - i, size = n2, prob = p, lower.tail = TRUE) + dbinom(s - i, size = n2, prob = p)) * dbinom(i, size = n1, prob = p))
+  }else{
+    stop("type should be either 'original' or 'speedup'")
+  }
+}
+
+probhaAll <- function(n1, n2, s, b_p0, B_p0, B_p0_ut, b_pa, B_pa, B_pa_ut){
+  ## Equation 4 page 122 Sargent et. Al
+  r <- s
+  ## Similar code as probsimonAllR
+  r_1 <- 0:(min(n1, r)-1)
+  x   <- r_1 + 1
+  ## note the n1+1 and n2+1 due to how R handles indexing B[[1]] is in fact the value of B for n = 0. Same for the 1 + in the vectors
+  # alpha
+  B_p0_r1         <- B_p0_ut[[n1 + 1]][1 + r] * as.numeric(n1 > r)
+  b_p0_x          <- b_p0[[n1 + 1]][1 + x]
+  B_p0_r2         <- B_p0[[n2 + 1]][1 + (r-x)]
+  B_p0_r2_density <- b_p0[[n2 + 1]][1 + (r-x)]
+  alpha_temp <- B_p0_r1 + rev(cumsum(rev(b_p0_x * (1 - B_p0_r2 + B_p0_r2_density))))
+  # pi
+  B_pa_r1         <- B_pa_ut[[n1 + 1]][1 + r] * as.numeric(n1 > r)
+  b_pa_x          <- b_pa[[n1 + 1]][1 + x]
+  B_pa_r2         <- B_pa[[n2 + 1]][1 + (r-x)]
+  B_pa_r2_density <- b_pa[[n2 + 1]][1 + (r-x)]
+  pi_temp <- B_pa_r1 + rev(cumsum(rev(b_pa_x * (1 - B_pa_r2 + B_pa_r2_density))))
+  list(N = n1 + n2, n1 = n1, n2 = n2,
+       r1 = r_1, s = s,
+       alpha_temp = alpha_temp, pi_temp = pi_temp)
 }
 
 
 #' @title The Sargent 2-stage function
-#' @description This function calculates sample sizes of the sargent 2-stage design.
+#' @description This function calculates sample sizes of the Sargent 2-stage design.
+#' @description The goal of a phase II trial is to make a preliminary determination regarding the activity and
+#' tolerability of a new treatment and thus to determine whether the treatment warrants
+#' further study in the phase III setting. \cr
+#' This function calculates the sample size needed in a Sargent 2-stage design which is a
+#' three-outcome design that allows for three outcomes: reject \eqn{H(0)}, reject \eqn{H(a)}, or reject neither.
 #' @param p0 probability of the uninteresting response (null hypothesis \eqn{H0})
 #' @param pa probability of the interesting response (alternative hypothesis Ha)
 #' @param alpha Type I error rate \eqn{P(reject H0|H0)}
@@ -80,7 +121,7 @@ probha <- function(n1, n2, r1, s, p) {
 #' minimax <- lapply(samplesize, FUN=function(x) subset(x, MIN == "Minimax"))
 #' minimax <- data.table::rbindlist(minimax)
 #' }
-sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), method = c("original", "speedup"), ...){
+sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), method = c("speedup", "original"), ...){
   admissible <- match.arg(admissible)
   method <- match.arg(method)
   if(length(p0) > 1 && length(pa) > 1){
@@ -94,7 +135,7 @@ sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_ma
   }
 }
 
-sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), method = c("original", "speedup"), ...) {
+sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), method = c("speedup", "original"), ...) {
   method <- match.arg(method)
   admissible <- match.arg(admissible)
   if (pa < p0) {
@@ -102,7 +143,7 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   }
 
   # Define variables as a NULL value (to avoid 'notes' in devtools package check)
-
+  n1 <- n2 <- r <- r2 <- rowid <- s <- NULL
   EN.p0 <- EN.p0_N_min <- EN.p0_min <- MIN <- N <- OPT <- NULL
 
   #----------------------------------------------------------------------------------------------------------#
@@ -154,7 +195,14 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   #----------------------------------------------------------#
   # Calculate beta and eta for all scenarios (only r needed) #
   #----------------------------------------------------------#
-  if(method == "original"){
+  nmax <- N_max
+  b_p0 <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = p0))
+  b_pa <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = pa))
+  B_p0 <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = p0, lower.tail = TRUE))
+  B_pa <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = pa, lower.tail = TRUE))
+  B_p0_ut <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = p0, lower.tail = FALSE))
+  B_pa_ut <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = pa, lower.tail = FALSE))
+  if(method %in% c("original", "speedup")){
     res3$beta_temp <- mapply(a = res3$n1, b = res3$n2, c = res3$r1, d = res3$r2,
                            FUN = function(a, b, c, d) probho(n1 = a, n2 = b, r1 = c, r = d, p = pa))
     res3$diff_beta <- res3$beta_temp - beta
@@ -174,17 +222,11 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
     # res3 <- res3[res3$diff_eta <= eps, ]
 
     ## NOTE: probho is exactly the same as probsimon so we can copy the speedup logic implemented from simon2stage
-    nmax <- N_max
-    b_p0 <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = p0))
-    b_pa <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = pa))
-    B_p0 <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = p0, lower.tail = TRUE))
-    B_pa <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = pa, lower.tail = TRUE))
-
     res3 <- data.table::setDT(res3)
     settings <- res3[, list(r = unique(r2)), by = list(N, n1, n2)]
     settings$rowid <- seq_len(nrow(settings))
     res5 <- settings[, probsimonAllR(n1 = n1, n2 = n2, r = r, b_p0 = b_p0, B_p0 = B_p0, b_pa = b_pa, B_pa = B_pa), by = list(rowid)]
-    res5 <- data.table::setnames(res5, old = c("alpha_temp", "beta_temp"), new = c("eta_temp", "beta_temp"))
+    res5 <- data.table::setnames(res5, old = c("alpha_temp"), new = c("eta_temp"))
     res5 <- merge(res5, res3[, c("N", "n1", "n2", "r1", "r2")], all.x = FALSE, all.y = FALSE, by = c("N", "n1", "n2", "r1", "r2"))
     res5 <- data.table::setDF(res5)
     res5$eta_temp <- 1 - res5$eta_temp ## DIFFERENCE WITH REGARDS TO SIMON2
@@ -222,17 +264,29 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
     res4$diff_alpha <- res4$alpha_temp - alpha
     res5 <- res4[res4$diff_alpha <= eps, ]
   }else if(method == "speedup"){
-    ## TODO: either lookup or Rcpp
-    res4$pi_temp <- mapply(n1 = res4$n1, n2 = res4$n2, r1 = res4$r1, s = res4$s,
-                           FUN = function(n1, n2, r1, s) probha(n1 = n1, n2 = n2, r1 = r1, s = s, p = pa))
-    res4$diff_pi <- pi - res4$pi_temp
-    res4 <- res4[res4$diff_pi <= eps, ]
-    res4$alpha_temp <- mapply(n1 = res4$n1, n2 = res4$n2, r1 = res4$r1, s = res4$s,
-                              FUN = function(n1, n2, r1, s) probha(n1 = n1, n2 = n2, r1 = r1, s = s, p = p0))
-    res4$diff_alpha <- res4$alpha_temp - alpha
-    res5 <- res4[res4$diff_alpha <= eps, ]
+    res4     <- data.table::setDT(res4)
+    settings <- res4[, list(s = unique(s)), by = list(N, n1, n2)]
+    settings$rowid <- seq_len(nrow(settings))
+    res5 <- settings[, probhaAll(n1 = n1, n2 = n2, s = s,
+                                 b_p0 = b_p0, B_p0 = B_p0, B_p0_ut = B_p0_ut,
+                                 b_pa = b_pa, B_pa = B_pa, B_pa_ut = B_pa_ut), by = list(rowid)]
+    #res4$test_alpha_temp <- mapply(a = res4$n1, b = res4$n2, c = res4$r1, d = res4$s, FUN = function(a, b, c, d) probha(n1 = a, n2 = b, r1 = c, s = d, p = p0))
+    #res4$test_pi_temp    <- mapply(a = res4$n1, b = res4$n2, c = res4$r1, d = res4$s, FUN = function(a, b, c, d) probha(n1 = a, n2 = b, r1 = c, s = d, p = pa))
+    #res5 <- merge(res4, res5, by = c("N", "n1", "n2", "r1", "r2", "s"), all.x = TRUE, all.y = FALSE, sort = FALSE)
+    # table(round(res5$test_alpha_temp - res5$alpha_temp), 10)
+    # table(round(res5$test_pi_temp - res5$pi_temp), 10)
+    res5 <- merge(res4[, c("N", "n1", "n2", "r1", "r2", "s", "beta_temp", "eta_temp")], res5,
+                  by = c("N", "n1", "n2", "r1", "s"), all.x = TRUE, all.y = FALSE, sort = FALSE)
+    res5 <- data.table::setDF(res5)
+    res5$diff_pi <- pi - res5$pi_temp
+    res5 <- res5[res5$diff_pi <= eps, ]
+    res5$diff_alpha <- res5$alpha_temp - alpha
+    res5 <- res5[res5$diff_alpha <= eps, ]
   }
-
+  res5 <- res5[!is.na(res5$alpha_temp) & !is.na(res5$beta_temp) & !is.na(res5$eta_temp) & !is.na(res5$pi_temp), ]
+  if(nrow(res5) == 0){
+    stop("No data satisfying the H0/Ha criteria")
+  }
   res5$alpha <- alpha
   res5$beta <- beta
   res5$eta <- eta
