@@ -2,7 +2,7 @@
 % Please edit documentation in R/sargent2stage_rando.R
 \name{sargent2stage_R}
 \alias{sargent2stage_R}
-\title{The sargent 2-stage function for two randomized arms}
+\title{The Sargent 2-stage function for two randomized arms}
 \usage{
 sargent2stage_R(
   p0,
@@ -77,7 +77,7 @@ dataframe with selected scenarios, with following columns:
 }
 }
 \description{
-This function calculates sample sizes of the sargent 2-stage design (randomized)
+This function calculates sample sizes of the Sargent 2-stage design (randomized)
 
 including first stage and second stage cutoff values for futility (r1 and r2) and efficacy (s)
 }

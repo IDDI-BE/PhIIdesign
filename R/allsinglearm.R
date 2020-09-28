@@ -12,7 +12,8 @@
 #' @param eps tolerance (actual alpha<=alpha+eps; actual beta<=beta+eps; actual eta>=eta-eps; actual p>=pi-eps); default value = 0.005
 #' @export
 #' @examples
-#' allsinglearm(p0=c(0.1),pa=c(0.7),alpha=0.05,beta=c(0.2),beta2=c(0.1),pi=c(0.8),eta=0.8)
+#' allsinglearm(p0 = 0.1, pa = 0.7,
+#'              alpha = 0.05, beta = 0.2, beta2 = 0.1, pi = 0.8, eta = 0.8)
 allsinglearm<-function (p0,pa,alpha,beta,alpha2=alpha,beta2,pi,eta,eps=0.005){
 
 onestage<-NULL

@@ -29,5 +29,6 @@ allsinglearm(p0, pa, alpha, beta, alpha2 = alpha, beta2, pi, eta, eps = 0.005)
 This function calculates sample sizes of the Fleming 1-stage , Simon-2stage, Sargent's 1- and 2-stage design. calculations are performed jointly for different sets of proportions (p0, pA) and operating characteristics. All designs are summarized in 2 tables, 1 for one-stage designs (Fleming and sargent) and 1 for two-stage designs (Simon and sargent)
 }
 \examples{
-allsinglearm(p0=c(0.1),pa=c(0.7),alpha=0.05,beta=c(0.2),beta2=c(0.1),pi=c(0.8),eta=0.8)
+allsinglearm(p0 = 0.1, pa = 0.7,
+             alpha = 0.05, beta = 0.2, beta2 = 0.1, pi = 0.8, eta = 0.8)
 }

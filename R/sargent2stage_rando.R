@@ -99,9 +99,9 @@ probha_R <- function(n1_E_, n1_C_, n2_E_, n2_C_, r1_, s_, p_E_, p_C_, ...) { # R
   return(probha)
 }
 
-#' @title The sargent 2-stage function for two randomized arms
+#' @title The Sargent 2-stage function for two randomized arms
 
-#' @description This function calculates sample sizes of the sargent 2-stage design (randomized)
+#' @description This function calculates sample sizes of the Sargent 2-stage design (randomized)
 #' @description including first stage and second stage cutoff values for futility (r1 and r2) and efficacy (s)
 
 #' @param p0 uninteresting response (null hypothesis H0)
