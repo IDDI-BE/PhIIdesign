@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • PhIIdesign</title>
+<title>P(reject Ha) in a 2-stage PhII single arm Sargent design — prob_reject_Ha • PhIIdesign</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,8 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="P(reject Ha) in a 2-stage PhII single arm Sargent design — prob_reject_Ha" />
+<meta property="og:description" content="This function calculates the P(reject alternative hypothesis|true success probability)" />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -97,102 +98,60 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>P(reject Ha) in a 2-stage PhII single arm Sargent design</h1>
+    
+    <div class="hidden name"><code>prob_reject_Ha.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>This function calculates the P(reject alternative hypothesis|true success probability)</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>prob_reject_Ha</span>(<span class='kw'>n1</span>, <span class='kw'>n2</span>, <span class='kw'>r1</span>, <span class='kw'>r2</span>, <span class='kw'>p</span>)</pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="allsinglearm.html">allsinglearm()</a></code> </p>
-        </td>
-        <td><p>Onestage combination function for optimal designs</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="data_sargent2.html">data_sargent2</a></code> </p>
-        </td>
-        <td><p>Dataset with design settings for sargent2stage</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="exact1stage.html">exact1stage()</a></code> </p>
-        </td>
-        <td><p>The exact 1-stage function, randomized</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="fleming1stage.html">fleming1stage()</a></code> </p>
-        </td>
-        <td><p>The Fleming 1-stage function</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.2stage.html">plot(<i>&lt;2stage&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Plot function for 2 stage sample size calculation</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prob_reject_H0.html">prob_reject_H0()</a></code> </p>
-        </td>
-        <td><p>P(reject H0) in a 2-stage PhII single arm Sargent design</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prob_reject_Ha.html">prob_reject_Ha()</a></code> </p>
-        </td>
-        <td><p>P(reject Ha) in a 2-stage PhII single arm Sargent design</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sargent1stage.html">sargent1stage()</a></code> </p>
-        </td>
-        <td><p>The Sargent 1-stage function</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sargent2stage.html">sargent2stage()</a></code> </p>
-        </td>
-        <td><p>The Sargent 2-stage function</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sargent2stage_R.html">sargent2stage_R()</a></code> </p>
-        </td>
-        <td><p>The Sargent 2-stage function for two randomized arms</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="simon2stage.html">simon2stage()</a></code> </p>
-        </td>
-        <td><p>Simon 2-stage function</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>n1</th>
+      <td><p>total number of patients in stage1</p></td>
+    </tr>
+    <tr>
+      <th>n2</th>
+      <td><p>total number of patients in stage2</p></td>
+    </tr>
+    <tr>
+      <th>r1</th>
+      <td><p>critical value for the first stage</p></td>
+    </tr>
+    <tr>
+      <th>r2</th>
+      <td><p>critical value for the second stage</p></td>
+    </tr>
+    <tr>
+      <th>p</th>
+      <td><p>true success probability</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>Probability</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>if x1&lt;=r1 --&gt; stop futility <br />
+if (x1+x2)&lt;=r --&gt; futility <br />
+with x1 the number of successes in the first stage and x2 the number of successes in the second stage</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Sargent DJ, Chan V, Goldberg RM. A three-outcome design for phase II clinical trials. Control Clin Trials. 2001;22(2):117-125. doi:10.1016/s0197-2456(00)00115-x</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='fu'>prob_reject_Ha</span>(n1=<span class='fl'>10</span>,n2=<span class='fl'>20</span>,r1=<span class='fl'>0</span>,r2=<span class='fl'>4</span>,p=<span class='fl'>0.25</span>)
+</div><div class='output co'>#&gt; [1] 0.1308219</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
