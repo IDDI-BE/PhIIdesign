@@ -88,7 +88,7 @@ if (x1+x2)>=s --> efficacy \cr
 \examples{
 samplesize <- sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
                             eta = 0.8, pi = 0.8,
-                            eps = 0.005, N_min = 15, N_max = 30, method = "speedup")
+                            eps = 0.005, N_min = 15, N_max = 30)
 plot(samplesize)
 
 \donttest{
