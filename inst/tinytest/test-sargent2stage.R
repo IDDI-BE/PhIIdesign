@@ -24,7 +24,7 @@ x <- list(r1 = c(1, 1, 1),
           pi_param = c(0.8, 0.8, 0.8))
 
 expect_equivalent(
-  current = as.list(sargent2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.1,eta=0.8,pi=0.8,eps = 0.005,N_min=15,N_max=30)),
+  current = as.list(sargent2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.1,eta=0.8,pi=0.8,eps = 0.005,N_min=15,N_max=30)[,-c(1)]), # '-c(1) to omit 'design_nr' column
   target = x)
 
 expect_equivalent(

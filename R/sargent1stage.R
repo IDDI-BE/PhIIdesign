@@ -146,7 +146,8 @@ sargent1stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   res <- data.table::setnames(res,
                               old = c("alpha_temp", "beta_temp", "eta_temp", "pi_temp"),
                               new = c("alpha", "beta", "eta", "pi"))
-  res <- cbind(res[, c("r", "s", "N", "alpha", "beta", "eta", "pi")],
+  res <- cbind(design_nr=1:dim(res)[1],
+               res[, c("r", "s", "N", "alpha", "beta", "eta", "pi")],
                p0 = p0,
                pa = pa,
                res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])

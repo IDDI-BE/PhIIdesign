@@ -5,34 +5,32 @@
 #' if the input is an object returned by \code{\link{sargent2stage}}, interactively choose \cr
 #' the design number
 #' @param x an object returned by \code{\link{sargent1stage}} or \code{\link{sargent2stage}}
+#' @param design_nr design_nr returned by \code{\link{sargent1stage}} or \code{\link{sargent2stage}} \cr
+#' default is 1 (for \code{\link{sargent1stage}}, only one design is outputted)
 #' @param main title of the graph, passed on to \code{plot}
 #' @param xlab x-axis label of the graph, passed on to \code{plot}
 #' @param ylab y-axis label of the graph, passed on to \code{plot}
 #' @param ... other arguments passed on to \code{plot}
 #' @export
 #' @examples
-#' result<-sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
-#'                       eps = 0.005, N_min = 35, N_max = 50)
-#' PlotSargent(result)
-
+#' \donttest{
 #' result_1<- sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
 #'                          eps = 0.005, N_min = 35, N_max = 50)
-#' plot.sargent(result_1)
+#' plotsargent(result_1)
 #'
 #' result_2 <- sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
 #'                           eta = 0.8, pi = 0.8,
 #'                           eps = 0.005, N_min = 15, N_max = 30)
-#' plot.sargent(result_2)
+#' plotsargent(result_2)
+#' }
 
-plot.sargent <- function(x,
-                         main = "Sargent's 3-outcome 1-stage design",
-                         xlab = "True response probability",
-                         ylab, ...) {
+plotsargent <- function(x,
+                        design_nr=1,
+                        main = "Sargent's 3-outcome 1-stage design",
+                        xlab = "True response probability",
+                        ylab, ...) {
 
-  if ("r1" %in% names(x) & dim(x)[1]>1){
-    design<-utils::menu(x$design_nr,title="Choose design number from Sargent 2-stage function result")
-    x<-x[x$design_nr==design,]
-  }
+  x<-x[x$design_nr==design_nr,]
 
   #res: truep, rejectHA,nodecision,reject H0
   Res=NULL
