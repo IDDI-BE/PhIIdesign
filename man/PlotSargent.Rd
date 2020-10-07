@@ -42,6 +42,6 @@ plotsargent(result_1)
 result_2 <- sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
                           eta = 0.8, pi = 0.8,
                           eps = 0.005, N_min = 15, N_max = 30)
-plotsargent(result_2)
+plotsargent(result_2,design_nr=1)
 }
 }
