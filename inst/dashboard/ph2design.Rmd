@@ -1,0 +1,103 @@
+---
+title: "Phase II clinical trials designs"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: yeti
+    logo: logo_h40.png
+    orientation: rows
+    vertical_layout: fill
+    social: menu
+    navbar:
+      - {title: "Contact", href: "https://www.iddi.com/clinical-research-organization-contact/iddi-head-office/functional-cro/", align: right}
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(shiny)
+library(shinyWidgets)
+library(shinipsum)
+library(ggplot2)
+```
+
+# Sample size design
+
+<!--
+  Documentation as a video
+-->
+
+## Inputs {.sidebar}
+
+Provide the type of design
+
+```{r}
+selectInput(inputId = "ui_design", label = "Statistical design", 
+            choices = c("2-stage Simon", "2-stage Sargent", "1-stage Exact", "1-stage Sargent", "1-stage Fleming"))
+```
+
+<hr>
+
+```{r}
+actionBttn(inputId = "ui_start", label = "Start calculation", icon = icon(name = "play", lib = "font-awesome"), 
+           color = "default", style = "material-flat", size = "md")
+dlg <- modalDialog("TODO", "Bunch of user input which is different depending on type of design", easyClose = TRUE)
+observeEvent(input$ui_start, {
+  showModal(dlg)
+})
+```
+
+<!--
+  Results
+-->
+
+## Row 1 {.tabset}
+
+### Visualisation 
+
+```{r}
+plotOutput("uo_plot")
+output$uo_plot <- renderPlot({
+  input$ui_start
+  plt <- random_ggplot(type = "col") + labs(title = "Random plot") + theme_bw()
+  plt
+})
+```
+
+
+### R output
+
+```{r}
+textOutput("uo_print")
+output$uo_print <- renderPrint({
+  input$ui_start
+  random_print("model")
+})
+```
+
+
+##  Row 2 
+
+### Table
+
+```{r}
+tableOutput("uo_table")
+output$uo_table <- renderTable({
+  input$ui_start
+  random_table(10, 5)
+})
+```
+
+
+
+<!--
+  Documentation as a video
+-->
+
+# Documentation
+
+## Video
+
+```{r}
+tags$iframe(src = "https://www.youtube.com/embed/P8ma5i05GX4", height = "100%", width = "100%")
+```
+
