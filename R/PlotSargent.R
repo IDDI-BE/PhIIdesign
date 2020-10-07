@@ -1,8 +1,10 @@
 
-#' @title Plot function for 1 stage Sargent design
+#' @title Plot function for 1- and 2-stage Sargent design
 #' @description Plots the probability of rejecting \eqn{H0} ('Positive result') and rejecting Ha \cr
-#' ('Negative result') for different true response binomial parameters
-#' @param x an object returned by \code{\link{sargent1stage}}
+#' ('Negative result') for different true response binomial parameters \cr
+#' if the input is an object returned by \code{\link{sargent2stage}}, interactively choose \cr
+#' the design number
+#' @param x an object returned by \code{\link{sargent1stage}} or \code{\link{sargent2stage}}
 #' @param main title of the graph, passed on to \code{plot}
 #' @param xlab x-axis label of the graph, passed on to \code{plot}
 #' @param ylab y-axis label of the graph, passed on to \code{plot}
@@ -13,19 +15,41 @@
 #'                       eps = 0.005, N_min = 35, N_max = 50)
 #' PlotSargent(result)
 
+#' result_1<- sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
+#'                          eps = 0.005, N_min = 35, N_max = 50)
+#' plot.sargent(result_1)
+#'
+#' result_2 <- sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
+#'                           eta = 0.8, pi = 0.8,
+#'                           eps = 0.005, N_min = 15, N_max = 30)
+#' plot.sargent(result_2)
 
-PlotSargent <- function(x,
-                        main = "Sargent's 3-outcome 1-stage design",
-                        xlab = "True response probability",
-                        ylab, ...) {
+plot.sargent <- function(x,
+                         main = "Sargent's 3-outcome 1-stage design",
+                         xlab = "True response probability",
+                         ylab, ...) {
+
+  if ("r1" %in% names(x) & dim(x)[1]>1){
+    design<-utils::menu(x$design_nr,title="Choose design number from Sargent 2-stage function result")
+    x<-x[x$design_nr==design,]
+  }
 
   #res: truep, rejectHA,nodecision,reject H0
   Res=NULL
   ptrue=seq(max(0,x$p0-0.1),min(x$pa+0.2,1),by=0.01)
   for (i in 1:length(ptrue)){
     p=ptrue[i]
-    rejectH0=pbinom(x$s-1, x$N, p, lower.tail = FALSE)
-    rejectHA=pbinom(x$r,x$N, p)
+
+    if ("r1" %in% names(x)){
+      rejectH0=prob_reject_H0(n1=x$n1,n2=x$n2,r1=x$r1,s =x$s ,p=p)
+      rejectHA=prob_reject_Ha(n1=x$n1,n2=x$n2,r1=x$r1,r2=x$r2,p=p)
+    }
+
+    if (!"r1" %in% names(x)){
+      rejectH0=pbinom(x$s-1, x$N, p, lower.tail = FALSE)
+      rejectHA=pbinom(x$r,x$N, p)
+    }
+
     Res_p1=c(p, rejectHA, 1-(rejectH0+rejectHA),rejectH0)
     Res=rbind(Res,Res_p1)
   }
@@ -74,3 +98,5 @@ PlotSargent <- function(x,
 
   return(as.data.frame(Res))
 }
+
+

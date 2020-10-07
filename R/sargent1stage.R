@@ -150,7 +150,7 @@ sargent1stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
                p0 = p0,
                pa = pa,
                res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])
-
+  class(res) <- c("sargent", "data.frame")
   res
 }
 

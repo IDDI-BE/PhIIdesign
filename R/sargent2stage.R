@@ -335,7 +335,8 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   res$lambda <- 1 - (res$eta + res$alpha)
   res$delta  <- 1 - (res$beta + res$pi)
   res <- data.table::setDF(res)
-  res <- cbind(res[, c("r1", "n1", "r2", "s", "n2", "N", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta", "eta", "pi", "lambda", "delta")],
+  res <- cbind(design_nr=1:dim(res)[1],
+               res[, c("r1", "n1", "r2", "s", "n2", "N", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta", "eta", "pi", "lambda", "delta")],
                p0 = p0, pa = pa,
                res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])
 
