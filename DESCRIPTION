@@ -24,4 +24,5 @@ Imports:
 LinkingTo: Rcpp
 Suggests:
     multichull,
-    tinytest
+    tinytest,
+    rmarkdown

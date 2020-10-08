@@ -2,6 +2,7 @@
 
 S3method(plot,"2stage")
 export(allsinglearm)
+export(app_start)
 export(exact1stage)
 export(fleming1stage)
 export(plotsargent)
