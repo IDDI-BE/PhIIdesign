@@ -14,9 +14,9 @@
 #' @references Sargent DJ, Chan V, Goldberg RM. A three-outcome design for phase II clinical trials. Control Clin Trials. 2001;22(2):117-125. doi:10.1016/s0197-2456(00)00115-x
 #' @export
 #' @examples
-#' prob_reject_Ha(n1=10,n2=20,r1=0,r2=4,p=0.25)
+#' sargent2stage_prob_reject_Ha(n1=10,n2=20,r1=0,r2=4,p=0.25)
 
-prob_reject_Ha<-function(n1,n2,r1,r2,p){
+sargent2stage_prob_reject_Ha<-function(n1,n2,r1,r2,p){
   i<-seq(r1+1,min(n1,r2))
   pbinom(q=r1,size=n1,prob=p,lower.tail=T)+sum(pbinom(q=r2-i,size=n2,prob=p,lower.tail=T)*dbinom(i,size=n1,prob=p))
 }

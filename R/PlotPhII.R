@@ -11,22 +11,32 @@
 #' @param xlab x-axis label of the graph, passed on to \code{plot}
 #' @param ylab y-axis label of the graph, passed on to \code{plot}
 #' @param ... other arguments passed on to \code{plot}
+#' @references Sargent DJ, Chan V, Goldberg RM. A three-outcome design for phase II clinical \cr
+#' trials. Control Clin Trials. 2001;22(2):117-125. doi:10.1016/s0197-2456(00)00115-x \cr
+#' Simon R. Optimal two-Stage Designs for Phase II Clinical Trials. \cr
+#' Control Clin Trials. 1989;10:1-10
 #' @export
 #' @examples
 #' \donttest{
-#' result_1<- sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
-#'                          eps = 0.005, N_min = 35, N_max = 50)
-#' plotsargent(result_1)
+#' fleming1 <- fleming1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2)
+#' plotPhII(fleming1)
+#' simon2<- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
+#'                      eps = 0.005, N_min = 0, N_max = 50)
+#' plotPhII(simon2)
 #'
-#' result_2 <- sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
+#' sargent1 <- sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
+#'                          eps = 0.005, N_min = 35, N_max = 50)
+#' plotPhII(sargent1)
+#'
+#' sargent2 <- sargent2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.1,
 #'                           eta = 0.8, pi = 0.8,
 #'                           eps = 0.005, N_min = 15, N_max = 30)
-#' plotsargent(result_2,design_nr=1)
+#' plotPhII(sargent2,design_nr=1)
 #' }
 
-plotsargent <- function(x,
+plotPhII <- function(x,
                         design_nr=1,
-                        main = "Sargent's 3-outcome 1-stage design",
+                        main = "PhII design",
                         xlab = "True response probability",
                         ylab, ...) {
 
@@ -38,14 +48,24 @@ plotsargent <- function(x,
   for (i in 1:length(ptrue)){
     p=ptrue[i]
 
-    if ("r1" %in% names(x)){
-      rejectH0=prob_reject_H0(n1=x$n1,n2=x$n2,r1=x$r1,s =x$s ,p=p)
-      rejectHA=prob_reject_Ha(n1=x$n1,n2=x$n2,r1=x$r1,r2=x$r2,p=p)
+    if ("r1" %in% names(x) & "s" %in% names(x) ){  # for Sargent 2-stage
+      rejectH0=sargent2stage_prob_reject_H0(n1=x$n1,n2=x$n2,r1=x$r1,s =x$s ,p=p)
+      rejectHA=sargent2stage_prob_reject_Ha(n1=x$n1,n2=x$n2,r1=x$r1,r2=x$r2,p=p)
     }
 
-    if (!"r1" %in% names(x)){
+    if (!"r1" %in% names(x) & "s" %in% names(x)){  # for Sargent 1-stage
       rejectH0=pbinom(x$s-1, x$N, p, lower.tail = FALSE)
       rejectHA=pbinom(x$r,x$N, p)
+    }
+
+    if (!"r1" %in% names(x) & !"s" %in% names(x)){  # for Fleming 1-stage
+      rejectHA=pbinom(x$r,x$n, p)
+      rejectH0=1-rejectHA
+    }
+
+    if ("r1" %in% names(x) & !"s" %in% names(x)){  # For Simon 2-stage
+      rejectHA=simon2stage_prob_reject_Ha(n1=x$n1,n2=x$n2,r1=x$r1,r=x$r2,p=p)
+      rejectH0=1-rejectHA
     }
 
     Res_p1=c(p, rejectHA, 1-(rejectH0+rejectHA),rejectH0)

@@ -88,7 +88,8 @@ fleming1stage.default <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005)
   }
 
   alpha_temp <- 1 - pbinom(q = r_temp, size = n, prob = p0, lower.tail = T)
-  res <- data.frame(n = n,
+  res <- data.frame(design_nr=1,
+                    n = n,
                     r = r_temp,
                     alpha = alpha_temp,
                     beta = beta_temp,

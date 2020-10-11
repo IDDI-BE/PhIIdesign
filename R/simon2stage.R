@@ -302,7 +302,8 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
   res <- data.table::setnames(res,
                               old = c("alpha_temp", "beta_temp"),
                               new = c("alpha", "beta"))
-  res <- cbind(res[, c("r1", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta")],
+  res <- cbind(design_nr=1:dim(res)[1],
+               res[, c("r1", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta")],
                p0 = p0, pa = pa,
                res[, c("alpha_param", "beta_param")])
   res <- data.table::setnames(res,
