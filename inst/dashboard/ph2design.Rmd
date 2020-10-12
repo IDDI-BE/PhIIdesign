@@ -41,6 +41,7 @@ selectInput(inputId = "ui_design", label = "Statistical design",
 actionBttn(inputId = "ui_start", label = "Start calculation", icon = icon(name = "play", lib = "font-awesome"), 
            color = "default", style = "material-flat", size = "md")
 dlg <- modalDialog("TODO", "Bunch of user input which is different depending on type of design", easyClose = TRUE)
+
 observeEvent(input$ui_start, {
   showModal(dlg)
 })
@@ -50,7 +51,41 @@ observeEvent(input$ui_start, {
   Results
 -->
 
-## Row 1 {.tabset}
+## Inputs {data-height=200}
+
+### Type
+
+```{r}
+renderValueBox({
+  valueBox(value = input$ui_design, caption = "Design", color = "info")
+})
+```
+
+### Required sample size
+
+```{r}
+renderValueBox({
+  valueBox(value = "132", caption = "Required sample size", color = "success")
+})
+```
+
+
+### Inputs
+
+```{r}
+renderUI({
+  tags$p("Parameters",
+    tags$ul(
+      tags$li(sprintf("alpha: %s", "TODO")),
+      tags$li(sprintf("beta: %s", "TODO"))
+    )
+  )
+})
+```
+
+
+
+## Row 2 {.tabset}
 
 ### Visualisation 
 
@@ -75,7 +110,7 @@ output$uo_print <- renderPrint({
 ```
 
 
-##  Row 2 
+##  Row 3 
 
 ### Table
 
