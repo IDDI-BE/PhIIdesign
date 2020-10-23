@@ -13,12 +13,22 @@ runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
+library(PhIIdesign)
 library(flexdashboard)
 library(shiny)
 library(shinyWidgets)
+library(shinyBS)
 library(shinipsum)
 library(ggplot2)
+recode <- function (x, from, to) {
+    to[match(x, from)]
+  }
+# DB <- Rd_db("PhIIdesign")
+# DB <- data.frame(fun = sapply(DB, tools:::.Rd_get_metadata, kind = "name"),
+#                  description = sapply(DB, tools:::.Rd_get_metadata, kind = "description"), 
+#                  stringsAsFactors = FALSE)
 ```
+
 
 # Sample size design
 
@@ -33,6 +43,17 @@ Provide the type of design
 ```{r}
 selectInput(inputId = "ui_design", label = "Statistical design", 
             choices = c("2-stage Simon", "2-stage Sargent", "1-stage Exact", "1-stage Sargent", "1-stage Fleming"))
+bsTooltip(id = "ui_design", title = "Type of design", placement = "right", options = list(container = "body"))
+user_design <- reactive({
+  input$ui_design
+  settings <- list()
+  settings$design <- input$ui_design
+  settings$design_function <- recode(settings$design, 
+                                     from = c("2-stage Simon", "2-stage Sargent", "1-stage Exact", "1-stage Sargent", "1-stage Fleming"), 
+                                     to = c("simon2stage", "sargent2stage", "exact1stage", "sargent1stage", "fleming1stage"))
+  #settings$description <- subset(DB, fun %in% settings$design_function)$description
+  settings
+})
 ```
 
 <hr>
@@ -40,10 +61,117 @@ selectInput(inputId = "ui_design", label = "Statistical design",
 ```{r}
 actionBttn(inputId = "ui_start", label = "Start calculation", icon = icon(name = "play", lib = "font-awesome"), 
            color = "default", style = "material-flat", size = "md")
-dlg <- modalDialog("TODO", "Bunch of user input which is different depending on type of design", easyClose = TRUE)
+```
 
+```{r}
+inputsUI <- function(type){
+  if(type %in% c("sargent1stage", "sargent2stage")){
+    etapi <- wellPanel(id = "error_rates_eta_pi",
+                       numericInput(inputId = "eta", value = 0.8, label = "eta: P(reject Ha|H0)", min = 0, max = 1, step = 0.05),
+                       bsTooltip(id = "eta", title = "TODO", placement = "right"),
+                       numericInput(inputId = "pi", value = 0.8, label = "pi: P(reject H0|Ha)", min = 0, max = 1, step = 0.05),
+                       bsTooltip(id = "pi", title = "TODO", placement = "right"))  
+  }else{
+    etapi <- NULL
+  }
+  if(type %in% c("simon2stage", "sargent1stage", "sargent2stage")){
+    nminnmax <- tags$p(
+                       tags$h4(tags$b("Other")),
+                       fluidRow(
+                         column(3, numericInput(inputId = "N_min", value = 10, label = "minimum sample size", min = 0, max = 1000, step = 1)),
+                         column(3, numericInput(inputId = "N_max", value = 50, label = "maximum sample size", min = 0, max = 1000, step = 1))
+                       )
+                     )
+  }else{
+    nminnmax <- NULL
+  }
+  
+  dlg <- modalDialog(title = "Provide some parameters for the design", 
+                     actionBttn(inputId = "ui_start_designcalculation", label = "run and calculate the design", block = TRUE, color = "success"),
+                     #actionButton(inputId = "ui_start_designcalculation", label = "run and calculate the design", width = "100%"),
+                     bsTooltip(id = "p0", title = "probability of the uninteresting response (null hypothesis H0)", placement = "right"),
+                     bsTooltip(id = "pa", title = "probability of the interesting response (alternative hypothesis Ha)", placement = "right"),
+                     bsTooltip(id = "alpha", title = "Type I error rate P(reject H0|H0)", placement = "right"),
+                     bsTooltip(id = "beta", title = "Type II error rate P(reject Ha|Ha)", placement = "right"),
+                     tags$p(
+                       tags$h4(tags$b("Activitity / Tolerability of treatment")),
+                       tags$li("Probability of the ", tags$b("uninteresting"), "response (p0) - null hypothesis H0"),
+                       fluidRow(column(width = 1), column(width = 10, sliderInput(inputId = "p0", value = 0.1, label = "", min = 0, max = 1, step = 0.01, width = "100%"))),
+                       tags$li("Probability of the ", tags$b("interesting"), "response (pa) - alternative hypothesis Ha"),
+                       fluidRow(column(width = 1), column(width = 10, sliderInput(inputId = "pa", value = 0.3, label = "", min = 0, max = 1, step = 0.01, width = "100%")))
+                     ),
+                     tags$hr(),
+                     tags$p(
+                       tags$h4(tags$b("Error rates")),
+                       fluidRow(
+                         column(6,
+                                wellPanel(id = "error_rates_alpha_beta",
+                                          numericInput(inputId = "alpha", value = 0.05, label = "alpha: Type I error rate P(reject H0|H0)", min = 0, max = 1, step = 0.05),
+                                          numericInput(inputId = "beta", value = 0.2, label = "beta: Type II error rate P(reject Ha|Ha)", min = 0, max = 1, step = 0.05))
+                         ),
+                         column(6, etapi)
+                       )
+                       
+                     ),
+                     nminnmax,
+                     easyClose = FALSE, size  = "l", 
+                     footer = NULL)
+  dlg
+}
 observeEvent(input$ui_start, {
+  settings <- user_design()
+  #dlg <- modalDialog("User inputs", "Bunch of user input which is different depending on type of design", easyClose = TRUE)
+  dlg <- inputsUI(settings$design_function)
   showModal(dlg)
+})
+design_parameters <- reactive({
+  input$ui_design
+  settings <- list()
+  settings$ui_design
+  isolate(settings$design <- user_design()$design_function)
+  settings$args$p0 <- input$p0
+  settings$args$pa <- input$pa
+  settings$args$alpha <- input$alpha
+  settings$args$beta <- input$beta
+  if(settings$design %in% c("sargent1stage", "sargent2stage")){
+    settings$args$eta <- input$eta
+    settings$args$pi <- input$pi
+  }
+  if(settings$design %in% c("simon2stage", "sargent2stage", "sargent1stage")){
+    settings$args$N_min <- input$N_min
+    settings$args$N_max <- input$N_max
+  }
+  settings
+})
+design_results <- eventReactive(input$ui_start_designcalculation, {
+  settings <- design_parameters()
+  removeModal()
+  showModal({
+    modalDialog(title = "Message", 
+                "Calculating the design", tags$br(),
+                "Please wait, this popup will close automatically when finished.", 
+                easyClose = FALSE, footer = NULL)
+  })
+  ## Do the calculation and fail gracefully in case of wrong user input
+  success <- try({
+    stats <- do.call(what = settings$design, args = settings$args)  
+  })
+  removeModal()
+  if(inherits(success, "try-error")){
+    show_alert(
+      title = "Error",
+      text = as.character(success),
+      type = "error"
+    )
+    out <- list(success = !inherits(success, "try-error"),
+                settings = settings) 
+  }else{
+    out <- list(success = !inherits(success, "try-error"),
+                stats = stats, 
+                settings = settings)  
+  }
+  print(out)
+  out
 })
 ```
 
@@ -65,20 +193,36 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-  valueBox(value = "132", caption = "Required sample size", color = "success")
+  calculations <- design_results()
+  if(calculations$success){
+    stats <- calculations$stats
+    names(stats) <- tolower(names(stats))
+    n <- head(stats$n, 1)
+    valueBox(value = n, caption = "Required sample size", color = "success")
+  }
 })
 ```
 
 
-### Inputs
+### 
 
 ```{r}
 renderUI({
-  tags$p("Parameters",
-    tags$ul(
-      tags$li(sprintf("alpha: %s", "TODO")),
-      tags$li(sprintf("beta: %s", "TODO"))
-    )
+  settings <- design_parameters()
+  settings <- settings$args
+  if("N_min" %in% names(settings) && "N_max" %in% names(settings)){
+    settings[["Nmin-Nmax"]] <- paste(settings$N_min, settings$N_max, sep = "-")  
+  }
+  settings <- settings[intersect(c("Nmin-Nmax", "p0", "pa", "alpha", "beta", "eta", "pi"), names(settings))]
+  tags$p(
+    "Design parameters:",
+   tags$ul(
+      Map(key = names(settings), value = settings, f = function(key, value){
+        tags$li(key, ":", value)  
+      })
+      #tags$li(sprintf("alpha: %s", "TODO")),
+      #tags$li(sprintf("beta: %s", "TODO"))
+   ) 
   )
 })
 ```
@@ -92,9 +236,16 @@ renderUI({
 ```{r}
 plotOutput("uo_plot")
 output$uo_plot <- renderPlot({
-  input$ui_start
-  plt <- random_ggplot(type = "col") + labs(title = "Random plot") + theme_bw()
-  plt
+  calculations <- design_results()
+  if(calculations$success){
+    #plt <- random_ggplot(type = "col") + labs(title = "Random plot") + theme_bw()
+    #plt
+    #plot(calculations$stats)
+    if(calculations$settings$design %in% c("simon2stage", "sargent2stage", "sargent1stage", "fleming1stage")){
+      plotPhII(calculations$stats)  
+    }
+    
+  }
 })
 ```
 
@@ -102,23 +253,29 @@ output$uo_plot <- renderPlot({
 ### R output
 
 ```{r}
-textOutput("uo_print")
+verbatimTextOutput("uo_print")
 output$uo_print <- renderPrint({
-  input$ui_start
-  random_print("model")
+  calculations <- design_results()
+  if(calculations$success){
+    #random_print("model")
+    calculations$stats
+  }
 })
 ```
 
 
-##  Row 3 
+##  Row 3 {data-height=250}
 
-### Table
+### Table  
 
 ```{r}
 tableOutput("uo_table")
 output$uo_table <- renderTable({
-  input$ui_start
-  random_table(10, 5)
+  calculations <- design_results()
+  if(calculations$success){
+    #random_table(10, 5)
+    calculations$stats
+  }
 })
 ```
 

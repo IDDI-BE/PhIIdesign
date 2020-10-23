@@ -8,7 +8,7 @@ app_start()
 }
 \description{
 Web application allowing to see designs.
-Note that this requires the rmarkdown, flexdashboard, shiny, shinyWidgets, ggplot2 and shinipsum packages to be installed
+Note that this requires the rmarkdown, flexdashboard, shiny, shinyWidgets, shinyBS, ggplot2 and shinipsum packages to be installed
 }
 \examples{
 \dontrun{
@@ -16,6 +16,7 @@ library(rmarkdown)
 library(flexdashboard)
 library(shiny)
 library(shinyWidgets)
+library(shinyBS)
 library(shinipsum)
 library(ggplot2)
 app_start()

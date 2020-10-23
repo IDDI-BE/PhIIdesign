@@ -1,7 +1,7 @@
 
 #' @title Launch Shiny app for Phase II clinical trials
 #' @description Web application allowing to see designs.
-#' Note that this requires the rmarkdown, flexdashboard, shiny, shinyWidgets, ggplot2 and shinipsum packages to be installed
+#' Note that this requires the rmarkdown, flexdashboard, shiny, shinyWidgets, shinyBS, ggplot2 and shinipsum packages to be installed
 #' @export
 #' @examples
 #' \dontrun{
@@ -9,6 +9,7 @@
 #' library(flexdashboard)
 #' library(shiny)
 #' library(shinyWidgets)
+#' library(shinyBS)
 #' library(shinipsum)
 #' library(ggplot2)
 #' app_start()
