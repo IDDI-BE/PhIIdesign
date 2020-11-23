@@ -111,19 +111,19 @@ including first stage and second stage cutoff values for futility (r1 and r2) an
 <p>including first stage and second stage cutoff values for futility (r1 and r2) and efficacy (s)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sargent2stage_R</span>(
-  <span class='kw'>p0</span>,
-  <span class='kw'>pa</span>,
-  <span class='kw'>alpha</span>,
-  <span class='kw'>beta</span>,
-  <span class='kw'>eta</span>,
-  <span class='kw'>pi</span>,
-  eps = <span class='fl'>0.005</span>,
-  <span class='kw'>N_min</span>,
-  <span class='kw'>N_max</span>,
-  <span class='kw'>alloc</span>,
-  <span class='kw'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>sargent2stage_R</span><span class='op'>(</span>
+  <span class='va'>p0</span>,
+  <span class='va'>pa</span>,
+  <span class='va'>alpha</span>,
+  <span class='va'>beta</span>,
+  <span class='va'>eta</span>,
+  <span class='va'>pi</span>,
+  eps <span class='op'>=</span> <span class='fl'>0.005</span>,
+  <span class='va'>N_min</span>,
+  <span class='va'>N_max</span>,
+  <span class='va'>alloc</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -225,12 +225,12 @@ including first stage and second stage cutoff values for futility (r1 and r2) an
 <p>alloc &gt;=1 (more patients in the experimental arm)</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='fu'>sargent2stage_R</span>(
-  p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.15</span>, eta = <span class='fl'>0.8</span>, pi = <span class='fl'>0.8</span>, eps = <span class='fl'>0.005</span>,
-  N_min = <span class='fl'>88</span>, N_max = <span class='fl'>90</span>, alloc = <span class='fl'>1</span>, type = <span class='st'>"normal"</span>
-)
-}
+    <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
+<span class='fu'>sargent2stage_R</span><span class='op'>(</span>
+  p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.15</span>, eta <span class='op'>=</span> <span class='fl'>0.8</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>, eps <span class='op'>=</span> <span class='fl'>0.005</span>,
+  N_min <span class='op'>=</span> <span class='fl'>88</span>, N_max <span class='op'>=</span> <span class='fl'>90</span>, alloc <span class='op'>=</span> <span class='fl'>1</span>, type <span class='op'>=</span> <span class='st'>"normal"</span>
+<span class='op'>)</span>
+<span class='op'>}</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

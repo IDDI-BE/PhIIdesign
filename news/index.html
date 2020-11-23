@@ -103,6 +103,57 @@
       
     </div>
 
+    <div id="changes-in-phiidesign-version-02" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-in-phiidesign-version-02" class="anchor"></a>CHANGES IN PhIIdesign VERSION 0.2</h2>
+<ul>
+<li>Added tinytest unit tests for
+<ul>
+<li>fleming1stage</li>
+<li>exact1stage</li>
+<li>sargent1stage</li>
+<li>sargent2stage</li>
+<li>simon2stage</li>
+</ul>
+</li>
+<li>Added website</li>
+<li>Added continuous integration using github workflows</li>
+<li>Makes sure R CMD check runs fine</li>
+<li>Added benchmarking script</li>
+<li>Make documentation consistent, put the commented examples which were in 0.1 code as examples in the functions + add example datasets of settings as datasets in the package</li>
+<li>Split up simon2stage in calculation and plotting</li>
+<li>Added speedier variant of
+<ul>
+<li>fleming1stage, using Rcpp - speedup x17
+<ul>
+<li>addded fleming1stage_multiple which uses this speedup and make calling the function for several settings more easy</li>
+</ul>
+</li>
+<li>exact1stage, using Rcpp - speedup x40
+<ul>
+<li>added exact1stage_multiple which uses this speedup and make calling the function for several settings more easy</li>
+</ul>
+</li>
+<li>sargent1stage, using Rcpp - speedup 14% due to use of sargent1stage_N_r_s
+<ul>
+<li>sargent1stage uses this speedup and make calling the function for several settings more easy</li>
+</ul>
+</li>
+<li>simon2stage, using lookup - speedup x4</li>
+<li>sargent2stage, using lookup similar as simon2stage - speedup x4</li>
+<li>plots of probability of success e.g.</li>
+</ul>
+</li>
+<li>Added allsinglearm</li>
+</ul>
+</div>
+    <div id="changes-in-phiidesign-version-01" class="section level2">
+<h2 class="hasAnchor">
+<a href="#changes-in-phiidesign-version-01" class="anchor"></a>CHANGES IN PhIIdesign VERSION 0.1</h2>
+<ul>
+<li>Initial version of the package</li>
+</ul>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

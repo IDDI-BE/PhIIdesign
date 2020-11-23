@@ -115,14 +115,14 @@ if the input is an object returned by <code><a href='sargent2stage.html'>sargent
 the design number</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotPhII</span>(
-  <span class='kw'>x</span>,
-  design_nr = <span class='fl'>1</span>,
-  main = <span class='st'>"PhII design"</span>,
-  xlab = <span class='st'>"True response probability"</span>,
-  <span class='kw'>ylab</span>,
-  <span class='kw'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>plotPhII</span><span class='op'>(</span>
+  <span class='va'>x</span>,
+  design_nr <span class='op'>=</span> <span class='fl'>1</span>,
+  main <span class='op'>=</span> <span class='st'>"PhII design"</span>,
+  xlab <span class='op'>=</span> <span class='st'>"True response probability"</span>,
+  <span class='va'>ylab</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -163,8 +163,8 @@ Control Clin Trials. 1989;10:1-10</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='kw'>fleming1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fleming1stage.html'>fleming1stage</a></span>(p0 = <span class='fl'>0.45</span>, pa = <span class='fl'>0.7</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.2</span>)
-<span class='fu'>plotPhII</span>(<span class='kw'>fleming1</span>)
+<span class='va'>fleming1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fleming1stage.html'>fleming1stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.45</span>, pa <span class='op'>=</span> <span class='fl'>0.7</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
+<span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>fleming1</span><span class='op'>)</span>
 </div><div class='img'><img src='plotPhII-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    Truep    ProbrejHA Probnodec   ProbrejH0
 #&gt; 1   0.35 0.9970618321         0 0.002938168
 #&gt; 2   0.36 0.9959267192         0 0.004073281
@@ -221,9 +221,9 @@ Control Clin Trials. 1989;10:1-10</p>
 #&gt; 53  0.87 0.0006948609         0 0.999305139
 #&gt; 54  0.88 0.0003629340         0 0.999637066
 #&gt; 55  0.89 0.0001765883         0 0.999823412
-#&gt; 56  0.90 0.0000789819         0 0.999921018</div><div class='input'><span class='kw'>simon2</span><span class='op'>&lt;-</span> <span class='fu'><a href='simon2stage.html'>simon2stage</a></span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.2</span>,
-                     eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>0</span>, N_max = <span class='fl'>50</span>)
-<span class='fu'>plotPhII</span>(<span class='kw'>simon2</span>)
+#&gt; 56  0.90 0.0000789819         0 0.999921018</div><div class='input'><span class='va'>simon2</span><span class='op'>&lt;-</span> <span class='fu'><a href='simon2stage.html'>simon2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,
+                     eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>0</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
+<span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>simon2</span><span class='op'>)</span>
 </div><div class='img'><img src='plotPhII-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    Truep   ProbrejHA Probnodec    ProbrejH0
 #&gt; 1   0.00 1.000000000         0 0.000000e+00
 #&gt; 2   0.01 0.999998263         0 1.736561e-06
@@ -276,9 +276,9 @@ Control Clin Trials. 1989;10:1-10</p>
 #&gt; 49  0.48 0.006718715         0 9.932813e-01
 #&gt; 50  0.49 0.005228705         0 9.947713e-01
 #&gt; 51  0.50 0.004039764         0 9.959602e-01</div><div class='input'>
-<span class='kw'>sargent1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent1stage.html'>sargent1stage</a></span>(p0 = <span class='fl'>0.2</span>, pa = <span class='fl'>0.35</span>, alpha = <span class='fl'>0.1</span>, beta = <span class='fl'>0.1</span>, eta = <span class='fl'>0.8</span>, pi = <span class='fl'>0.8</span>,
-                         eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>35</span>, N_max = <span class='fl'>50</span>)
-<span class='fu'>plotPhII</span>(<span class='kw'>sargent1</span>)
+<span class='va'>sargent1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent1stage.html'>sargent1stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.2</span>, pa <span class='op'>=</span> <span class='fl'>0.35</span>, alpha <span class='op'>=</span> <span class='fl'>0.1</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eta <span class='op'>=</span> <span class='fl'>0.8</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>,
+                         eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>35</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
+<span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>sargent1</span><span class='op'>)</span>
 </div><div class='img'><img src='plotPhII-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    Truep    ProbrejHA    Probnodec    ProbrejH0
 #&gt; 1   0.10 9.981709e-01 0.0013393325 0.0004897231
 #&gt; 2   0.11 9.961163e-01 0.0027329574 0.0011507657
@@ -326,10 +326,10 @@ Control Clin Trials. 1989;10:1-10</p>
 #&gt; 44  0.53 1.825167e-04 0.0004261706 0.9993913127
 #&gt; 45  0.54 1.114593e-04 0.0002745867 0.9996139540
 #&gt; 46  0.55 6.688577e-05 0.0001737713 0.9997593429</div><div class='input'>
-<span class='kw'>sargent2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent2stage.html'>sargent2stage</a></span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.3</span>, alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.1</span>,
-                          eta = <span class='fl'>0.8</span>, pi = <span class='fl'>0.8</span>,
-                          eps = <span class='fl'>0.005</span>, N_min = <span class='fl'>15</span>, N_max = <span class='fl'>30</span>)
-<span class='fu'>plotPhII</span>(<span class='kw'>sargent2</span>,design_nr=<span class='fl'>1</span>)
+<span class='va'>sargent2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent2stage.html'>sargent2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>,
+                          eta <span class='op'>=</span> <span class='fl'>0.8</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>,
+                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>15</span>, N_max <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span>
+<span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>sargent2</span>,design_nr<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
 </div><div class='img'><img src='plotPhII-4.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    Truep   ProbrejHA    Probnodec    ProbrejH0
 #&gt; 1   0.00 1.000000000 0.0000000000 0.000000e+00
 #&gt; 2   0.01 0.999952239 0.0000460247 1.736561e-06

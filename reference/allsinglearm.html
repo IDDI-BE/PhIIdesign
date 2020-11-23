@@ -109,7 +109,7 @@
     <p>This function calculates sample sizes of the Fleming 1-stage , Simon-2stage, Sargent's 1- and 2-stage design. calculations are performed jointly for different sets of proportions (p0, pA) and operating characteristics. All designs are summarized in 2 tables, 1 for one-stage designs (Fleming and sargent) and 1 for two-stage designs (Simon and sargent)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>allsinglearm</span>(<span class='kw'>p0</span>, <span class='kw'>pa</span>, <span class='kw'>alpha</span>, <span class='kw'>beta</span>, alpha2 = <span class='kw'>alpha</span>, <span class='kw'>beta2</span>, <span class='kw'>pi</span>, <span class='kw'>eta</span>, eps = <span class='fl'>0.005</span>)</pre>
+    <pre class="usage"><span class='fu'>allsinglearm</span><span class='op'>(</span><span class='va'>p0</span>, <span class='va'>pa</span>, <span class='va'>alpha</span>, <span class='va'>beta</span>, alpha2 <span class='op'>=</span> <span class='va'>alpha</span>, <span class='va'>beta2</span>, <span class='va'>pi</span>, <span class='va'>eta</span>, eps <span class='op'>=</span> <span class='fl'>0.005</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -154,8 +154,8 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>allsinglearm</span>(p0 = <span class='fl'>0.1</span>, pa = <span class='fl'>0.7</span>,
-             alpha = <span class='fl'>0.05</span>, beta = <span class='fl'>0.2</span>, beta2 = <span class='fl'>0.1</span>, pi = <span class='fl'>0.8</span>, eta = <span class='fl'>0.8</span>)
+    <pre class="examples"><div class='input'><span class='fu'>allsinglearm</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.7</span>,
+             alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>, beta2 <span class='op'>=</span> <span class='fl'>0.1</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>, eta <span class='op'>=</span> <span class='fl'>0.8</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; <span class='warning'>Warning: NaNs produced</span></div><div class='output co'>#&gt; [[1]]
 #&gt;      p0  pa alpha beta N_Flem R_Flem alpha beta  pi eta N_Sar S_Sar R_Sar
 #&gt; one 0.1 0.7  0.05  0.2      1      4  0.05  0.1 0.8 0.8     3     1     1
