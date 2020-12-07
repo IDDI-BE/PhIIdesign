@@ -29,7 +29,7 @@ for (p in 1:length(p0)){
       #-----------------------
       flem<-fleming1stage(p0=p0[p],pa=pa[p], alpha=alpha[a], beta=beta[b], eps = eps)
       sim<-simon2stage(p0=p0[p],pa=pa[p], alpha=alpha[a], beta=beta[b], eps = eps,
-                      N_min=(flem$n-5), N_max=(flem$n+15))
+                      N_min=max(0,(flem$n-5)), N_max=(flem$n+15))
       sim<-(subset(sim,sim$OPT=="Optimal"))
       sar1<-(sargent1stage(p0=p0[p],pa=pa[p], alpha=alpha2[a], beta=beta2[b],
                           pi=pi[b],eta=eta[a],eps = eps, N_min=max(3,(flem$n-15)), N_max=(flem$n+15)))

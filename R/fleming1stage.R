@@ -42,6 +42,7 @@
 #'   fleming1stage(p0 = p0, pa = pa, alpha = 0.05, beta = 0.2)
 #' }, SIMPLIFY = FALSE)
 #' samplesize <- do.call(rbind, samplesize)
+
 fleming1stage <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005){
   stopifnot(length(eps) == 1)
   stopifnot(all(p0 >= 0) && all(p0 <= 1))

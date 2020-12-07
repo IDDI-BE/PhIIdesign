@@ -27,4 +27,4 @@ expect_equivalent(
 
 expect_equivalent(
   current = simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "original"),
-  target = simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "speedup"))
+  target  = simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "speedup"))

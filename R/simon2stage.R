@@ -44,6 +44,8 @@ probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #' @param eps tolerance default value = 0.005
 #' @param N_min minimum sample size value for grid search
 #' @param N_max maximum sample size value for grid search
+#' @param int pre-specified interim analysis percentage information
+#' @param int_window window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value
 #' @param admissible character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull
 #' @param method either 'original' or 'speedup' for the original implementation or a more speedier version
 #' @param ... arguments passed on to plot in case admissible is set to CHull
@@ -80,13 +82,17 @@ probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #'                           eps = 0.005, N_min = 0, N_max = 50)
 #' plot(samplesize)
 #' \donttest{
+#' samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
+#'                           eps = 0.005, N_min = 0, N_max = 50,int=0.33,int_window=0.025)
+#' plot(samplesize)
+#' }
+#' \donttest{
 #' if(require(multichull, quietly = TRUE)){
 #' library(multichull)
 #' simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
 #'             eps = 0.005, N_min = 0, N_max = 200, admissible = "CHull")
 #' }
 #' }
-#'
 #' \donttest{
 #' ## Example 1
 #' test <- data.frame(p0 = c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
@@ -116,29 +122,41 @@ probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #' })
 #' optimal_minimax <- data.table::rbindlist(optimal_minimax)
 #' }
-simon2stage <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
+
+simon2stage <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max, int=0, int_window=0.025,
                         admissible = c("chull", "CHull"), method = c("speedup", "original"), ...){
+
   method <- match.arg(method)
   admissible <- match.arg(admissible)
+
   if(length(p0) > 1 && length(pa) > 1){
-    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max,
-                      FUN = function(null, alternative, alpha, beta, eps, N_min, N_max, admissible, method, ...){
-                        simon2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, method = method, ...)
+    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
+                      FUN = function(null, alternative, alpha, beta, eps, N_min, N_max, int, int_window, admissible, method, ...){
+                        simon2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
+                                            admissible = admissible, method = method, ...)
                       }, MoreArgs = list(admissible = admissible, method = method), ...,
                       SIMPLIFY = FALSE)
   }else{
-    results <- simon2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, method = method, ...)
+    results <- simon2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
+                                   admissible = admissible, method = method, ...)
   }
 }
-simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
+
+simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max, int=0, int_window=0.025,
                                 admissible = c("chull", "CHull"), method = c("speedup", "original"), ...) {
   method <- match.arg(method)
   admissible <- match.arg(admissible)
+
+  # WARNING MESSAGES
   if (pa < p0) {
     stop("p0 should be smaller than pa")
   }
+
+  if (N_min <0 ) {
+    stop("N_min should be >=0")
+  }
   # R CMD check happiness
-  EN.p0 <- EN.p0_N_min <- EN.p0_min <- MIN <- N <- OPT <- NULL
+  EN.p0 <- EN.p0_N_min <- EN.p0_N_n1_min <- EN.p0_min <- EN.p0_N_min_int <- MIN <- N <- OPT <- NULL
   rowid <- N <- r <- n1 <- n2 <- r2 <- NULL
 
   #----------------------------------------------------------------------------------------------------------#
@@ -151,7 +169,7 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
   # should be lower in the second stage, compared to a 1-stage design, as some cases already rejected at first stage,
   # meaning that an rmax, calculated using a 1-stage design, is a good maximum
   #------------------------------------------------------------------------------------------------------------
-  ## TODO : shouldn't this be cbind(N = a, rtemp = min(1,a):a)
+
   res0 <- lapply(N_min:N_max, FUN=function(N) cbind(N = N, rtemp = 1:N))
   res0 <- do.call(rbind, res0)
   res0 <- data.frame(res0)
@@ -259,17 +277,25 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
 
   res5 <- data.table::setDT(res5)
 
-  res5 <- res5[, N_min := min(N)]
-  res5 <- res5[, EN.p0_min := min(EN.p0)]
-  res5 <- res5[, EN.p0_N_min := min(EN.p0), by = list(N)]
-  res6 <- res5[EN.p0 == EN.p0_N_min, ]
+  res5 <- res5[, N_min          := min(N)]
+  res5 <- res5[, EN.p0_min      := min(EN.p0)]
+  res5 <- res5[, EN.p0_N_min    := min(EN.p0) , by = list(N)]
+  res5 <- res5[, EN.p0_N_n1_min := min(EN.p0) , by = list(N,n1)]
 
-  res6$OPT <- res6$MIN <- res6$ADMISS <- c("")
+  if (int>0){
+    res6_int <- res5[EN.p0 == EN.p0_N_n1_min & floor((int-int_window)*N)<=n1 & n1<=ceiling((int+int_window)*N), ]
+    res6_int <- res6_int[, EN.p0_N_min_int := min(EN.p0) , by = list(N)]
+    res6_int <- res6_int[EN.p0 == EN.p0_N_min_int   , ]
+    res6_int$INTERIM=int;
+  }
+
+  res6         <- res5[EN.p0 == EN.p0_N_min   , ]
+  res6$OPT     <- res6$MIN <- res6$ADMISS <- c("")
   res6$OPT[which(res6$EN.p0 == res6$EN.p0_min)] <- "Optimal"
   res6$MIN[which(res6$N == res6$N_min)] <- "Minimax" # Note: if multiple designs that meet the criteria for minimax:choose
   # design with minimal expected sample size under H0: "Optimal minimax design"
 
-  res6 <- setDF(res6)
+  res6 <- data.table::setDF(res6)
 
   # Get admissible designs
   y <- res6[, c("N", "EN.p0")]
@@ -289,6 +315,19 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
   res <- res6[res6$N >= min(res6$N[res6$MIN == "Minimax"]) & res6$N <= max(res6$N[res6$OPT == "Optimal"]), ]
   res$ADMISS[which((rownames(res) %in% c(con.ind)) & (res$N > res$N_min) & (res$EN.p0 > res$EN.p0_min) & (res$N < res$N[res$OPT == "Optimal"]))] <- "Admissible"
 
+  if (int>0){
+    res$EN_opt  <- "EN.p0_optimal"
+    res6_int<-res6_int[res6_int$N >= min(res6$N[res6$MIN == "Minimax"]) & res6_int$N <= max(res6$N[res6$OPT == "Optimal"]), ]
+    res<-merge(x = res, y = res6_int, by = c("N","n1","n2","r1","r2","alpha_temp","beta_temp","diff_beta","diff_alpha","alpha","beta","PET.p0","EN.p0","N_min","EN.p0_min","EN.p0_N_min","EN.p0_N_n1_min","rowid"), all = TRUE)
+
+    res$ADMISS[is.na(res$ADMISS)] <- "" # AFter merging: replace NA's with """
+    res$MIN   [is.na(res$MIN)   ] <- ""
+    res$OPT   [is.na(res$OPT)   ] <- ""
+    res$EN_opt[is.na(res$EN_opt)] <- ""
+  }
+
+
+
   # Calculate 1-2*alpha confidence interval, based on Koyama, Statistics in Medicine 2008
   res$eff <- paste0(res$r2 + 1, "/", res$N, " (", 100 * round((res$r2 + 1) / res$N, 3), "%)")
   CI <- mapply(a = res$r2 + 1, b = res$r1, c = res$n1, d = res$N,
@@ -302,10 +341,19 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max,
   res <- data.table::setnames(res,
                               old = c("alpha_temp", "beta_temp"),
                               new = c("alpha", "beta"))
+
+  if (int>0){
   res <- cbind(design_nr=1:dim(res)[1],
-               res[, c("r1", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta")],
+               res[, c("r1", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS","EN_opt","INTERIM", "alpha", "beta")],
                p0 = p0, pa = pa,
                res[, c("alpha_param", "beta_param")])
+  }
+  if (int==0){
+    res <- cbind(design_nr=1:dim(res)[1],
+                 res[, c("r1", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS","alpha", "beta")],
+                 p0 = p0, pa = pa,
+                 res[, c("alpha_param", "beta_param")])
+  }
   res <- data.table::setnames(res,
                               old = c("CI_low", "CI_high"),
                               new = c(paste0(100 - 2 * 100 * alpha, "%CI_low"), paste0(100 - 2 * 100 * alpha, "%CI_high")))

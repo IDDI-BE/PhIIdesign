@@ -12,6 +12,8 @@ simon2stage(
   eps = 0.005,
   N_min,
   N_max,
+  int = 0,
+  int_window = 0.025,
   admissible = c("chull", "CHull"),
   method = c("speedup", "original"),
   ...
@@ -31,6 +33,10 @@ simon2stage(
 \item{N_min}{minimum sample size value for grid search}
 
 \item{N_max}{maximum sample size value for grid search}
+
+\item{int}{pre-specified interim analysis percentage information}
+
+\item{int_window}{window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value}
 
 \item{admissible}{character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull}
 
@@ -80,13 +86,17 @@ samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
                           eps = 0.005, N_min = 0, N_max = 50)
 plot(samplesize)
 \donttest{
+samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
+                          eps = 0.005, N_min = 0, N_max = 50,int=0.33,int_window=0.025)
+plot(samplesize)
+}
+\donttest{
 if(require(multichull, quietly = TRUE)){
 library(multichull)
 simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
             eps = 0.005, N_min = 0, N_max = 200, admissible = "CHull")
 }
 }
-
 \donttest{
 ## Example 1
 test <- data.frame(p0 = c(0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
