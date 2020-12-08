@@ -126,9 +126,11 @@ three-outcome design that allows for three outcomes: reject \(H(0)\), reject \(H
   <span class='va'>beta</span>,
   <span class='va'>eta</span>,
   <span class='va'>pi</span>,
-  eps <span class='op'>=</span> <span class='fl'>0.005</span>,
+  eps <span class='op'>=</span> <span class='fl'>0</span>,
   <span class='va'>N_min</span>,
   <span class='va'>N_max</span>,
+  int <span class='op'>=</span> <span class='fl'>0</span>,
+  int_window <span class='op'>=</span> <span class='fl'>0.025</span>,
   admissible <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"chull"</span>, <span class='st'>"CHull"</span><span class='op'>)</span>,
   method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"speedup"</span>, <span class='st'>"original"</span><span class='op'>)</span>,
   <span class='va'>...</span>
@@ -174,6 +176,14 @@ three-outcome design that allows for three outcomes: reject \(H(0)\), reject \(H
       <td><p>maximum sample size value for grid search</p></td>
     </tr>
     <tr>
+      <th>int</th>
+      <td><p>pre-specified interim analysis percentage information</p></td>
+    </tr>
+    <tr>
+      <th>int_window</th>
+      <td><p>window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value</p></td>
+    </tr>
+    <tr>
       <th>admissible</th>
       <td><p>character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull</p></td>
     </tr>
@@ -195,6 +205,9 @@ three-outcome design that allows for three outcomes: reject \(H(0)\), reject \(H
 <li><p>N: total number of patients=n1+n2</p></li>
 <li><p>r1: critical value for the first stage</p></li>
 <li><p>r2: critical value for the second stage</p></li>
+<li><p>eff: s/N</p></li>
+<li><p>90<!-- %CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154; --></p></li>
+<li><p>90<!-- %CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154; --></p></li>
 <li><p>EN.p0: expected sample size under H0</p></li>
 <li><p>PET.p0: probability of terminating the trial at the end of the first stage under H0</p></li>
 <li><p>MIN: column indicating if the design is the minimal design</p></li>
@@ -238,9 +251,9 @@ if (x1+x2)&gt;=s --&gt; efficacy <br /></p>
                             N_min <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>N_min</span>, N_max <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>N_max</span><span class='op'>)</span>
 <span class='va'>optimal</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>samplesize</span>, FUN<span class='op'>=</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>OPT</span> <span class='op'>==</span> <span class='st'>"Optimal"</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>optimal</span> <span class='op'>&lt;-</span> <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span><span class='op'>(</span><span class='va'>optimal</span><span class='op'>)</span>
-<span class='va'>minimax</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>samplesize</span>, FUN<span class='op'>=</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>MIN</span> <span class='op'>==</span> <span class='st'>"Minimax"</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='message'>Column 9 ['90%CI_low'] of item 2 is missing in item 1. Use fill=TRUE to fill with NA (NULL for list columns), or use.names=FALSE to ignore column names. use.names='check' (default from v1.12.2) emits this message and proceeds as if use.names=FALSE for  backwards compatibility. See news item 5 in v1.12.2 for options to control this message.</span></div><div class='input'><span class='va'>minimax</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>samplesize</span>, FUN<span class='op'>=</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>MIN</span> <span class='op'>==</span> <span class='st'>"Minimax"</span><span class='op'>)</span><span class='op'>)</span>
 <span class='va'>minimax</span> <span class='op'>&lt;-</span> <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span><span class='op'>(</span><span class='va'>minimax</span><span class='op'>)</span>
-<span class='co'># }</span>
+</div><div class='output co'>#&gt; <span class='message'>Column 9 ['90%CI_low'] of item 2 is missing in item 1. Use fill=TRUE to fill with NA (NULL for list columns), or use.names=FALSE to ignore column names. use.names='check' (default from v1.12.2) emits this message and proceeds as if use.names=FALSE for  backwards compatibility. See news item 5 in v1.12.2 for options to control this message.</span></div><div class='input'><span class='co'># }</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
