@@ -9,7 +9,7 @@ simon2stage(
   pa,
   alpha,
   beta,
-  eps = 0.005,
+  eps = 0,
   N_min,
   N_max,
   int = 0,

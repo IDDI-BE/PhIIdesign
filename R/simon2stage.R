@@ -123,7 +123,7 @@ probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #' optimal_minimax <- data.table::rbindlist(optimal_minimax)
 #' }
 
-simon2stage <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max, int=0, int_window=0.025,
+simon2stage <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025,
                         admissible = c("chull", "CHull"), method = c("speedup", "original"), ...){
 
   method <- match.arg(method)
@@ -142,7 +142,7 @@ simon2stage <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max, int=0, i
   }
 }
 
-simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max, int=0, int_window=0.025,
+simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025,
                                 admissible = c("chull", "CHull"), method = c("speedup", "original"), ...) {
   method <- match.arg(method)
   admissible <- match.arg(admissible)
@@ -155,9 +155,9 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0.005, N_min, N_max, 
   if (N_min <0 ) {
     stop("N_min should be >=0")
   }
-  # R CMD check happiness
+
   EN.p0 <- EN.p0_N_min <- EN.p0_N_n1_min <- EN.p0_min <- EN.p0_N_min_int <- MIN <- N <- OPT <- NULL
-  rowid <- N <- r <- n1 <- n2 <- r2 <- NULL
+  rowid <- n1 <- n2 <- r <- r2 <- NULL
 
   #----------------------------------------------------------------------------------------------------------#
   # Get all possible scenarios for N, n1, r1, r2 and n2                                                      #

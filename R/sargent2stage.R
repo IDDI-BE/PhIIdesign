@@ -69,6 +69,8 @@ probhaAll <- function(n1, n2, s, b_p0, B_p0, B_p0_ut, b_pa, B_pa, B_pa_ut){
 #' @param eps tolerance default value = 0.005
 #' @param N_min minimum sample size value for grid search
 #' @param N_max maximum sample size value for grid search
+#' @param int pre-specified interim analysis percentage information
+#' @param int_window window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value
 #' @param admissible character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull
 #' @param method either 'original' or 'speedup' for the original implementation or a more speedier version
 #' @param ... arguments passed on to plot in case admissible is set to CHull
@@ -79,6 +81,9 @@ probhaAll <- function(n1, n2, s, b_p0, B_p0, B_p0_ut, b_pa, B_pa, B_pa_ut){
 #' \item N: total number of patients=n1+n2
 #' \item r1: critical value for the first stage
 #' \item r2: critical value for the second stage
+#' \item eff: s/N
+#' \item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
+#' \item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
 #' \item EN.p0: expected sample size under H0
 #' \item PET.p0: probability of terminating the trial at the end of the first stage under H0
 #' \item MIN: column indicating if the design is the minimal design
@@ -121,30 +126,42 @@ probhaAll <- function(n1, n2, s, b_p0, B_p0, B_p0_ut, b_pa, B_pa, B_pa_ut){
 #' minimax <- lapply(samplesize, FUN=function(x) subset(x, MIN == "Minimax"))
 #' minimax <- data.table::rbindlist(minimax)
 #' }
-sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), method = c("speedup", "original"), ...){
-  admissible <- match.arg(admissible)
+
+sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, N_max, int=0, int_window=0.025,
+                          admissible = c("chull", "CHull"), method = c("speedup", "original"), ...){
+
   method <- match.arg(method)
+  admissible <- match.arg(admissible)
+
   if(length(p0) > 1 && length(pa) > 1){
-    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max,
-                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max, admissible, method, ...){
-                        sargent2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, method = method, ...)
+    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
+                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max, int, int_window, admissible, method, ...){
+                        sargent2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
+		                              admissible = admissible, method = method, ...)
                       }, MoreArgs = list(admissible = admissible, method = method), ...,
                       SIMPLIFY = FALSE)
   }else{
-    results <- sargent2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, admissible = admissible, method = method, ...)
+    results <- sargent2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
+                                   admissible = admissible, method = method, ...)
   }
 }
 
-sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, admissible = c("chull", "CHull"), method = c("speedup", "original"), ...) {
+sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, N_max, int=0, int_window=0.025,
+                                  admissible = c("chull", "CHull"), method = c("speedup", "original"), ...) {
   method <- match.arg(method)
   admissible <- match.arg(admissible)
+
+  # WARNING MESSAGES
   if (pa < p0) {
     stop("p0 should be smaller than pa")
   }
 
-  # Define variables as a NULL value (to avoid 'notes' in devtools package check)
-  n1 <- n2 <- r <- r2 <- rowid <- s <- NULL
-  EN.p0 <- EN.p0_N_min <- EN.p0_min <- MIN <- N <- OPT <- NULL
+  if (N_min <0 ) {
+    stop("N_min should be >=0")
+  }
+
+  EN.p0 <- EN.p0_N_min <- EN.p0_N_n1_min <- EN.p0_min <- EN.p0_N_min_int <- MIN <- N <- OPT <- NULL
+  rowid <- n1 <- n2 <- r <- r2 <- s <- NULL
 
   #----------------------------------------------------------------------------------------------------------#
   # Get all possible scenarios for N, n1, r1, r2 and n2                                                      #
@@ -300,12 +317,22 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   res5 <- res5[, N_min := min(N)]
   res5 <- res5[, EN.p0_min := min(EN.p0)]
   res5 <- res5[, EN.p0_N_min := min(EN.p0), by = N]
+  res5 <- res5[, EN.p0_N_n1_min := min(EN.p0) , by = list(N,n1)]
+
+  if (int>0){
+    res6_int <- res5[EN.p0 == EN.p0_N_n1_min & floor((int-int_window)*N)<=n1 & n1<=ceiling((int+int_window)*N), ]
+    res6_int <- res6_int[, EN.p0_N_min_int := min(EN.p0) , by = list(N)]
+    res6_int <- res6_int[EN.p0 == EN.p0_N_min_int   , ]
+    res6_int$INTERIM=int;
+  }
   res6 <- res5[EN.p0 == EN.p0_N_min, ]
 
   res6$OPT <- res6$MIN <- res6$ADMISS <- c("")
   res6$OPT[which(res6$EN.p0 == res6$EN.p0_min)] <- "Optimal"
   res6$MIN[which(res6$N == res6$N_min)] <- "Minimax" # Note: if multiple designs that meet the criteria for minimax:choose
   # design with minimal expected sample size under H0: "Optimal minimax design"
+
+  res6 <- data.table::setDF(res6)
 
   # Get admissible designs
   y <- res6[, c("N", "EN.p0")]
@@ -326,6 +353,23 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   res <- res6[res6$N >= min(res6$N[res6$MIN == "Minimax"]) & res6$N <= max(res6$N[res6$OPT == "Optimal"]), ]
   res$ADMISS[which((rownames(res) %in% c(con.ind)) & (res$N > res$N_min) & (res$EN.p0 > res$EN.p0_min) & (res$N < unique(res$N[res$OPT == "Optimal"])))] <- "Admissible"
 
+  if (int>0){
+    res$EN_opt  <- "EN.p0_optimal"
+    res6_int<-res6_int[res6_int$N >= min(res6$N[res6$MIN == "Minimax"]) & res6_int$N <= max(res6$N[res6$OPT == "Optimal"]), ]
+    res<-merge(x = res, y = res6_int, by = c("N","n1","n2","r1","s","r2","beta_temp","eta_temp","rowid","alpha_temp","pi_temp","diff_pi","diff_alpha","alpha","beta","eta","pi",
+                                             "PET.p0","EN.p0","N_min","EN.p0_min","EN.p0_N_min","EN.p0_N_n1_min"), all = TRUE)
+
+    res$ADMISS[is.na(res$ADMISS)] <- "" # AFter merging: replace NA's with """
+    res$MIN   [is.na(res$MIN)   ] <- ""
+    res$OPT   [is.na(res$OPT)   ] <- ""
+    res$EN_opt[is.na(res$EN_opt)] <- ""
+  }
+  # Calculate 1-2*alpha confidence interval, based on Koyama, Statistics in Medicine 2008
+  res$eff <- paste0(res$s, "/", res$N, " (", 100 * round((res$s) / res$N, 3), "%)")
+  CI <- mapply(a = res$s, b = res$r1, c = res$n1, d = res$N,
+               FUN = function(a, b, c, d) OneArmPhaseTwoStudy::get_CI(k = a, r1 = as.numeric(b), n1 = as.numeric(c), n = as.numeric(d), alpha = alpha, precision = 3))
+  res$CI_low  <- 100 * unlist(CI[rownames(CI) == "CI_low", ])
+  res$CI_high <- 100 * unlist(CI[rownames(CI) == "CI_high", ])
   res <- data.table::setnames(res,
                               old = c("alpha", "beta", "eta", "pi"),
                               new = c("alpha_param", "beta_param", "eta_param", "pi_param"))
@@ -335,11 +379,24 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   res$lambda <- 1 - (res$eta + res$alpha)
   res$delta  <- 1 - (res$beta + res$pi)
   res <- data.table::setDF(res)
-  res <- cbind(design_nr=1:dim(res)[1],
-               res[, c("r1", "n1", "r2", "s", "n2", "N", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta", "eta", "pi", "lambda", "delta")],
-               p0 = p0, pa = pa,
-               res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])
 
+  if (int>0){
+	  res <- cbind(design_nr=1:dim(res)[1],
+	               res[, c("r1", "n1", "r2", "s", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "EN_opt","INTERIM", "alpha", "beta", "eta", "pi", "lambda", "delta")],
+	               p0 = p0, pa = pa,
+	               res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])
+	  }
+
+  if (int==0){
+	  res <- cbind(design_nr=1:dim(res)[1],
+	               res[, c("r1", "n1", "r2", "s", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta", "eta", "pi", "lambda", "delta")],
+	               p0 = p0, pa = pa,
+	               res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])
+	  }
+
+  res <- data.table::setnames(res,
+                              old = c("CI_low", "CI_high"),
+                              new = c(paste0(100 - 2 * 100 * alpha, "%CI_low"), paste0(100 - 2 * 100 * alpha, "%CI_high")))
   attr(res, "inputs") <- list(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max)
   class(res) <- c("2stage", "sargent", "data.frame")
   res
@@ -371,3 +428,6 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
 #
 # test_M<- data.frame(do.call("rbind",test_list_M))
 # test_M<-test_M[,c("p0","pa","alpha_param","beta_param","eta_param","pi_param","alpha","beta","eta","pi","n1","n2","r1","r2","s","N","EN.p0")]
+
+
+p0 = 0.1; pa = 0.3; alpha = 0.05; beta = 0.1;eta = 0.8; pi = 0.8;eps = 0.005; N_min = 15; N_max = 30; int=0.33; int_window=0.025

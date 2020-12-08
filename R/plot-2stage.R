@@ -26,20 +26,20 @@ plot.2stage <- function(x,
   }
 
   if(is.null(x$EN_opt)){
-    plot(x$N, x$EN.p0, type = "l",xlab = xlab, ylab = ylab, main = main, ...)
+    plot(x$N, x$EN.p0, type = "l", lwd=2, xlab = xlab, ylab = ylab, main = main, ...)
   }
 
   if(!is.null(x$EN_opt)){
-    plot(x[which(x$EN_opt=="EN.p0_optimal"),]$N, x[which(x$EN_opt=="EN.p0_optimal"),]$EN.p0, type = "l",
+    plot(x[which(x$EN_opt=="EN.p0_optimal"),]$N, x[which(x$EN_opt=="EN.p0_optimal"),]$EN.p0, type = "l", lwd=2,
          xlab = xlab, ylab = ylab,
          main = main,
          ylim = c(min(x$EN.p0),max(x$EN.p0)),
          ...)
-    lines(x[!is.na(x$INTERIM),]$N, x[!is.na(x$INTERIM),]$EN.p0, type = "l",col="red")
+    lines(x[!is.na(x$INTERIM),]$N, x[!is.na(x$INTERIM),]$EN.p0, type = "o",col="red",lwd=2)
   }
-  points(x[x$MIN == "Minimax", "N"], x[x$MIN == "Minimax", "EN.p0"], pch = "M")
-  points(x[x$OPT == "Optimal", "N"], x[x$OPT == "Optimal", "EN.p0"], pch = "O")
-  points(x[x$ADMISS == "Admissible", "N"], x[x$ADMISS == "Admissible", "EN.p0"], pch = "A")
+  points(x[x$MIN == "Minimax", "N"], x[x$MIN == "Minimax", "EN.p0"], pch = "M",col="blue")
+  points(x[x$OPT == "Optimal", "N"], x[x$OPT == "Optimal", "EN.p0"], pch = "O",col="blue")
+  points(x[x$ADMISS == "Admissible", "N"], x[x$ADMISS == "Admissible", "EN.p0"], pch = "A",col="green")
   if (sum(x$EN_opt!="EN.p0_optimal")>0){
     legend("topleft",col=c("black","red"),c("Minimum EN.p0",paste0("Desired Interim at ",unique(x[!is.na(x$INTERIM),]$INTERIM))),lty=1,bty = "n")
   }
