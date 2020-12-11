@@ -128,10 +128,7 @@ Two-stage designs which minimize the maximum sample size are also determined.</p
   <span class='va'>N_min</span>,
   <span class='va'>N_max</span>,
   int <span class='op'>=</span> <span class='fl'>0</span>,
-  int_window <span class='op'>=</span> <span class='fl'>0.025</span>,
-  admissible <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"chull"</span>, <span class='st'>"CHull"</span><span class='op'>)</span>,
-  method <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"speedup"</span>, <span class='st'>"original"</span><span class='op'>)</span>,
-  <span class='va'>...</span>
+  int_window <span class='op'>=</span> <span class='fl'>0.025</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -173,18 +170,6 @@ Two-stage designs which minimize the maximum sample size are also determined.</p
       <th>int_window</th>
       <td><p>window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value</p></td>
     </tr>
-    <tr>
-      <th>admissible</th>
-      <td><p>character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull</p></td>
-    </tr>
-    <tr>
-      <th>method</th>
-      <td><p>either 'original' or 'speedup' for the original implementation or a more speedier version</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>arguments passed on to plot in case admissible is set to CHull</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -222,34 +207,13 @@ if (x1+x2)&gt; s --&gt; efficacy <br /></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>simon2stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,
-                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>0</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
+                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>1</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>samplesize</span><span class='op'>)</span>
 </div><div class='img'><img src='simon2stage-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># \donttest{</span>
 <span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>simon2stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,
-                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>0</span>, N_max <span class='op'>=</span> <span class='fl'>50</span>,int<span class='op'>=</span><span class='fl'>0.33</span>,int_window<span class='op'>=</span><span class='fl'>0.025</span><span class='op'>)</span>
+                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>1</span>, N_max <span class='op'>=</span> <span class='fl'>50</span>,int<span class='op'>=</span><span class='fl'>0.33</span>,int_window<span class='op'>=</span><span class='fl'>0.025</span><span class='op'>)</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>samplesize</span><span class='op'>)</span>
-</div><div class='input'><span class='co'># }</span>
-<span class='co'># \donttest{</span>
-<span class='kw'>if</span><span class='op'>(</span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'>multichull</span>, quietly <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span>
-<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'>multichull</span><span class='op'>)</span>
-<span class='fu'>simon2stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,
-            eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>0</span>, N_max <span class='op'>=</span> <span class='fl'>200</span>, admissible <span class='op'>=</span> <span class='st'>"CHull"</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘igraph’</span></div><div class='output co'>#&gt; <span class='message'>The following objects are masked from ‘package:stats’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    decompose, spectrum</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:base’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    union</span></div><div class='output co'>#&gt; <span class='message'></span>
-#&gt; <span class='message'>Attaching package: ‘plotly’</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:ggplot2’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    last_plot</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:igraph’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    groups</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:stats’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    filter</span></div><div class='output co'>#&gt; <span class='message'>The following object is masked from ‘package:graphics’:</span>
-#&gt; <span class='message'></span>
-#&gt; <span class='message'>    layout</span></div><div class='img'><img src='simon2stage-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt; [1] "WARNING: Check whether input parameter 'bound' is specified correctly"</div><div class='img'><img src='simon2stage-3.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
+</div><div class='img'><img src='simon2stage-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'># }</span>
 <span class='co'># \donttest{</span>
 <span class='co'>## Example 1</span>
 <span class='va'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.05</span>, <span class='fl'>0.1</span>, <span class='fl'>0.2</span>, <span class='fl'>0.3</span>, <span class='fl'>0.4</span>, <span class='fl'>0.5</span>, <span class='fl'>0.6</span>, <span class='fl'>0.7</span><span class='op'>)</span>,
