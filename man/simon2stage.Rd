@@ -13,10 +13,7 @@ simon2stage(
   N_min,
   N_max,
   int = 0,
-  int_window = 0.025,
-  admissible = c("chull", "CHull"),
-  method = c("speedup", "original"),
-  ...
+  int_window = 0.025
 )
 }
 \arguments{
@@ -37,12 +34,6 @@ simon2stage(
 \item{int}{pre-specified interim analysis percentage information}
 
 \item{int_window}{window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value}
-
-\item{admissible}{character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull}
-
-\item{method}{either 'original' or 'speedup' for the original implementation or a more speedier version}
-
-\item{...}{arguments passed on to plot in case admissible is set to CHull}
 }
 \value{
 a data.frame with elements
@@ -83,19 +74,12 @@ if (x1+x2)> s --> efficacy \cr
 }
 \examples{
 samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
-                          eps = 0.005, N_min = 0, N_max = 50)
+                          eps = 0.005, N_min = 1, N_max = 50)
 plot(samplesize)
 \donttest{
 samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
-                          eps = 0.005, N_min = 0, N_max = 50,int=0.33,int_window=0.025)
+                          eps = 0.005, N_min = 1, N_max = 50,int=0.33,int_window=0.025)
 plot(samplesize)
-}
-\donttest{
-if(require(multichull, quietly = TRUE)){
-library(multichull)
-simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
-            eps = 0.005, N_min = 0, N_max = 200, admissible = "CHull")
-}
 }
 \donttest{
 ## Example 1

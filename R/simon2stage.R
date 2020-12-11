@@ -1,32 +1,24 @@
 
-
-probsimon <- function(n1, n2, r1, r, p) {
-  i <- seq(r1 + 1, min(n1, r))
-  pbinom(q = r1, size = n1, prob = p, lower.tail = TRUE) +
-    sum(dbinom(i, size = n1, prob = p) * pbinom(q = r - i, size = n2, prob = p, lower.tail = TRUE))
-}
-
-
-probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
-  ## r is the total number of seen cases on both n1 and n2 together, original implementation used r2=r
-  ## we use r for consistency with the formula in the paper
+P_Simon_reject_Ha <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
+  ## r is the total number of seen cases on both n1 and n2 together
   ## Calculate alpha/beta for all values up to r (see formula (1) paper Simon)
-  r_1 <- 0:(min(n1, r)-1)
-  x   <- r_1 + 1
-  ## note the n1+1 and n2+1 due to how R handles indexing B[[1]] is in fact the value of B for n = 0. Same for the 1 + in the vectors
+
+  r_1 <- (max(0,r-n2)):(max(0,min(n1-1, r-1))) # for min value: r_1 must be minimal (r-n2): if n2<r
+                                              #(note: r_1<n1, otherwise first stage makes no sense: futility even if all outcomes a success)
+  x1  <- r_1 + 1  # e.g. when r=2; r_1=0 or r_1=1; x1=1 or x1=2
+
   # alpha
-  B_p0_r1    <- B_p0[[n1 + 1]][1 + r_1]
-  b_p0_x     <- b_p0[[n1 + 1]][1 + x]
-  B_p0_r2    <- B_p0[[n2 + 1]][1 + (r-x)]
-  alpha_temp <- B_p0_r1 + rev(cumsum(rev(b_p0_x * B_p0_r2)))
+  B_p0_r1    <- B_p0[[n1]][1 + r_1]     # P(X1<=r),    so pbinom(r_1  ,n1,p0), indexing with "+1", as B_p0 starts from 0 successes
+  b_p0_x1    <- b_p0[[n1]][1 + x1]      # P(X1=r) ,    so dbinom(x1  ,n1,p0), indexing with "+1", as b_p0 starts from 0 successes
+  B_p0_r2    <- B_p0[[n2]][1 + (r-x1)]  # P(X1+X2<=r), so pbinom(r-x1,n2,p0), indexing with "+1", as B_p0 starts from 0 successes
+  eta_temp   <- B_p0_r1 + rev(cumsum(rev(b_p0_x1 * B_p0_r2))) # e.g. for r=2: r_1=0: P(X1<=0) + P(X1=1)P(X1+X2<=2) + P(X1=2)P(X1+X2<=2)
+                                                             #                r_1=1: P(X1<=1) +                      P(X1=2)P(X1+X2<=2)
   # beta
-  B_pa_r1    <- B_pa[[n1 + 1]][1 + r_1]
-  b_pa_x     <- b_pa[[n1 + 1]][1 + x]
-  B_pa_r2    <- B_pa[[n2 + 1]][1 + (r-x)]
-  beta_temp  <- B_pa_r1 + rev(cumsum(rev(b_pa_x * B_pa_r2)))
-  list(N = n1 + n2, n1 = n1, r1 = r_1, n2 = n2, #r2 = r-r_1, #r2 = (min(n1, r) - x) + 1,
-       r2 = r,
-       alpha_temp = 1 - alpha_temp, beta_temp = beta_temp)
+  B_pa_r1    <- B_pa[[n1]][1 + r_1]
+  b_pa_x1    <- b_pa[[n1]][1 + x1]
+  B_pa_r2    <- B_pa[[n2]][1 + (r-x1)]
+  beta_temp  <- B_pa_r1 + rev(cumsum(rev(b_pa_x1 * B_pa_r2)))
+  list(N = n1 + n2, n1 = n1, r1 = r_1, n2 = n2, r2 = r, alpha_temp = 1 - eta_temp, beta_temp = beta_temp)
 }
 
 #' @title Simon 2-stage function
@@ -46,9 +38,6 @@ probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #' @param N_max maximum sample size value for grid search
 #' @param int pre-specified interim analysis percentage information
 #' @param int_window window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value
-#' @param admissible character string indicating how to compute admissible designs, either 'chull' or 'CHull', the former uses grDevices::chull, the latter uses multichull::CHull
-#' @param method either 'original' or 'speedup' for the original implementation or a more speedier version
-#' @param ... arguments passed on to plot in case admissible is set to CHull
 #' @return a data.frame with elements
 #' \itemize{
 #' \item n1: total number of patients in stage1
@@ -79,19 +68,12 @@ probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #' @export
 #' @examples
 #' samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
-#'                           eps = 0.005, N_min = 0, N_max = 50)
+#'                           eps = 0.005, N_min = 1, N_max = 50)
 #' plot(samplesize)
 #' \donttest{
 #' samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
-#'                           eps = 0.005, N_min = 0, N_max = 50,int=0.33,int_window=0.025)
+#'                           eps = 0.005, N_min = 1, N_max = 50,int=0.33,int_window=0.025)
 #' plot(samplesize)
-#' }
-#' \donttest{
-#' if(require(multichull, quietly = TRUE)){
-#' library(multichull)
-#' simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
-#'             eps = 0.005, N_min = 0, N_max = 200, admissible = "CHull")
-#' }
 #' }
 #' \donttest{
 #' ## Example 1
@@ -123,37 +105,27 @@ probsimonAllR <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #' optimal_minimax <- data.table::rbindlist(optimal_minimax)
 #' }
 
-simon2stage <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025,
-                        admissible = c("chull", "CHull"), method = c("speedup", "original"), ...){
-
-  method <- match.arg(method)
-  admissible <- match.arg(admissible)
+simon2stage <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025){
 
   if(length(p0) > 1 && length(pa) > 1){
     results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
-                      FUN = function(null, alternative, alpha, beta, eps, N_min, N_max, int, int_window, admissible, method, ...){
-                        simon2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
-                                            admissible = admissible, method = method, ...)
-                      }, MoreArgs = list(admissible = admissible, method = method), ...,
-                      SIMPLIFY = FALSE)
+                      FUN = function(null, alternative, alpha, beta, eps, N_min, N_max, int, int_window){
+                        simon2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window)
+                      }, SIMPLIFY = FALSE)
   }else{
-    results <- simon2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
-                                   admissible = admissible, method = method, ...)
+    results <- simon2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window)
   }
 }
 
-simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025,
-                                admissible = c("chull", "CHull"), method = c("speedup", "original"), ...) {
-  method <- match.arg(method)
-  admissible <- match.arg(admissible)
+simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025) {
 
   # WARNING MESSAGES
   if (pa < p0) {
     stop("p0 should be smaller than pa")
   }
 
-  if (N_min <0 ) {
-    stop("N_min should be >=0")
+  if (N_min <1 ) {
+    stop("N_min should be >=1")
   }
 
   EN.p0 <- EN.p0_N_min <- EN.p0_N_n1_min <- EN.p0_min <- EN.p0_N_min_int <- MIN <- N <- OPT <- NULL
@@ -164,7 +136,7 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=
   # Note that this is the possible range of values: 0 <=r1<n1; r1+1<=r; r<=n1+n2                             #
   #----------------------------------------------------------------------------------------------------------#
 
-  # Get all N"s for which there is a max r (1:N) for which P(X<=r|Ha)<=beta+eps, and select that max r
+  # Get all N's for which there is a max r (1:N) for which P(X<=r|Ha)<=beta+eps, and select that max r
   # Note that this is not taking into account first stage. However, the probability of rejecting Ha
   # should be lower in the second stage, compared to a 1-stage design, as some cases already rejected at first stage,
   # meaning that an rmax, calculated using a 1-stage design, is a good maximum
@@ -180,91 +152,44 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=
   res0 <- aggregate(res0$rtemp, by = list(res0$N), max)
   names(res0) <- c("N", "rmax")
 
-  # Get for selected N's all possible n1's (1:N-1) + create r1max with 0<=r1<=r-1 and 0<=r1<n1 (note: r1<n1, otherwise first stage makes
-  # no sense: futility even if all outcomes a success)
-  #-------------------------------------------------------------------------------------------
+  # Get for selected N's all possible n1's (1:N-1)
+  #-----------------------------------------------
   res1 <- mapply(N = res0$N, rmax = res0$rmax, FUN = function(N, rmax) cbind(N = N, n1 = (1:(N - 1)), rmax = rmax), SIMPLIFY = FALSE)
   res1 <- do.call(rbind, res1)
   res1 <- data.frame(res1)
-  res1$r1max <- pmin(res1$rmax - 1, res1$n1 - 1)
 
-  # Get for selected N's and n1's, r1's (0:r1max, where P(X_1<=r_1|Ha)<=beta+eps)
-  #------------------------------------------------------------------------------
-  res2 <- mapply(N = res1$N, n1 = res1$n1, rmax = res1$rmax, r1max = res1$r1max,
-                 FUN = function(N, n1, rmax, r1max) cbind(N = N, n1 = n1, rmax = rmax, r1max = r1max, r1 = (0:r1max)),
+  # Get for selected N's and n1's, r's (1:rmax)
+  #--------------------------------------------
+  res2 <- mapply(N = res1$N, n1 = res1$n1, rmax = res1$rmax,
+                 FUN = function(N, n1, rmax) cbind(N = N, n1 = n1, rmax = rmax, r = (1:rmax)),
                  SIMPLIFY = FALSE)
   res2 <- do.call(rbind, res2)
   res2 <- data.frame(res2)
-  res2$beta <- pbinom(q = res2$r1, size = res2$n1, prob = pa, lower.tail = TRUE)
-  res2 <- res2[res2$beta <= (beta + eps), ]
-
-  # Get for selected N"s, n1"s and r1"s: r2"s ((r1+1):rmax)
-  #----------------------------------------------------------
-  res3 <- mapply(N = res2$N, n1 = res2$n1, rmax = res2$rmax, r1 = res2$r1,
-                 FUN = function(N, n1, rmax, r1) cbind(N = N, n1 = n1, r1 = r1, r2 = ((r1 + 1):rmax), rmax = rmax))
-  res3 <- do.call(rbind, res3)
-  res3 <- data.frame(res3)
-  res3$n2 <- res3$N - res3$n1
+  res2$n2 <- res2$N - res2$n1
 
   # Calculate beta and alpha
   #-------------------------
-  if(method == "original"){
-    res3$beta_temp <- mapply(a = res3$n1, b = res3$n2, c = res3$r1, d = res3$r2, FUN = function(a, b, c, d) probsimon(n1 = a, n2 = b, r1 = c, r = d, p = pa))
-    res3$diff_beta <- res3$beta_temp - beta
-    res4 <- res3[res3$diff_beta <= eps, ]
 
-    res4$alpha_temp <- 1 - mapply(a = res4$n1, b = res4$n2, c = res4$r1, d = res4$r2, FUN = function(a, b, c, d) probsimon(n1 = a, n2 = b, r1 = c, r = d, p = p0))
-    res4$diff_alpha <- res4$alpha_temp - alpha
-    res5 <- res4[res4$diff_alpha <= eps, ]
-    # res5_original <- res5
-  }else if(method == "speedup"){
-    ###
-    ### CHANGES MADE WITH REGARDS TO ORIGINAL IMPLEMENTATION TO SPEED THINGS UP
-    ###   basically using a lookup table for formula (1) from paper Simon
-    ###   b: probability mass       (see formula (1) paper Simon)
-    ###   B: cumulative probability (see formula (1) paper Simon)
-    nmax <- N_max
-    # b_p0 <- lapply(0:nmax, FUN = function(n) dbinom(0:n, size = n, prob = p0))
-    # b_pa <- lapply(0:nmax, FUN = function(n) dbinom(0:n, size = n, prob = pa))
-    # B_p0 <- lapply(0:nmax, FUN = function(n) pbinom(0:n, size = n, prob = p0))
-    # B_pa <- lapply(0:nmax, FUN = function(n) pbinom(0:n, size = n, prob = pa))
-    ### NOTE: we keep the behaviour of the original implementation which looked like containing a bug typical bug form previous implementation allowing an impossible setup like the following
-    # n1 = 16
-    # n2 = 1
-    # r = 4
-    # r1 = 1
-    # p <- p0
-    # probsimon(    n1 = n1, n2 = n2, r = r, r1 = r1, p = p0)
-    # probsimonAllR(n1 = n1, n2 = n2, r = r, b_p0, B_p0, b_pa, B_pa) %>% as.data.table
-    b_p0 <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = p0))
-    b_pa <- lapply(0:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = pa))
-    B_p0 <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = p0, lower.tail = TRUE))
-    B_pa <- lapply(0:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = pa, lower.tail = TRUE))
+  ###   use a lookup table for formula (1) from paper Simon
+  ###   b: probability mass       (see formula (1) paper Simon)
+  ###   B: cumulative probability (see formula (1) paper Simon)
+  nmax <- N_max
+  b_p0 <- lapply(1:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = p0))
+  b_pa <- lapply(1:nmax, FUN = function(n) dbinom(0:nmax, size = n, prob = pa))
+  B_p0 <- lapply(1:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = p0, lower.tail = TRUE))
+  B_pa <- lapply(1:nmax, FUN = function(n) pbinom(0:nmax, size = n, prob = pa, lower.tail = TRUE))
 
-    res3 <- data.table::setDT(res3)
-    settings <- res3[, list(r = unique(r2)), by = list(N, n1, n2)]
-    settings$rowid <- seq_len(nrow(settings))
-    res5 <- settings[, probsimonAllR(n1 = n1, n2 = n2, r = r, b_p0 = b_p0, B_p0 = B_p0, b_pa = b_pa, B_pa = B_pa), by = list(rowid)]
-    # datacheck <- merge(res5, res5_original, all.x = FALSE, all.y = TRUE, by = c("N", "n1", "n2", "r1", "r2"))
-    # subset(datacheck, alpha_temp.x != alpha_temp.y)
-    # subset(datacheck, beta_temp.x != beta_temp.y)
-    # head(subset(datacheck, is.na(alpha_temp.x) | is.na(beta_temp.x)))
-    # subset(settings, n1 == 7 & n2 == 20)
-    # 1-probsimon(n1 = 7, n2 = 20,  r1 = 0, r = 5, p = p0)
-    # probsimonAllR(n1 = 7, n2 = 20, r = 5, b_p0 = b_p0, B_p0 = B_p0, b_pa = b_pa, B_pa = B_pa) %>% as.data.frame
-    # 1-probsimon(n1 = 10, n2 = 19,  r1 = 1, r = 5, p = p0)
-    # probsimonAllR(n1 = 10, n2 = 19, r = 6, b_p0 = b_p0, B_p0 = B_p0, b_pa = b_pa, B_pa = B_pa) %>% as.data.frame
-    # probsimonAllR(n1 = 15, n2 = 7,  r = 6, b_p0 = b_p0, B_p0 = B_p0, b_pa = b_pa, B_pa = B_pa) %>% as.data.frame
-    # probsimon(n1 = 15, n2 = 7,  r1 = 2, r = 4, p = p0)
-    # probsimon(n1 = 15, n2 = 7,  r1 = 2, r = 4, p = pa)
-    res5 <- merge(res5, res3[, c("N", "n1", "n2", "r1", "r2")], all.x = FALSE, all.y = FALSE, by = c("N", "n1", "n2", "r1", "r2"))
-    res5 <- data.table::setDF(res5)
-    res5 <- res5[!is.na(res5$alpha_temp) & !is.na(res5$beta_temp), ] ## this no longer happens as in ### NOTE above
-    res5$diff_beta <- res5$beta_temp - beta
-    res5 <- res5[res5$diff_beta <= eps, ]
-    res5$diff_alpha <- res5$alpha_temp - alpha
-    res5 <- res5[res5$diff_alpha <= eps, ]
-  }
+  res2 <- data.table::setDT(res2)
+  res2$rowid <- seq_len(nrow(res2))
+  res3 <- res2[, P_Simon_reject_Ha(n1 = n1, n2 = n2, r = r, b_p0 = b_p0, B_p0 = B_p0, b_pa = b_pa, B_pa = B_pa), by = list(rowid)]
+  res3 <- data.table::setDF(res3)
+  res3$diff_beta <- res3$beta_temp - beta
+  res4 <- res3[res3$diff_beta <= eps, ]
+  res4$diff_alpha <- res4$alpha_temp - alpha
+  res5 <- res4[res4$diff_alpha <= eps, ]
+
+  res5[2:6] <- lapply(res5[2:6], as.numeric) # convert integer into numeric
+
   if(nrow(res5) == 0){
     stop("No data satisfying the H0/Ha criteria")
   }
@@ -299,19 +224,7 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=
 
   # Get admissible designs
   y <- res6[, c("N", "EN.p0")]
-  if(admissible == "CHull" && requireNamespace("multichull", quietly = TRUE)){
-    chull_result <- multichull::CHull(y, bound = "lower")
-    if(inherits(chull_result, "CHull")){
-      chull_result <- data.frame(chull_result$Hull)
-      con.ind <- as.numeric(rownames(y[y$N %in% chull_result$complexity,]))
-      plot(y$N, y$EN.p0, ...)
-      lines(y$N[con.ind], y$EN.p0[con.ind])
-    }else{
-      con.ind <- chull(y)[chull((y)) == cummin(chull((y)))]
-    }
-  }else{
-    con.ind <- chull(y)[chull((y)) == cummin(chull((y)))]
-  }
+  con.ind <- chull(y)[chull((y)) == cummin(chull((y)))]
   res <- res6[res6$N >= min(res6$N[res6$MIN == "Minimax"]) & res6$N <= max(res6$N[res6$OPT == "Optimal"]), ]
   res$ADMISS[which((rownames(res) %in% c(con.ind)) & (res$N > res$N_min) & (res$EN.p0 > res$EN.p0_min) & (res$N < res$N[res$OPT == "Optimal"]))] <- "Admissible"
 
@@ -327,11 +240,11 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=
   }
 
 
-
   # Calculate 1-2*alpha confidence interval, based on Koyama, Statistics in Medicine 2008
+
   res$eff <- paste0(res$r2 + 1, "/", res$N, " (", 100 * round((res$r2 + 1) / res$N, 3), "%)")
   CI <- mapply(a = res$r2 + 1, b = res$r1, c = res$n1, d = res$N,
-               FUN = function(a, b, c, d) OneArmPhaseTwoStudy::get_CI(k = a, r1 = as.numeric(b), n1 = as.numeric(c), n = as.numeric(d), alpha = alpha, precision = 3))
+               FUN = function(a, b, c, d) OneArmPhaseTwoStudy::get_CI(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 3))
   res$CI_low  <- 100 * unlist(CI[rownames(CI) == "CI_low", ])
   res$CI_high <- 100 * unlist(CI[rownames(CI) == "CI_high", ])
 
@@ -361,8 +274,6 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=
   class(res) <- c("2stage", "simon", "data.frame")
   res
 }
-
-
 
 
 

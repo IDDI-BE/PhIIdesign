@@ -38,7 +38,7 @@ the design number
 fleming1 <- fleming1stage(p0 = 0.45, pa = 0.7, alpha = 0.05, beta = 0.2)
 plotPhII(fleming1)
 simon2<- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
-                     eps = 0.005, N_min = 0, N_max = 50)
+                     eps = 0.005, N_min = 1, N_max = 50)
 plotPhII(simon2)
 
 sargent1 <- sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,

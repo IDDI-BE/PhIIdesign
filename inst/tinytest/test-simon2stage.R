@@ -21,10 +21,5 @@ x <- list(design_nr=c(1:7),
           beta_param = c(0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2))
 
 expect_equivalent(
-  current = as.list(simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "original")),
+  current = as.list(simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=1,N_max=50)),
   target = x)
-
-
-expect_equivalent(
-  current = simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "original"),
-  target  = simon2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.2,eps = 0.005,N_min=0,N_max=50, method = "speedup"))

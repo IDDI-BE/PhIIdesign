@@ -30,11 +30,3 @@ x <- list(design_nr=c(1:3),
 expect_equivalent(
   current = as.list(sargent2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.1,eta=0.8,pi=0.8,eps = 0.005,N_min=15,N_max=30)),
   target = x)
-
-expect_equivalent(
-  current = as.list(sargent2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.1,eta=0.8,pi=0.8,eps = 0.005,N_min=15,N_max=30, method = "original")),
-  target = as.list(sargent2stage(p0=0.1,pa=0.3,alpha=0.05,beta=0.1,eta=0.8,pi=0.8,eps = 0.005,N_min=15,N_max=30, method = "speedup")))
-
-expect_equal(
-  current = PhIIdesign:::probha(n1 = 14, n2 = 7, r1 = 1, s = 5, p = 0.1, type = "original"),
-  target = PhIIdesign:::probha(n1 = 14, n2 = 7, r1 = 1, s = 5, p = 0.1, type = "speedup"))
