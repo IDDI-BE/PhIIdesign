@@ -180,11 +180,11 @@ Two-stage designs which minimize the maximum sample size are also determined.</p
 <li><p>n1: total number of patients in stage1</p></li>
 <li><p>n2: total number of patients in stage2</p></li>
 <li><p>N: total number of patients=n1+n2</p></li>
-<li><p>r1: critical value for the first stage</p></li>
-<li><p>r2: critical value for the second stage</p></li>
+<li><p>r1: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1&lt;=r1 --&gt; stop for futility at first stage</p></li>
+<li><p>r2: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1+x2&lt;=r --&gt; futility at second stage</p></li>
 <li><p>eff: (r2 + 1)/N</p></li>
-<li><p>90<!-- %CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154; --></p></li>
-<li><p>90<!-- %CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154; --></p></li>
+<li><p>90<!-- %CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989) --></p></li>
+<li><p>90<!-- %CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989) --></p></li>
 <li><p>EN.p0: expected sample size under H0</p></li>
 <li><p>PET.p0: probability of terminating the trial at the end of the first stage under H0</p></li>
 <li><p>MIN: column indicating if the design is the minimal design</p></li>
@@ -202,10 +202,11 @@ Two-stage designs which minimize the maximum sample size are also determined.</p
 
     <p>if x1&lt;=r1 --&gt; stop futility <br />
 if (x1+x2)&lt;=r --&gt; futility <br />
-if (x1+x2)&gt; s --&gt; efficacy <br /></p>
+if (x1+x2)&gt; r --&gt; efficacy <br /></p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Simon R. Optimal two-stage designs for phase II clinical trials. Control Clin Trials. 1989;10(1):1-10. doi:10.1016/0197-2456(89)90015-9</p>
+    <p>Simon R. Optimal two-stage designs for phase II clinical trials. Control Clin Trials. 1989;10(1):1-10. doi:10.1016/0197-2456(89)90015-9
+    Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154;</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>simon2stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,
