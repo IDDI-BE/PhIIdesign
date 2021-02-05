@@ -41,11 +41,11 @@ a data.frame with elements
 \item n1: total number of patients in stage1
 \item n2: total number of patients in stage2
 \item N: total number of patients=n1+n2
-\item r1: critical value for the first stage
-\item r2: critical value for the second stage
+\item r1: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1<=r1 --> stop for futility at first stage
+\item r2: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1+x2<=r --> futility at second stage
 \item eff: (r2 + 1)/N
-\item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154;
-\item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154;
+\item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
+\item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
 \item EN.p0: expected sample size under H0
 \item PET.p0: probability of terminating the trial at the end of the first stage under H0
 \item MIN: column indicating if the design is the minimal design
@@ -70,7 +70,7 @@ Two-stage designs which minimize the maximum sample size are also determined.
 \details{
 if x1<=r1 --> stop futility \cr
 if (x1+x2)<=r --> futility \cr
-if (x1+x2)> s --> efficacy \cr
+if (x1+x2)> r --> efficacy \cr
 }
 \examples{
 samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
@@ -113,4 +113,5 @@ optimal_minimax <- data.table::rbindlist(optimal_minimax)
 }
 \references{
 Simon R. Optimal two-stage designs for phase II clinical trials. Control Clin Trials. 1989;10(1):1-10. doi:10.1016/0197-2456(89)90015-9
+    Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154;
 }
