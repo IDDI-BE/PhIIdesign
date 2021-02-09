@@ -180,8 +180,8 @@ Two-stage designs which minimize the maximum sample size are also determined.</p
 <li><p>n1: total number of patients in stage1</p></li>
 <li><p>n2: total number of patients in stage2</p></li>
 <li><p>N: total number of patients=n1+n2</p></li>
-<li><p>r1: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1&lt;=r1 --&gt; stop for futility at first stage</p></li>
-<li><p>r2: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1+x2&lt;=r --&gt; futility at second stage</p></li>
+<li><p>r1: threshold for "rejecting" Ha: if x1&lt;=r1 --&gt; stop for futility at first stage</p></li>
+<li><p>r2: threshold for "rejecting" Ha: if x1+x2&lt;=r2 --&gt; futility at second stage</p></li>
 <li><p>eff: (r2 + 1)/N</p></li>
 <li><p>90<!-- %CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989) --></p></li>
 <li><p>90<!-- %CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989) --></p></li>
@@ -201,8 +201,8 @@ Two-stage designs which minimize the maximum sample size are also determined.</p
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>if x1&lt;=r1 --&gt; stop futility <br />
-if (x1+x2)&lt;=r --&gt; futility <br />
-if (x1+x2)&gt; r --&gt; efficacy <br /></p>
+if (x1+x2)&lt;=r2 --&gt; futility <br />
+if (x1+x2)&gt; r2 --&gt; efficacy <br /></p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
     <p>Simon R. Optimal two-stage designs for phase II clinical trials. Control Clin Trials. 1989;10(1):1-10. doi:10.1016/0197-2456(89)90015-9
