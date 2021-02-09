@@ -1,19 +1,28 @@
 
+#--------------------------------------------------------#
+# Help function to calculate the probability (reject Ha) #
+#--------------------------------------------------------#
+
 P_Simon_reject_Ha <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
   ## r is the total number of seen cases on both n1 and n2 together
   ## Calculate alpha/beta for all values up to r (see formula (1) paper Simon)
 
-  r_1 <- (max(0,r-n2)):(max(0,min(n1-1, r-1))) # for min value: r_1 must be minimal (r-n2): if n2<r, then x1>=(r+1-n2), so r1>=r-n2
-                                               # for max value: r_1<n1, otherwise first stage makes no sense: futility even if all outcomes a success
-  x1  <- r_1 + 1  # e.g. when r=2; r_1=0 or r_1=1; x1=1 or x1=2
+  r_1 <- (max(0,r-n2)):(max(0,min(n1-1, r-1))) # for min value: if r>n2, and knowing that you must have (r+1) successes to reject H0 after stage 2,
+                                               #                then you must already have >= (r+1)-n2 successes in stage 1 with continuation, so r1 should be minimal
+                                               #                (r-n2)
+                                               # for max value: r_1<n1, otherwise first stage makes no sense: futility even if all outcomes a success;
+                                               #                        also logical that r1<=r-1
 
-  # alpha
-  B_p0_r1    <- B_p0[[n1]][1 + r_1]     # P(X1<=r),    so pbinom(r_1 ,n1,p0), indexing with "+1", as B_p0 starts from 0 successes
-  b_p0_x1    <- b_p0[[n1]][1 + x1]      # P(X1=r) ,    so dbinom(x1  ,n1,p0), indexing with "+1", as b_p0 starts from 0 successes
-  B_p0_r2    <- B_p0[[n2]][1 + (r-x1)]  # P(X1+X2<=r), so pbinom(r-x1,n2,p0), indexing with "+1", as B_p0 starts from 0 successes
-  eta_temp   <- B_p0_r1 + rev(cumsum(rev(b_p0_x1 * B_p0_r2))) # e.g. for r=2: r_1=0: P(X1<=0) + P(X1=1)P(X1+X2<=2) + P(X1=2)P(X1+X2<=2)
-                                                             #                r_1=1: P(X1<=1) +                      P(X1=2)P(X1+X2<=2)
-  # beta
+  x1  <- r_1 + 1  # Function is to calculate P(reject Ha), so going from (r_1 + 1) to min(n1,r)
+                  #   'n1' is logical. 'r': if X1>r then you cannot reject Ha. [see also previous step]
+
+  # calculate alpha for each (r1,x1)
+  B_p0_r1    <- B_p0[[n1]][1 + r_1]     # P(X1<=r1|n1,p0)   so pbinom(r_1 ,n1,p0), indexing with "+1", as B_p0 starts from 0 successes
+  b_p0_x1    <- b_p0[[n1]][1 + x1]      # P(X1=x1|n1,p0)    so dbinom(x1  ,n1,p0), indexing with "+1", as b_p0 starts from 0 successes
+  B_p0_r2    <- B_p0[[n2]][1 + (r-x1)]  # P(X2<=r-x1|n2,p0) so pbinom(r-x1,n2,p0), indexing with "+1", as B_p0 starts from 0 successes
+  eta_temp   <- B_p0_r1 + rev(cumsum(rev(b_p0_x1 * B_p0_r2))) # e.g. for r=2: r_1=0: P(X1<=0) + P(X1=1)P(X2<=2-1) + P(X1=2)P(X2<=2-2)
+                                                              #               r_1=1: P(X1<=1) +                     P(X1=2)P(X2<=2-2)
+  # calculate beta for each (r1,x1)
   B_pa_r1    <- B_pa[[n1]][1 + r_1]
   b_pa_x1    <- b_pa[[n1]][1 + x1]
   B_pa_r2    <- B_pa[[n2]][1 + (r-x1)]
@@ -43,8 +52,8 @@ P_Simon_reject_Ha <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #' \item n1: total number of patients in stage1
 #' \item n2: total number of patients in stage2
 #' \item N: total number of patients=n1+n2
-#' \item r1: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1<=r1 --> stop for futility at first stage
-#' \item r2: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1+x2<=r --> futility at second stage
+#' \item r1: threshold for "rejecting" Ha: if x1<=r1 --> stop for futility at first stage
+#' \item r2: threshold for "rejecting" Ha: if x1+x2<=r2 --> futility at second stage
 #' \item eff: (r2 + 1)/N
 #' \item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
 #' \item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
@@ -62,8 +71,8 @@ P_Simon_reject_Ha <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #' }
 #' @details
 #' if x1<=r1 --> stop futility \cr
-#' if (x1+x2)<=r --> futility \cr
-#' if (x1+x2)> r --> efficacy \cr
+#' if (x1+x2)<=r2 --> futility \cr
+#' if (x1+x2)> r2 --> efficacy \cr
 #' @references Simon R. Optimal two-stage designs for phase II clinical trials. Control Clin Trials. 1989;10(1):1-10. doi:10.1016/0197-2456(89)90015-9
 #'     Koyama T, Chen H. Proper inference from simon’s two-stage designs. Stat Med. 2008; 27:3145–154;
 #' @export

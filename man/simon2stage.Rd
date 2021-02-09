@@ -41,8 +41,8 @@ a data.frame with elements
 \item n1: total number of patients in stage1
 \item n2: total number of patients in stage2
 \item N: total number of patients=n1+n2
-\item r1: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1<=r1 --> stop for futility at first stage
-\item r2: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1+x2<=r --> futility at second stage
+\item r1: threshold for "rejecting" Ha: if x1<=r1 --> stop for futility at first stage
+\item r2: threshold for "rejecting" Ha: if x1+x2<=r2 --> futility at second stage
 \item eff: (r2 + 1)/N
 \item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
 \item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
@@ -69,8 +69,8 @@ Two-stage designs which minimize the maximum sample size are also determined.
 }
 \details{
 if x1<=r1 --> stop futility \cr
-if (x1+x2)<=r --> futility \cr
-if (x1+x2)> r --> efficacy \cr
+if (x1+x2)<=r2 --> futility \cr
+if (x1+x2)> r2 --> efficacy \cr
 }
 \examples{
 samplesize <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
