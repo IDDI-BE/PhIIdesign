@@ -162,21 +162,6 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
   res3 <- do.call(rbind, res3)
   res2 <- data.frame(res3)
 
-  # Get for selected N's, n1's, r's, a's: r1's (max(0,r-n2)):max(0,min(a-2, r-1))))  Note: for min: - there should be x's for which r1<x1<a, so minimum for a should be 2
-  #                                                                                 - if r>n2, and knowing that you must have (r+1) successes to reject H0 after stage 2,
-  #                                                                                   then you must already have >= (r+1)-n2 successes in stage 1 with continuation, so r1 should be minimal
-  #                                                                                   (r-n2), and with one x1 between r1 and a, the minimal value for a is thus (r-n2)+2
-  #                                                                        for max: r1<=a-2, as there must be at least one value x1, for which r1<x1<a, so trial can continue to stage 2
-  #                                                                                 also logical that r1<=r-1, as you need r1+1 to proceed to second stage.
-  #                                                                                 if r1=r than in second stage X1+X2>r, so second stage not needed anymore
-  #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-  # res4 <- mapply(N = res3$N, n1 = res3$n1, rmax = res3$rmax,r=res3$r, n2=res3$n2, a=res3$a,
-  #                FUN = function(N, n1, rmax, r, n2, a) cbind(N = N, n1 = n1, rmax = rmax, r = r, n2 = n2, a=a, r1=(max(0,r-n2)):(max(0,min(a-2, r-1)))),
-  #                SIMPLIFY = FALSE)
-  # res4 <- do.call(rbind, res4)
-  # res4 <- data.frame(res4)
-
 
   # Calculate beta and alpha
   #-------------------------
