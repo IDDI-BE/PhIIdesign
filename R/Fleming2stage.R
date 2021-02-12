@@ -79,6 +79,7 @@ P_Fleming2st_reject_Ha <- function(n1, n2, r, a, b_p0, B_p0, b_pa, B_pa){
 #' So PET.H0=P_H0(X1<=r1)+P_H0(X1>=a1)
 #' @references Mander AP, Thompson SG. Two-stage designs optimal under the alternative hypothesis for phase II cancer clinical trials.
 #'     Contemporary Clinical Trials 2010;31:572–578
+#'     Qin F et al. Optimal, minimax and admissible two-stage design for phase II oncology clinical trials. BMC Medical Research Methodology 2020;20:126
 #' @export
 #' @examples
 #' samplesize <- fleming2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
