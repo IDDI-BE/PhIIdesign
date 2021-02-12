@@ -5,5 +5,6 @@
 #' @importFrom grDevices chull
 #' @importFrom graphics plot points lines abline axis par polygon text legend
 #' @importFrom OneArmPhaseTwoStudy get_CI
+#' @importFrom binom binom.confint
 #' @useDynLib PhIIdesign
 NULL

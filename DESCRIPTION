@@ -20,7 +20,8 @@ RoxygenNote: 7.1.1
 Imports:
     Rcpp,
     data.table,
-    OneArmPhaseTwoStudy
+    OneArmPhaseTwoStudy,
+    binom
 LinkingTo: Rcpp
 Suggests:
     multichull,
