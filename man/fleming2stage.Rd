@@ -45,8 +45,8 @@ a data.frame with elements
 \item r2: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1+x2<=r --> futility at second stage
 \item a: ("a" for "acceptance") threshold for "accepting" Ha= stop for efficacy at first stage
 \item eff: (r2 + 1)/N
-\item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
-\item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
+\item 90%CI_low: exact 1-2*alpha confidence interval lower limit
+\item 90%CI_high: exact 1-2*alpha confidence interval upper limit
 \item EN.p0: expected sample size under H0
 \item PET.p0: probability of terminating the trial for futility at the end of the first stage under H0
 \item EN.pa: expected sample size under Ha

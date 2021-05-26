@@ -2,26 +2,31 @@
 % Please edit documentation in R/PlotPhII.R
 \name{plotPhII}
 \alias{plotPhII}
-\title{Plot function for 1- and 2-stage Sargent design}
+\title{Plot function for Probability of conclusions of a PhII design}
 \usage{
 plotPhII(
   x,
   design_nr = 1,
   main = "PhII design",
   xlab = "True response probability",
+  grid = "Y",
   ylab,
   ...
 )
 }
 \arguments{
-\item{x}{an object returned by \code{\link{sargent1stage}} or \code{\link{sargent2stage}}}
+\item{x}{an object returned by \code{\link{fleming1stage}}, \code{\link{simon2stage}},
+\code{\link{simon2stage}}, \code{\link{sargent1stage}} or \code{\link{sargent2stage}} \cr}
 
-\item{design_nr}{design_nr returned by \code{\link{sargent1stage}} or \code{\link{sargent2stage}} \cr
+\item{design_nr}{design_nr returned by \code{\link{fleming1stage}}, \code{\link{simon2stage}},
+\code{\link{simon2stage}}, \code{\link{sargent1stage}} or \code{\link{sargent2stage}} \cr
 default is 1 (for \code{\link{sargent1stage}}, only one design is outputted)}
 
 \item{main}{title of the graph, passed on to \code{plot}}
 
 \item{xlab}{x-axis label of the graph, passed on to \code{plot}}
+
+\item{grid}{add grid to plot ("Y" or "N")}
 
 \item{ylab}{y-axis label of the graph, passed on to \code{plot}}
 
@@ -30,7 +35,8 @@ default is 1 (for \code{\link{sargent1stage}}, only one design is outputted)}
 \description{
 Plots the probability of rejecting \eqn{H0} ('Positive result') and rejecting Ha \cr
 ('Negative result') for different true response binomial parameters \cr
-if the input is an object returned by \code{\link{sargent2stage}}, interactively choose \cr
+if the input is an object returned by \code{\link{fleming1stage}}, \code{\link{simon2stage}},
+\code{\link{simon2stage}}, \code{\link{sargent1stage}} or \code{\link{sargent2stage}}, interactively choose \cr
 the design number
 }
 \examples{

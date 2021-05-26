@@ -94,7 +94,7 @@ P_Simon_reject_Ha <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #'               data.frame(alpha = c(0.1, 0.05, 0.05), beta = c(0.1, 0.2, 0.1)))
 #' samplesize <- fleming1stage(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta)
 #' samplesize <- simon2stage(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta,
-#'                           N_min = 10, N_max = samplesize$n + 15)
+#'                           N_min = 10, N_max = samplesize$N + 15)
 #' optimal_minimax <- lapply(samplesize, FUN=function(x){
 #'   cbind(subset(x, OPT == "Optimal", c("r1","n1","r2","N","EN.p0","PET.p0")),
 #'         subset(x, MIN == "Minimax", c("r1","n1","r2","N","EN.p0","PET.p0")))
@@ -108,7 +108,7 @@ P_Simon_reject_Ha <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #'               data.frame(alpha = c(0.1, 0.05, 0.05), beta = c(0.1, 0.2, 0.1)))
 #' samplesize <- fleming1stage(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta)
 #' samplesize <- simon2stage(p0 = test$p0, pa = test$pa, alpha = test$alpha, beta = test$beta,
-#'                           N_min = 25, N_max = samplesize$n + 20)
+#'                           N_min = 25, N_max = samplesize$N + 20)
 #' optimal_minimax <- lapply(samplesize, FUN=function(x){
 #'   cbind(subset(x, OPT == "Optimal", c("r1","n1","r2","N","EN.p0","PET.p0")),
 #'         subset(x, MIN == "Minimax", c("r1","n1","r2","N","EN.p0","PET.p0")))

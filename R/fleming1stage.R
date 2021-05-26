@@ -12,6 +12,9 @@
 #' \itemize{
 #' \item n: total number of patients
 #' \item r: quantile function of \code{1 - (alpha + eps)} at \code{n} under \code{p0}. Note if \code{n <= r} --> futility
+#' \item eff: r/N
+#' \item 90%CI_low: exact 1-2*alpha confidence interval lower limit
+#' \item 90%CI_high: exact 1-2*alpha confidence interval upper limit
 #' \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
 #' \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
 #' \item p0: your provided \code{p0} value
@@ -43,16 +46,22 @@
 #' }, SIMPLIFY = FALSE)
 #' samplesize <- do.call(rbind, samplesize)
 
+
+# p0 = 0.45; pa = 0.7; alpha = 0.05; beta = 0.2; eps=0
+
 fleming1stage <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005){
+
   stopifnot(length(eps) == 1)
   stopifnot(all(p0 >= 0) && all(p0 <= 1))
   stopifnot(all(pa >= 0) && all(pa <= 1))
   stopifnot(all(alpha >= 0) && all(alpha <= 1))
   stopifnot(all(beta >= 0) && all(beta <= 1))
   stopifnot(all((beta + eps) <= 1))
+
   if (!all(p0 < pa)) {
     stop("p0 should be smaller than pa")
   }
+
   if(length(p0) > 1 && length(pa) > 1){
     ## Use Rcpp implementation
     results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta,
@@ -70,11 +79,13 @@ fleming1stage <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005){
 }
 
 fleming1stage.default <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005) {
+
   stopifnot(p0 >= 0 && p0 <= 1)
   stopifnot(pa >= 0 && pa <= 1)
   stopifnot(alpha >= 0 && alpha <= 1)
   stopifnot(beta >= 0 && beta <= 1)
   stopifnot((beta + eps) <= 1)
+
   if(!(p0 < pa)) {
     stop("p0 should be smaller than pa")
   }
@@ -89,8 +100,9 @@ fleming1stage.default <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005)
   }
 
   alpha_temp <- 1 - pbinom(q = r_temp, size = n, prob = p0, lower.tail = T)
+
   res <- data.frame(design_nr=1,
-                    n = n,
+                    N = n,
                     r = r_temp,
                     alpha = alpha_temp,
                     beta = beta_temp,
@@ -98,6 +110,16 @@ fleming1stage.default <- function(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005)
                     pa = pa,
                     alpha_param = alpha,
                     beta_param = beta)
+
+  # Calculate exact 1-2*alpha confidence interval
+
+  res$eff <- paste0(res$r + 1, "/", res$N, " (", 100 * round((res$r + 1) / res$N, 3), "%)")
+  CI <- mapply(a = res$r + 1, b = res$N, FUN = function(a, b) binom::binom.confint(a,b,conf.level=1-2*alpha,methods="exact"))
+  res$CI_low  <- round(100 * unlist(CI[rownames(CI) == "lower", ]),2)
+  res$CI_high <- round(100 * unlist(CI[rownames(CI) == "upper", ]),2)
+
+  res<-res[, c("design_nr","N","r","eff","CI_low","CI_high","alpha","beta","p0","pa","alpha_param","beta_param")]
+
   res
 }
 

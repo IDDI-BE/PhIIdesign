@@ -22,6 +22,9 @@ a data.frame with elements
 \itemize{
 \item n: total number of patients
 \item r: quantile function of \code{1 - (alpha + eps)} at \code{n} under \code{p0}. Note if \code{n <= r} --> futility
+\item eff: r/N
+\item 90%CI_low: exact 1-2*alpha confidence interval lower limit
+\item 90%CI_high: exact 1-2*alpha confidence interval upper limit
 \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
 \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
 \item p0: your provided \code{p0} value
