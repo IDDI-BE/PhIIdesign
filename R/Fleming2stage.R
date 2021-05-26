@@ -59,7 +59,9 @@ P_Fleming2st_reject_Ha <- function(n1, n2, r, a, b_p0, B_p0, b_pa, B_pa){
 #' \item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
 #' \item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
 #' \item EN.p0: expected sample size under H0
-#' \item PET.p0: probability of terminating the trial at the end of the first stage under H0
+#' \item PET.p0: probability of terminating the trial for futility at the end of the first stage under H0
+#' \item EN.pa: expected sample size under Ha
+#' \item PET.pa: probability of terminating the trial for efficacy at the end of the first stage under Ha
 #' \item MIN: column indicating if the design is the minimal design
 #' \item OPT: column indicating if the setting is the optimal design
 #' \item ADMISS: column indicating if the setting is the admissible design
@@ -74,8 +76,8 @@ P_Fleming2st_reject_Ha <- function(n1, n2, r, a, b_p0, B_p0, b_pa, B_pa){
 #' if x1<=r1 --> stop futility at first stage \cr
 #' if r1<x1<a --> proceed to second dtage \cr
 #' if x1>=a --> stop efficacy at first stage \cr
-#' if (x1+x2)<=r --> futility at second stage \cr
-#' if (x1+x2)> r --> efficacy at second stage \cr
+#' if (x1+x2)<=r2 --> futility at second stage \cr
+#' if (x1+x2)> r2 --> efficacy at second stage \cr
 #' So PET.H0=P_H0(X1<=r1)+P_H0(X1>=a1)
 #' @references Mander AP, Thompson SG. Two-stage designs optimal under the alternative hypothesis for phase II cancer clinical trials.
 #'     Contemporary Clinical Trials 2010;31:572–578
@@ -110,7 +112,7 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
     stop("N_min should be >=1")
   }
 
-  EN.p0 <- EN.p0_N_min <- EN.p0_N_n1_min <- EN.p0_min <- EN.p0_N_min_int <- MIN <- N <- OPT <- NULL
+  EN.p0 <- EN.p0_N_min <- EN.p0_N_n1_min <- EN.p0_min <- EN.p0_N_min_int <- EN.pa <- MIN <- N <- OPT <- NULL
   rowid <- n1 <- n2 <- r <- r2 <- a <- NULL
 
   #----------------------------------------------------------------------------------------------------------#
@@ -198,6 +200,7 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
   res5$PET.pa <- pbinom(q = res5$r1, size = res5$n1, prob = pa, lower.tail = TRUE) + pbinom(q = res5$a-1, size = res5$n1, prob = pa, lower.tail = FALSE)
 
   res5$EN.p0  <- res5$N - ((res5$N - res5$n1) * res5$PET.p0)
+  res5$EN.pa  <- res5$N - ((res5$N - res5$n1) * res5$PET.pa)
 
   res5 <- data.table::setDT(res5)
 
@@ -230,7 +233,7 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
   if (int>0){
     res$EN_opt  <- "EN.p0_optimal"
     res6_int<-res6_int[res6_int$N >= min(res6$N[res6$MIN == "Minimax"]) & res6_int$N <= max(res6$N[res6$OPT == "Optimal"]), ]
-    res<-merge(x = res, y = res6_int, by = c("N","n1","n2","r1","a","r2","alpha_temp","beta_temp","diff_beta","diff_alpha","alpha","beta","PET.p0","EN.p0","PET.pa","N_min","EN.p0_min","EN.p0_N_min","EN.p0_N_n1_min","rowid"), all = TRUE)
+    res<-merge(x = res, y = res6_int, by = c("N","n1","n2","r1","a","r2","alpha_temp","beta_temp","diff_beta","diff_alpha","alpha","beta","PET.p0","EN.p0","PET.pa","EN.pa","N_min","EN.p0_min","EN.p0_N_min","EN.p0_N_n1_min","rowid"), all = TRUE)
 
     res$ADMISS[is.na(res$ADMISS)] <- "" # AFter merging: replace NA's with """
     res$MIN   [is.na(res$MIN)   ] <- ""
@@ -255,13 +258,13 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
 
   if (int>0){
   res <- cbind(design_nr=1:dim(res)[1],
-               res[, c("r1", "a", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "PET.pa", "MIN", "OPT", "ADMISS","EN_opt","INTERIM", "alpha", "beta")],
+               res[, c("r1", "a", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "EN.pa", "PET.pa", "MIN", "OPT", "ADMISS","EN_opt","INTERIM", "alpha", "beta")],
                p0 = p0, pa = pa,
                res[, c("alpha_param", "beta_param")])
   }
   if (int==0){
     res <- cbind(design_nr=1:dim(res)[1],
-                 res[, c("r1", "a", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "PET.pa", "MIN", "OPT", "ADMISS","alpha", "beta")],
+                 res[, c("r1", "a", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "EN.pa", "PET.pa", "MIN", "OPT", "ADMISS","alpha", "beta")],
                  p0 = p0, pa = pa,
                  res[, c("alpha_param", "beta_param")])
   }
