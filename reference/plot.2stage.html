@@ -58,6 +58,7 @@
 
 
 
+
   
 
   
@@ -117,8 +118,8 @@
     <p>Plots the expected sample size under H0 versus the maximum sample size</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for `2stage`</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, main <span class='op'>=</span> <span class='st'>"Two-stage Designs"</span>, xlab <span class='op'>=</span> <span class='st'>"Maximum Sample Size N"</span>, <span class='va'>ylab</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='co'># S3 method for `2stage`</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, main <span class='op'>=</span> <span class='st'>"Two-stage Designs"</span>, xlab <span class='op'>=</span> <span class='st'>"Maximum Sample Size N"</span>, <span class='va'>ylab</span>, <span class='va'>...</span><span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,15 +148,17 @@
 
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simon2stage.html'>simon2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,
-                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>1</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>samplesize</span><span class='op'>)</span>
-</div><div class='img'><img src='plot.2stage-1.png' alt='' width='700' height='433' /></div><div class='input'>
-<span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent2stage.html'>sargent2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>,
-                            eta <span class='op'>=</span> <span class='fl'>0.8</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>,
-                            eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>15</span>, N_max <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>samplesize</span><span class='op'>)</span>
-</div><div class='img'><img src='plot.2stage-2.png' alt='' width='700' height='433' /></div></pre>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simon2stage.html'>simon2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,</span>
+<span class='r-in'>                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>1</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>samplesize</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='plot.2stage-1.png' alt='' width='700' height='433' /></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent2stage.html'>sargent2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
+<span class='r-in'>                            eta <span class='op'>=</span> <span class='fl'>0.8</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>,</span>
+<span class='r-in'>                            eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>15</span>, N_max <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>samplesize</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='plot.2stage-2.png' alt='' width='700' height='433' /></span>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -167,11 +170,11 @@
 
       <footer>
       <div class="copyright">
-  <p>Developed by Koenraad D'Hollander.</p>
+  <p><p>Developed by Koenraad D’Hollander.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>

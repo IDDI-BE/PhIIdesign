@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot function for 1- and 2-stage Sargent design — plotPhII • PhIIdesign</title>
+<title>Plot function for Probability of conclusions of a PhII design — plotPhII • PhIIdesign</title>
 
 
 <!-- jquery -->
@@ -39,10 +39,11 @@
 
 
 
-<meta property="og:title" content="Plot function for 1- and 2-stage Sargent design — plotPhII" />
+<meta property="og:title" content="Plot function for Probability of conclusions of a PhII design — plotPhII" />
 <meta property="og:description" content="Plots the probability of rejecting \(H0\) ('Positive result') and rejecting Ha 
 ('Negative result') for different true response binomial parameters 
-if the input is an object returned by sargent2stage, interactively choose 
+if the input is an object returned by fleming1stage, simon2stage,
+simon2stage, sargent1stage or sargent2stage, interactively choose 
 the design number" />
 
 
@@ -58,6 +59,7 @@ the design number" />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
 
@@ -111,7 +113,7 @@ the design number" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot function for 1- and 2-stage Sargent design</h1>
+    <h1>Plot function for Probability of conclusions of a PhII design</h1>
     
     <div class="hidden name"><code>plotPhII.Rd</code></div>
     </div>
@@ -119,29 +121,33 @@ the design number" />
     <div class="ref-description">
     <p>Plots the probability of rejecting \(H0\) ('Positive result') and rejecting Ha <br />
 ('Negative result') for different true response binomial parameters <br />
-if the input is an object returned by <code><a href='sargent2stage.html'>sargent2stage</a></code>, interactively choose <br />
+if the input is an object returned by <code><a href='fleming1stage.html'>fleming1stage</a></code>, <code><a href='simon2stage.html'>simon2stage</a></code>,
+<code><a href='simon2stage.html'>simon2stage</a></code>, <code><a href='sargent1stage.html'>sargent1stage</a></code> or <code><a href='sargent2stage.html'>sargent2stage</a></code>, interactively choose <br />
 the design number</p>
     </div>
 
-    <pre class="usage"><span class='fu'>plotPhII</span><span class='op'>(</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>plotPhII</span><span class='op'>(</span>
   <span class='va'>x</span>,
   design_nr <span class='op'>=</span> <span class='fl'>1</span>,
   main <span class='op'>=</span> <span class='st'>"PhII design"</span>,
   xlab <span class='op'>=</span> <span class='st'>"True response probability"</span>,
+  grid <span class='op'>=</span> <span class='st'>"Y"</span>,
   <span class='va'>ylab</span>,
   <span class='va'>...</span>
-<span class='op'>)</span></pre>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>an object returned by <code><a href='sargent1stage.html'>sargent1stage</a></code> or <code><a href='sargent2stage.html'>sargent2stage</a></code></p></td>
+      <td><p>an object returned by <code><a href='fleming1stage.html'>fleming1stage</a></code>, <code><a href='simon2stage.html'>simon2stage</a></code>,
+<code><a href='simon2stage.html'>simon2stage</a></code>, <code><a href='sargent1stage.html'>sargent1stage</a></code> or <code><a href='sargent2stage.html'>sargent2stage</a></code> <br /></p></td>
     </tr>
     <tr>
       <th>design_nr</th>
-      <td><p>design_nr returned by <code><a href='sargent1stage.html'>sargent1stage</a></code> or <code><a href='sargent2stage.html'>sargent2stage</a></code> <br />
+      <td><p>design_nr returned by <code><a href='fleming1stage.html'>fleming1stage</a></code>, <code><a href='simon2stage.html'>simon2stage</a></code>,
+<code><a href='simon2stage.html'>simon2stage</a></code>, <code><a href='sargent1stage.html'>sargent1stage</a></code> or <code><a href='sargent2stage.html'>sargent2stage</a></code> <br />
 default is 1 (for <code><a href='sargent1stage.html'>sargent1stage</a></code>, only one design is outputted)</p></td>
     </tr>
     <tr>
@@ -151,6 +157,10 @@ default is 1 (for <code><a href='sargent1stage.html'>sargent1stage</a></code>, o
     <tr>
       <th>xlab</th>
       <td><p>x-axis label of the graph, passed on to <code>plot</code></p></td>
+    </tr>
+    <tr>
+      <th>grid</th>
+      <td><p>add grid to plot ("Y" or "N")</p></td>
     </tr>
     <tr>
       <th>ylab</th>
@@ -170,227 +180,235 @@ Simon R. Optimal two-Stage Designs for Phase II Clinical Trials. <br />
 Control Clin Trials. 1989;10:1-10</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># \donttest{</span>
-<span class='va'>fleming1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fleming1stage.html'>fleming1stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.45</span>, pa <span class='op'>=</span> <span class='fl'>0.7</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
-<span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>fleming1</span><span class='op'>)</span>
-</div><div class='img'><img src='plotPhII-1.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    Truep    ProbrejHA Probnodec   ProbrejH0
-#&gt; 1   0.35 0.9970618321         0 0.002938168
-#&gt; 2   0.36 0.9959267192         0 0.004073281
-#&gt; 3   0.37 0.9944311524         0 0.005568848
-#&gt; 4   0.38 0.9924870354         0 0.007512965
-#&gt; 5   0.39 0.9899923609         0 0.010007639
-#&gt; 6   0.40 0.9868309265         0 0.013169073
-#&gt; 7   0.41 0.9828725440         0 0.017127456
-#&gt; 8   0.42 0.9779738368         0 0.022026163
-#&gt; 9   0.43 0.9719797118         0 0.028020288
-#&gt; 10  0.44 0.9647255700         0 0.035274430
-#&gt; 11  0.45 0.9560402968         0 0.043959703
-#&gt; 12  0.46 0.9457500401         0 0.054249960
-#&gt; 13  0.47 0.9336827460         0 0.066317254
-#&gt; 14  0.48 0.9196733798         0 0.080326620
-#&gt; 15  0.49 0.9035697152         0 0.096430285
-#&gt; 16  0.50 0.8852385283         0 0.114761472
-#&gt; 17  0.51 0.8645719908         0 0.135428009
-#&gt; 18  0.52 0.8414940189         0 0.158505981
-#&gt; 19  0.53 0.8159663019         0 0.184033698
-#&gt; 20  0.54 0.7879937185         0 0.212006281
-#&gt; 21  0.55 0.7576288397         0 0.242371160
-#&gt; 22  0.56 0.7249752269         0 0.275024773
-#&gt; 23  0.57 0.6901892596         0 0.309810740
-#&gt; 24  0.58 0.6534802683         0 0.346519732
-#&gt; 25  0.59 0.6151088084         0 0.384891192
-#&gt; 26  0.60 0.5753829823         0 0.424617018
-#&gt; 27  0.61 0.5346528055         0 0.465347194
-#&gt; 28  0.62 0.4933027042         0 0.506697296
-#&gt; 29  0.63 0.4517423319         0 0.548257668
-#&gt; 30  0.64 0.4103959891         0 0.589604011
-#&gt; 31  0.65 0.3696910191         0 0.630308981
-#&gt; 32  0.66 0.3300456291         0 0.669954371
-#&gt; 33  0.67 0.2918566444         0 0.708143356
-#&gt; 34  0.68 0.2554877341         0 0.744512266
-#&gt; 35  0.69 0.2212586539         0 0.778741346
-#&gt; 36  0.70 0.1894360235         0 0.810563976
-#&gt; 37  0.71 0.1602261005         0 0.839773900
-#&gt; 38  0.72 0.1337699219         0 0.866230078
-#&gt; 39  0.73 0.1101410729         0 0.889858927
-#&gt; 40  0.74 0.0893462031         0 0.910653797
-#&gt; 41  0.75 0.0713282627         0 0.928671737
-#&gt; 42  0.76 0.0559722748         0 0.944027725
-#&gt; 43  0.77 0.0431133144         0 0.956886686
-#&gt; 44  0.78 0.0325462299         0 0.967453770
-#&gt; 45  0.79 0.0240365395         0 0.975963460
-#&gt; 46  0.80 0.0173318695         0 0.982668130
-#&gt; 47  0.81 0.0121732711         0 0.987826729
-#&gt; 48  0.82 0.0083057807         0 0.991694219
-#&gt; 49  0.83 0.0054876544         0 0.994512346
-#&gt; 50  0.84 0.0034978240         0 0.996502176
-#&gt; 51  0.85 0.0021412671         0 0.997858733
-#&gt; 52  0.86 0.0012521604         0 0.998747840
-#&gt; 53  0.87 0.0006948609         0 0.999305139
-#&gt; 54  0.88 0.0003629340         0 0.999637066
-#&gt; 55  0.89 0.0001765883         0 0.999823412
-#&gt; 56  0.90 0.0000789819         0 0.999921018</div><div class='input'><span class='va'>simon2</span><span class='op'>&lt;-</span> <span class='fu'><a href='simon2stage.html'>simon2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,
-                     eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>1</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
-<span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>simon2</span><span class='op'>)</span>
-</div><div class='img'><img src='plotPhII-2.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    Truep   ProbrejHA Probnodec    ProbrejH0
-#&gt; 1   0.00 1.000000000         0 0.000000e+00
-#&gt; 2   0.01 0.999998263         0 1.736561e-06
-#&gt; 3   0.02 0.999951385         0 4.861479e-05
-#&gt; 4   0.03 0.999677227         0 3.227735e-04
-#&gt; 5   0.04 0.998811446         0 1.188554e-03
-#&gt; 6   0.05 0.996832180         0 3.167820e-03
-#&gt; 7   0.06 0.993119277         0 6.880723e-03
-#&gt; 8   0.07 0.987024517         0 1.297548e-02
-#&gt; 9   0.08 0.977938221         0 2.206178e-02
-#&gt; 10  0.09 0.965344115         0 3.465588e-02
-#&gt; 11  0.10 0.948858789         0 5.114121e-02
-#&gt; 12  0.11 0.928255078         0 7.174492e-02
-#&gt; 13  0.12 0.903470569         0 9.652943e-02
-#&gt; 14  0.13 0.874603501         0 1.253965e-01
-#&gt; 15  0.14 0.841898811         0 1.581012e-01
-#&gt; 16  0.15 0.805727157         0 1.942728e-01
-#&gt; 17  0.16 0.766559609         0 2.334404e-01
-#&gt; 18  0.17 0.724940323         0 2.750597e-01
-#&gt; 19  0.18 0.681459180         0 3.185408e-01
-#&gt; 20  0.19 0.636725868         0 3.632741e-01
-#&gt; 21  0.20 0.591346556         0 4.086534e-01
-#&gt; 22  0.21 0.545903842         0 4.540962e-01
-#&gt; 23  0.22 0.500940404         0 4.990596e-01
-#&gt; 24  0.23 0.456946472         0 5.430535e-01
-#&gt; 25  0.24 0.414351016         0 5.856490e-01
-#&gt; 26  0.25 0.373516420         0 6.264836e-01
-#&gt; 27  0.26 0.334736252         0 6.652637e-01
-#&gt; 28  0.27 0.298235711         0 7.017643e-01
-#&gt; 29  0.28 0.264174281         0 7.358257e-01
-#&gt; 30  0.29 0.232650100         0 7.673499e-01
-#&gt; 31  0.30 0.203705616         0 7.962944e-01
-#&gt; 32  0.31 0.177334080         0 8.226659e-01
-#&gt; 33  0.32 0.153486525         0 8.465135e-01
-#&gt; 34  0.33 0.132078885         0 8.679211e-01
-#&gt; 35  0.34 0.112999008         0 8.870010e-01
-#&gt; 36  0.35 0.096113327         0 9.038867e-01
-#&gt; 37  0.36 0.081273050         0 9.187269e-01
-#&gt; 38  0.37 0.068319739         0 9.316803e-01
-#&gt; 39  0.38 0.057090215         0 9.429098e-01
-#&gt; 40  0.39 0.047420759         0 9.525792e-01
-#&gt; 41  0.40 0.039150603         0 9.608494e-01
-#&gt; 42  0.41 0.032124732         0 9.678753e-01
-#&gt; 43  0.42 0.026196049         0 9.738040e-01
-#&gt; 44  0.43 0.021226941         0 9.787731e-01
-#&gt; 45  0.44 0.017090328         0 9.829097e-01
-#&gt; 46  0.45 0.013670253         0 9.863297e-01
-#&gt; 47  0.46 0.010862089         0 9.891379e-01
-#&gt; 48  0.47 0.008572427         0 9.914276e-01
-#&gt; 49  0.48 0.006718715         0 9.932813e-01
-#&gt; 50  0.49 0.005228705         0 9.947713e-01
-#&gt; 51  0.50 0.004039764         0 9.959602e-01</div><div class='input'>
-<span class='va'>sargent1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent1stage.html'>sargent1stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.2</span>, pa <span class='op'>=</span> <span class='fl'>0.35</span>, alpha <span class='op'>=</span> <span class='fl'>0.1</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eta <span class='op'>=</span> <span class='fl'>0.8</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>,
-                         eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>35</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span>
-<span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>sargent1</span><span class='op'>)</span>
-</div><div class='img'><img src='plotPhII-3.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    Truep    ProbrejHA    Probnodec    ProbrejH0
-#&gt; 1   0.10 9.981709e-01 0.0013393325 0.0004897231
-#&gt; 2   0.11 9.961163e-01 0.0027329574 0.0011507657
-#&gt; 3   0.12 9.924862e-01 0.0050709228 0.0024429208
-#&gt; 4   0.13 9.865584e-01 0.0086809566 0.0047606394
-#&gt; 5   0.14 9.775102e-01 0.0138667620 0.0086230633
-#&gt; 6   0.15 9.644843e-01 0.0208537783 0.0146619583
-#&gt; 7   0.16 9.466721e-01 0.0297379840 0.0235899070
-#&gt; 8   0.17 9.234020e-01 0.0404477193 0.0361502714
-#&gt; 9   0.18 8.942200e-01 0.0527261741 0.0530538233
-#&gt; 10  0.19 8.589522e-01 0.0661383428 0.0749095034
-#&gt; 11  0.20 8.177401e-01 0.0801018772 0.1021580183
-#&gt; 12  0.21 7.710459e-01 0.0939373085 0.1350167608
-#&gt; 13  0.22 7.196267e-01 0.1069302794 0.1734429809
-#&gt; 14  0.23 6.644833e-01 0.1183971050 0.2171196038
-#&gt; 15  0.24 6.067897e-01 0.1277451908 0.2654650812
-#&gt; 16  0.25 5.478130e-01 0.1345213227 0.3176656858
-#&gt; 17  0.26 4.888307e-01 0.1384431753 0.3727261461
-#&gt; 18  0.27 4.310552e-01 0.1394120590 0.4295327718
-#&gt; 19  0.28 3.755701e-01 0.1375074947 0.4869223796
-#&gt; 20  0.29 3.232833e-01 0.1329662958 0.5437503817
-#&gt; 21  0.30 2.748975e-01 0.1261502554 0.5989522097
-#&gt; 22  0.31 2.308992e-01 0.1175072023 0.6515935980
-#&gt; 23  0.32 1.915629e-01 0.1075301557 0.7009068997
-#&gt; 24  0.33 1.569690e-01 0.0967187225 0.7463122973
-#&gt; 25  0.34 1.270298e-01 0.0855459169 0.7874243213
-#&gt; 26  0.35 1.015222e-01 0.0744324508 0.8240453253
-#&gt; 27  0.36 8.012216e-02 0.0637294044 0.8561484362
-#&gt; 28  0.37 6.243786e-02 0.0537091872 0.8838529577
-#&gt; 29  0.38 4.804078e-02 0.0445639194 0.9073952991
-#&gt; 30  0.39 3.649186e-02 0.0364098475 0.9270982906
-#&gt; 31  0.40 2.736254e-02 0.0292961498 0.9433413127
-#&gt; 32  0.41 2.025043e-02 0.0232164549 0.9565331107
-#&gt; 33  0.42 1.478990e-02 0.0181215413 0.9670885573
-#&gt; 34  0.43 1.065801e-02 0.0139319470 0.9754100456
-#&gt; 35  0.44 7.576774e-03 0.0105495366 0.9818736896
-#&gt; 36  0.45 5.312492e-03 0.0078674043 0.9868201034
-#&gt; 37  0.46 3.672957e-03 0.0057777943 0.9905492485
-#&gt; 38  0.47 2.503364e-03 0.0041779733 0.9933186628
-#&gt; 39  0.48 1.681505e-03 0.0029741787 0.9953443162
-#&gt; 40  0.49 1.112761e-03 0.0020838924 0.9968033468
-#&gt; 41  0.50 7.252455e-04 0.0014367570 0.9978379975
-#&gt; 42  0.51 4.653551e-04 0.0009744677 0.9985601772
-#&gt; 43  0.52 2.938473e-04 0.0006499606 0.9990561921
-#&gt; 44  0.53 1.825167e-04 0.0004261706 0.9993913127
-#&gt; 45  0.54 1.114593e-04 0.0002745867 0.9996139540
-#&gt; 46  0.55 6.688577e-05 0.0001737713 0.9997593429</div><div class='input'>
-<span class='va'>sargent2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent2stage.html'>sargent2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>,
-                          eta <span class='op'>=</span> <span class='fl'>0.8</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>,
-                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>15</span>, N_max <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span>
-<span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>sargent2</span>,design_nr<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span>
-</div><div class='img'><img src='plotPhII-4.png' alt='' width='700' height='433' /></div><div class='output co'>#&gt;    Truep   ProbrejHA    Probnodec    ProbrejH0
-#&gt; 1   0.00 1.000000000 0.0000000000 0.000000e+00
-#&gt; 2   0.01 0.999952239 0.0000460247 1.736561e-06
-#&gt; 3   0.02 0.999331722 0.0006196635 4.861479e-05
-#&gt; 4   0.03 0.997042126 0.0026351003 3.227735e-04
-#&gt; 5   0.04 0.991828422 0.0069830246 1.188554e-03
-#&gt; 6   0.05 0.982563824 0.0142683564 3.167820e-03
-#&gt; 7   0.06 0.968403677 0.0247155999 6.880723e-03
-#&gt; 8   0.07 0.948848121 0.0381763961 1.297548e-02
-#&gt; 9   0.08 0.923744914 0.0541933073 2.206178e-02
-#&gt; 10  0.09 0.893255555 0.0720885599 3.465588e-02
-#&gt; 11  0.10 0.857801377 0.0910574121 5.114121e-02
-#&gt; 12  0.11 0.818001296 0.1102537821 7.174492e-02
-#&gt; 13  0.12 0.774609107 0.1288614617 9.652943e-02
-#&gt; 14  0.13 0.728455343 0.1461481581 1.253965e-01
-#&gt; 15  0.14 0.680396606 0.1615022051 1.581012e-01
-#&gt; 16  0.15 0.631273766 0.1744533912 1.942728e-01
-#&gt; 17  0.16 0.581879366 0.1846802426 2.334404e-01
-#&gt; 18  0.17 0.532933838 0.1920064856 2.750597e-01
-#&gt; 19  0.18 0.485069730 0.1963894499 3.185408e-01
-#&gt; 20  0.19 0.438822873 0.1979029953 3.632741e-01
-#&gt; 21  0.20 0.394629325 0.1967172317 4.086534e-01
-#&gt; 22  0.21 0.352826917 0.1930769250 4.540962e-01
-#&gt; 23  0.22 0.313660313 0.1872800910 4.990596e-01
-#&gt; 24  0.23 0.277288573 0.1796578982 5.430535e-01
-#&gt; 25  0.24 0.243794358 0.1705566583 5.856490e-01
-#&gt; 26  0.25 0.213194039 0.1603223814 6.264836e-01
-#&gt; 27  0.26 0.185448125 0.1492881272 6.652637e-01
-#&gt; 28  0.27 0.160471528 0.1377641831 7.017643e-01
-#&gt; 29  0.28 0.138143331 0.1260309493 7.358257e-01
-#&gt; 30  0.29 0.118315793 0.1143343067 7.673499e-01
-#&gt; 31  0.30 0.100822445 0.1028831711 7.962944e-01
-#&gt; 32  0.31 0.085485180 0.0918489002 8.226659e-01
-#&gt; 33  0.32 0.072120318 0.0813662071 8.465135e-01
-#&gt; 34  0.33 0.060543644 0.0715352416 8.679211e-01
-#&gt; 35  0.34 0.050574487 0.0624245205 8.870010e-01
-#&gt; 36  0.35 0.042038905 0.0540744216 9.038867e-01
-#&gt; 37  0.36 0.034772060 0.0465009905 9.187269e-01
-#&gt; 38  0.37 0.028619888 0.0396998513 9.316803e-01
-#&gt; 39  0.38 0.023440162 0.0336500528 9.429098e-01
-#&gt; 40  0.39 0.019103040 0.0283177189 9.525792e-01
-#&gt; 41  0.40 0.015491195 0.0236594075 9.608494e-01
-#&gt; 42  0.41 0.012499615 0.0196251176 9.678753e-01
-#&gt; 43  0.42 0.010035144 0.0161609057 9.738040e-01
-#&gt; 44  0.43 0.008015840 0.0132111010 9.787731e-01
-#&gt; 45  0.44 0.006370204 0.0107201240 9.829097e-01
-#&gt; 46  0.45 0.005036325 0.0086339279 9.863297e-01
-#&gt; 47  0.46 0.003960996 0.0069010931 9.891379e-01
-#&gt; 48  0.47 0.003098817 0.0054736101 9.914276e-01
-#&gt; 49  0.48 0.002411323 0.0043073924 9.932813e-01
-#&gt; 50  0.49 0.001866146 0.0033625593 9.947713e-01
-#&gt; 51  0.50 0.001436234 0.0026035309 9.959602e-01</div><div class='input'><span class='co'># }</span>
-</div></pre>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='co'># \donttest{</span></span>
+<span class='r-in'><span class='va'>fleming1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='fleming1stage.html'>fleming1stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.45</span>, pa <span class='op'>=</span> <span class='fl'>0.7</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>fleming1</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='plotPhII-1.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ptrue    ProbrejHA Probnodec   ProbrejH0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1   0.35 0.9970618321         0 0.002938168</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2   0.36 0.9959267192         0 0.004073281</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3   0.37 0.9944311524         0 0.005568848</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4   0.38 0.9924870354         0 0.007512965</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5   0.39 0.9899923609         0 0.010007639</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6   0.40 0.9868309265         0 0.013169073</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7   0.41 0.9828725440         0 0.017127456</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8   0.42 0.9779738368         0 0.022026163</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9   0.43 0.9719797118         0 0.028020288</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10  0.44 0.9647255700         0 0.035274430</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11  0.45 0.9560402968         0 0.043959703</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12  0.46 0.9457500401         0 0.054249960</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13  0.47 0.9336827460         0 0.066317254</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14  0.48 0.9196733798         0 0.080326620</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15  0.49 0.9035697152         0 0.096430285</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16  0.50 0.8852385283         0 0.114761472</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17  0.51 0.8645719908         0 0.135428009</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18  0.52 0.8414940189         0 0.158505981</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19  0.53 0.8159663019         0 0.184033698</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20  0.54 0.7879937185         0 0.212006281</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21  0.55 0.7576288397         0 0.242371160</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22  0.56 0.7249752269         0 0.275024773</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23  0.57 0.6901892596         0 0.309810740</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24  0.58 0.6534802683         0 0.346519732</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25  0.59 0.6151088084         0 0.384891192</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26  0.60 0.5753829823         0 0.424617018</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27  0.61 0.5346528055         0 0.465347194</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28  0.62 0.4933027042         0 0.506697296</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29  0.63 0.4517423319         0 0.548257668</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30  0.64 0.4103959891         0 0.589604011</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31  0.65 0.3696910191         0 0.630308981</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32  0.66 0.3300456291         0 0.669954371</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33  0.67 0.2918566444         0 0.708143356</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 34  0.68 0.2554877341         0 0.744512266</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 35  0.69 0.2212586539         0 0.778741346</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 36  0.70 0.1894360235         0 0.810563976</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 37  0.71 0.1602261005         0 0.839773900</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 38  0.72 0.1337699219         0 0.866230078</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 39  0.73 0.1101410729         0 0.889858927</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 40  0.74 0.0893462031         0 0.910653797</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 41  0.75 0.0713282627         0 0.928671737</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 42  0.76 0.0559722748         0 0.944027725</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 43  0.77 0.0431133144         0 0.956886686</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 44  0.78 0.0325462299         0 0.967453770</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 45  0.79 0.0240365395         0 0.975963460</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 46  0.80 0.0173318695         0 0.982668130</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 47  0.81 0.0121732711         0 0.987826729</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 48  0.82 0.0083057807         0 0.991694219</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 49  0.83 0.0054876544         0 0.994512346</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 50  0.84 0.0034978240         0 0.996502176</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 51  0.85 0.0021412671         0 0.997858733</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 52  0.86 0.0012521604         0 0.998747840</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 53  0.87 0.0006948609         0 0.999305139</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 54  0.88 0.0003629340         0 0.999637066</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 55  0.89 0.0001765883         0 0.999823412</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 56  0.90 0.0000789819         0 0.999921018</span>
+<span class='r-in'><span class='va'>simon2</span><span class='op'>&lt;-</span> <span class='fu'><a href='simon2stage.html'>simon2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,</span>
+<span class='r-in'>                     eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>1</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>simon2</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='plotPhII-2.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ptrue   ProbrejHA Probnodec    ProbrejH0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1   0.00 1.000000000         0 0.000000e+00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2   0.01 0.999998263         0 1.736561e-06</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3   0.02 0.999951385         0 4.861479e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4   0.03 0.999677227         0 3.227735e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5   0.04 0.998811446         0 1.188554e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6   0.05 0.996832180         0 3.167820e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7   0.06 0.993119277         0 6.880723e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8   0.07 0.987024517         0 1.297548e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9   0.08 0.977938221         0 2.206178e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10  0.09 0.965344115         0 3.465588e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11  0.10 0.948858789         0 5.114121e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12  0.11 0.928255078         0 7.174492e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13  0.12 0.903470569         0 9.652943e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14  0.13 0.874603501         0 1.253965e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15  0.14 0.841898811         0 1.581012e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16  0.15 0.805727157         0 1.942728e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17  0.16 0.766559609         0 2.334404e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18  0.17 0.724940323         0 2.750597e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19  0.18 0.681459180         0 3.185408e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20  0.19 0.636725868         0 3.632741e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21  0.20 0.591346556         0 4.086534e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22  0.21 0.545903842         0 4.540962e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23  0.22 0.500940404         0 4.990596e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24  0.23 0.456946472         0 5.430535e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25  0.24 0.414351016         0 5.856490e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26  0.25 0.373516420         0 6.264836e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27  0.26 0.334736252         0 6.652637e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28  0.27 0.298235711         0 7.017643e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29  0.28 0.264174281         0 7.358257e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30  0.29 0.232650100         0 7.673499e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31  0.30 0.203705616         0 7.962944e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32  0.31 0.177334080         0 8.226659e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33  0.32 0.153486525         0 8.465135e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 34  0.33 0.132078885         0 8.679211e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 35  0.34 0.112999008         0 8.870010e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 36  0.35 0.096113327         0 9.038867e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 37  0.36 0.081273050         0 9.187269e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 38  0.37 0.068319739         0 9.316803e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 39  0.38 0.057090215         0 9.429098e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 40  0.39 0.047420759         0 9.525792e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 41  0.40 0.039150603         0 9.608494e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 42  0.41 0.032124732         0 9.678753e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 43  0.42 0.026196049         0 9.738040e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 44  0.43 0.021226941         0 9.787731e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 45  0.44 0.017090328         0 9.829097e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 46  0.45 0.013670253         0 9.863297e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 47  0.46 0.010862089         0 9.891379e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 48  0.47 0.008572427         0 9.914276e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 49  0.48 0.006718715         0 9.932813e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 50  0.49 0.005228705         0 9.947713e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 51  0.50 0.004039764         0 9.959602e-01</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>sargent1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent1stage.html'>sargent1stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.2</span>, pa <span class='op'>=</span> <span class='fl'>0.35</span>, alpha <span class='op'>=</span> <span class='fl'>0.1</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eta <span class='op'>=</span> <span class='fl'>0.8</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>,</span>
+<span class='r-in'>                         eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>35</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>sargent1</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='plotPhII-3.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ptrue    ProbrejHA    Probnodec    ProbrejH0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1   0.10 9.981709e-01 0.0013393325 0.0004897231</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2   0.11 9.961163e-01 0.0027329574 0.0011507657</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3   0.12 9.924862e-01 0.0050709228 0.0024429208</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4   0.13 9.865584e-01 0.0086809566 0.0047606394</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5   0.14 9.775102e-01 0.0138667620 0.0086230633</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6   0.15 9.644843e-01 0.0208537783 0.0146619583</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7   0.16 9.466721e-01 0.0297379840 0.0235899070</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8   0.17 9.234020e-01 0.0404477193 0.0361502714</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9   0.18 8.942200e-01 0.0527261741 0.0530538233</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10  0.19 8.589522e-01 0.0661383428 0.0749095034</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11  0.20 8.177401e-01 0.0801018772 0.1021580183</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12  0.21 7.710459e-01 0.0939373085 0.1350167608</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13  0.22 7.196267e-01 0.1069302794 0.1734429809</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14  0.23 6.644833e-01 0.1183971050 0.2171196038</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15  0.24 6.067897e-01 0.1277451908 0.2654650812</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16  0.25 5.478130e-01 0.1345213227 0.3176656858</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17  0.26 4.888307e-01 0.1384431753 0.3727261461</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18  0.27 4.310552e-01 0.1394120590 0.4295327718</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19  0.28 3.755701e-01 0.1375074947 0.4869223796</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20  0.29 3.232833e-01 0.1329662958 0.5437503817</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21  0.30 2.748975e-01 0.1261502554 0.5989522097</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22  0.31 2.308992e-01 0.1175072023 0.6515935980</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23  0.32 1.915629e-01 0.1075301557 0.7009068997</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24  0.33 1.569690e-01 0.0967187225 0.7463122973</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25  0.34 1.270298e-01 0.0855459169 0.7874243213</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26  0.35 1.015222e-01 0.0744324508 0.8240453253</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27  0.36 8.012216e-02 0.0637294044 0.8561484362</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28  0.37 6.243786e-02 0.0537091872 0.8838529577</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29  0.38 4.804078e-02 0.0445639194 0.9073952991</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30  0.39 3.649186e-02 0.0364098475 0.9270982906</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31  0.40 2.736254e-02 0.0292961498 0.9433413127</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32  0.41 2.025043e-02 0.0232164549 0.9565331107</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33  0.42 1.478990e-02 0.0181215413 0.9670885573</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 34  0.43 1.065801e-02 0.0139319470 0.9754100456</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 35  0.44 7.576774e-03 0.0105495366 0.9818736896</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 36  0.45 5.312492e-03 0.0078674043 0.9868201034</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 37  0.46 3.672957e-03 0.0057777943 0.9905492485</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 38  0.47 2.503364e-03 0.0041779733 0.9933186628</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 39  0.48 1.681505e-03 0.0029741787 0.9953443162</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 40  0.49 1.112761e-03 0.0020838924 0.9968033468</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 41  0.50 7.252455e-04 0.0014367570 0.9978379975</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 42  0.51 4.653551e-04 0.0009744677 0.9985601772</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 43  0.52 2.938473e-04 0.0006499606 0.9990561921</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 44  0.53 1.825167e-04 0.0004261706 0.9993913127</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 45  0.54 1.114593e-04 0.0002745867 0.9996139540</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 46  0.55 6.688577e-05 0.0001737713 0.9997593429</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>sargent2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='sargent2stage.html'>sargent2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
+<span class='r-in'>                          eta <span class='op'>=</span> <span class='fl'>0.8</span>, pi <span class='op'>=</span> <span class='fl'>0.8</span>,</span>
+<span class='r-in'>                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>15</span>, N_max <span class='op'>=</span> <span class='fl'>30</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>plotPhII</span><span class='op'>(</span><span class='va'>sargent2</span>,design_nr<span class='op'>=</span><span class='fl'>1</span><span class='op'>)</span></span>
+<span class='r-plt'><img src='plotPhII-4.png' alt='' width='700' height='433' /></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>    ptrue   ProbrejHA    Probnodec    ProbrejH0</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1   0.00 1.000000000 0.0000000000 0.000000e+00</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 2   0.01 0.999952239 0.0000460247 1.736561e-06</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 3   0.02 0.999331722 0.0006196635 4.861479e-05</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 4   0.03 0.997042126 0.0026351003 3.227735e-04</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 5   0.04 0.991828422 0.0069830246 1.188554e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 6   0.05 0.982563824 0.0142683564 3.167820e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 7   0.06 0.968403677 0.0247155999 6.880723e-03</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 8   0.07 0.948848121 0.0381763961 1.297548e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 9   0.08 0.923744914 0.0541933073 2.206178e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 10  0.09 0.893255555 0.0720885599 3.465588e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 11  0.10 0.857801377 0.0910574121 5.114121e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 12  0.11 0.818001296 0.1102537821 7.174492e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 13  0.12 0.774609107 0.1288614617 9.652943e-02</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 14  0.13 0.728455343 0.1461481581 1.253965e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 15  0.14 0.680396606 0.1615022051 1.581012e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 16  0.15 0.631273766 0.1744533912 1.942728e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 17  0.16 0.581879366 0.1846802426 2.334404e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 18  0.17 0.532933838 0.1920064856 2.750597e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 19  0.18 0.485069730 0.1963894499 3.185408e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 20  0.19 0.438822873 0.1979029953 3.632741e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 21  0.20 0.394629325 0.1967172317 4.086534e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 22  0.21 0.352826917 0.1930769250 4.540962e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 23  0.22 0.313660313 0.1872800910 4.990596e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 24  0.23 0.277288573 0.1796578982 5.430535e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 25  0.24 0.243794358 0.1705566583 5.856490e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 26  0.25 0.213194039 0.1603223814 6.264836e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 27  0.26 0.185448125 0.1492881272 6.652637e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 28  0.27 0.160471528 0.1377641831 7.017643e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 29  0.28 0.138143331 0.1260309493 7.358257e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 30  0.29 0.118315793 0.1143343067 7.673499e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 31  0.30 0.100822445 0.1028831711 7.962944e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 32  0.31 0.085485180 0.0918489002 8.226659e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 33  0.32 0.072120318 0.0813662071 8.465135e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 34  0.33 0.060543644 0.0715352416 8.679211e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 35  0.34 0.050574487 0.0624245205 8.870010e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 36  0.35 0.042038905 0.0540744216 9.038867e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 37  0.36 0.034772060 0.0465009905 9.187269e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 38  0.37 0.028619888 0.0396998513 9.316803e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 39  0.38 0.023440162 0.0336500528 9.429098e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 40  0.39 0.019103040 0.0283177189 9.525792e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 41  0.40 0.015491195 0.0236594075 9.608494e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 42  0.41 0.012499615 0.0196251176 9.678753e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 43  0.42 0.010035144 0.0161609057 9.738040e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 44  0.43 0.008015840 0.0132111010 9.787731e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 45  0.44 0.006370204 0.0107201240 9.829097e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 46  0.45 0.005036325 0.0086339279 9.863297e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 47  0.46 0.003960996 0.0069010931 9.891379e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 48  0.47 0.003098817 0.0054736101 9.914276e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 49  0.48 0.002411323 0.0043073924 9.932813e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 50  0.49 0.001866146 0.0033625593 9.947713e-01</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 51  0.50 0.001436234 0.0026035309 9.959602e-01</span>
+<span class='r-in'><span class='co'># }</span></span>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -402,11 +420,11 @@ Control Clin Trials. 1989;10:1-10</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Koenraad D'Hollander.</p>
+  <p><p>Developed by Koenraad D’Hollander.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>

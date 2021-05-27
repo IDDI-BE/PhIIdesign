@@ -60,6 +60,7 @@ This function calculates sample sizes of the Fleming single-stage design, for \(
 
 
 
+
   
 
   
@@ -121,7 +122,7 @@ an eligible patient receiving the treatment regimen will experience a regression
 This function calculates sample sizes of the Fleming single-stage design, for \(p_0 &lt; p_a\) for the requested Type I (alpha) and Type II error (beta).</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fleming1stage</span><span class='op'>(</span><span class='va'>p0</span>, <span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>, eps <span class='op'>=</span> <span class='fl'>0.005</span><span class='op'>)</span></pre>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>fleming1stage</span><span class='op'>(</span><span class='va'>p0</span>, <span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>, eps <span class='op'>=</span> <span class='fl'>0.005</span><span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -153,6 +154,9 @@ This function calculates sample sizes of the Fleming single-stage design, for \(
     <p>a data.frame with elements</p><ul>
 <li><p>n: total number of patients</p></li>
 <li><p>r: quantile function of <code>1 - (alpha + eps)</code> at <code>n</code> under <code>p0</code>. Note if <code>n &lt;= r</code> --&gt; futility</p></li>
+<li><p>eff: r/N</p></li>
+<li><p>90<!-- %CI_low: exact 1-2*alpha confidence interval lower limit --></p></li>
+<li><p>90<!-- %CI_high: exact 1-2*alpha confidence interval upper limit --></p></li>
 <li><p>alpha: the actual alpha value which is smaller than <code>alpha_param + eps</code></p></li>
 <li><p>beta: the actual beta value where which is smaller than <code>beta_param + eps</code></p></li>
 <li><p>p0: your provided <code>p0</code> value</p></li>
@@ -166,30 +170,39 @@ This function calculates sample sizes of the Fleming single-stage design, for \(
     <p>Fleming TR. One-sample multiple testing procedure for phase II clinical trials. Biometrics. 1982;38(1):143-151.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.45</span>, pa <span class='op'>=</span> <span class='fl'>0.7</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   design_nr  n  r     alpha     beta   p0  pa alpha_param beta_param
-#&gt; 1         1 25 15 0.0439597 0.189436 0.45 0.7        0.05        0.2</div><div class='input'><span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0.005</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   design_nr  n r      alpha      beta  p0  pa alpha_param beta_param
-#&gt; 1         1 33 6 0.04170385 0.0944455 0.1 0.3        0.05        0.1</div><div class='input'><span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0.00001</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;   design_nr  n r      alpha      beta  p0  pa alpha_param beta_param
-#&gt; 1         1 33 6 0.04170385 0.0944455 0.1 0.3        0.05        0.1</div><div class='input'>
-<span class='co'>## For several combinations of p0 and pa</span>
-<span class='co'>## not it is important that p0 is not equal to pa</span>
-<span class='va'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.95</span>, by <span class='op'>=</span> <span class='fl'>0.05</span><span class='op'>)</span>,
-                    pa <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.95</span>, by <span class='op'>=</span> <span class='fl'>0.05</span><span class='op'>)</span><span class='op'>)</span>
-<span class='va'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>test</span>, <span class='op'>(</span><span class='va'>pa</span> <span class='op'>-</span> <span class='va'>p0</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0.00001</span><span class='op'>)</span>
-<span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>, eps <span class='op'>=</span> <span class='fl'>0.0005</span><span class='op'>)</span>
-<span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0.0005</span><span class='op'>)</span>
-<span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.01</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>, eps <span class='op'>=</span> <span class='fl'>0.0005</span><span class='op'>)</span>
-<span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.01</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0.0005</span><span class='op'>)</span>
-
-<span class='co'>## these 2 are the same</span>
-<span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
-<span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mapply.html'>mapply</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, FUN<span class='op'>=</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>p0</span>, <span class='va'>pa</span><span class='op'>)</span><span class='op'>{</span>
-  <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span>
-<span class='op'>}</span>, SIMPLIFY <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span>
-<span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/do.call.html'>do.call</a></span><span class='op'>(</span><span class='va'>rbind</span>, <span class='va'>samplesize</span><span class='op'>)</span>
-</div></pre>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.45</span>, pa <span class='op'>=</span> <span class='fl'>0.7</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   design_nr  N  r         eff CI_low CI_high     alpha     beta   p0  pa</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1         1 25 15 16/25 (64%)  45.61   79.76 0.0439597 0.189436 0.45 0.7</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   alpha_param beta_param</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1        0.05        0.2</span>
+<span class='r-in'><span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0.005</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   design_nr  N r          eff CI_low CI_high      alpha      beta  p0  pa</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1         1 33 6 7/33 (21.2%)   10.4   36.18 0.04170385 0.0944455 0.1 0.3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   alpha_param beta_param</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1        0.05        0.1</span>
+<span class='r-in'><span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0.00001</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   design_nr  N r          eff CI_low CI_high      alpha      beta  p0  pa</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1         1 33 6 7/33 (21.2%)   10.4   36.18 0.04170385 0.0944455 0.1 0.3</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>   alpha_param beta_param</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> 1        0.05        0.1</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## For several combinations of p0 and pa</span></span>
+<span class='r-in'><span class='co'>## not it is important that p0 is not equal to pa</span></span>
+<span class='r-in'><span class='va'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.95</span>, by <span class='op'>=</span> <span class='fl'>0.05</span><span class='op'>)</span>,</span>
+<span class='r-in'>                    pa <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>0.95</span>, by <span class='op'>=</span> <span class='fl'>0.05</span><span class='op'>)</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>test</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>test</span>, <span class='op'>(</span><span class='va'>pa</span> <span class='op'>-</span> <span class='va'>p0</span><span class='op'>)</span> <span class='op'>&gt;</span> <span class='fl'>0.00001</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>, eps <span class='op'>=</span> <span class='fl'>0.0005</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0.0005</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.01</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>, eps <span class='op'>=</span> <span class='fl'>0.0005</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.01</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0.0005</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## these 2 are the same</span></span>
+<span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mapply.html'>mapply</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>pa</span>, FUN<span class='op'>=</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>p0</span>, <span class='va'>pa</span><span class='op'>)</span><span class='op'>{</span></span>
+<span class='r-in'>  <span class='fu'>fleming1stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='va'>p0</span>, pa <span class='op'>=</span> <span class='va'>pa</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span>, SIMPLIFY <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/do.call.html'>do.call</a></span><span class='op'>(</span><span class='va'>rbind</span>, <span class='va'>samplesize</span><span class='op'>)</span></span>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -201,11 +214,11 @@ This function calculates sample sizes of the Fleming single-stage design, for \(
 
       <footer>
       <div class="copyright">
-  <p>Developed by Koenraad D'Hollander.</p>
+  <p><p>Developed by Koenraad D’Hollander.</p></p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.9000.</p>
+  <p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p></p>
 </div>
 
       </footer>
