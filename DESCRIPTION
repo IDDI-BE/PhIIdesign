@@ -20,7 +20,6 @@ RoxygenNote: 7.1.1
 Imports:
     Rcpp,
     data.table,
-    OneArmPhaseTwoStudy,
     binom
 LinkingTo: Rcpp
 Suggests:
