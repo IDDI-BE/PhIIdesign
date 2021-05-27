@@ -4,7 +4,6 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom grDevices chull
 #' @importFrom graphics plot points lines abline axis par polygon text legend mtext
-#' @importFrom OneArmPhaseTwoStudy get_CI
 #' @importFrom binom binom.confint
 #' @useDynLib PhIIdesign
 NULL

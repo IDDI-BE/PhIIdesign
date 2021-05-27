@@ -56,8 +56,8 @@ P_Simon_reject_Ha <- function(n1, n2, r, b_p0, B_p0, b_pa, B_pa){
 #' \item r1: threshold for "rejecting" Ha: if x1<=r1 --> stop for futility at first stage
 #' \item r2: threshold for "rejecting" Ha: if x1+x2<=r2 --> futility at second stage
 #' \item eff: (r2 + 1)/N
-#' \item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
-#' \item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
+#' \item 90%CI_low: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989)
+#' \item 90%CI_high: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989)
 #' \item EN.p0: expected sample size under H0
 #' \item PET.p0: probability of terminating the trial at the end of the first stage under H0
 #' \item MIN: column indicating if the design is the minimal design
@@ -255,7 +255,7 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=
 
   res$eff <- paste0(res$r2 + 1, "/", res$N, " (", 100 * round((res$r2 + 1) / res$N, 3), "%)")
   CI <- mapply(a = res$r2 + 1, b = res$r1, c = res$n1, d = res$N,
-               FUN = function(a, b, c, d) OneArmPhaseTwoStudy::get_CI(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 3))
+               FUN = function(a, b, c, d) getCI_Koyama(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 3))
   res$CI_low  <- 100 * unlist(CI[rownames(CI) == "CI_low", ])
   res$CI_high <- 100 * unlist(CI[rownames(CI) == "CI_high", ])
 

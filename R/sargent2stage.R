@@ -80,8 +80,8 @@ P_Sargent_reject_H0 <- function(n1, n2, r1min, s, b_p0, B_p0, b_pa, B_pa){
 #' \item r1: critical value for the first stage
 #' \item r2: critical value for the second stage
 #' \item eff: s/N
-#' \item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
-#' \item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
+#' \item 90%CI_low: Result of call to getCI_Koyama. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
+#' \item 90%CI_high: Result of call to getCI_Koyama. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
 #' \item EN.p0: expected sample size under H0
 #' \item PET.p0: probability of terminating the trial at the end of the first stage under H0
 #' \item MIN: column indicating if the design is the minimal design
@@ -290,7 +290,7 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, 
 
   res$eff <- paste0(res$s, "/", res$N, " (", 100 * round((res$s) / res$N, 3), "%)")
   CI <- mapply(a = res$s, b = res$r1, c = res$n1, d = res$N,
-               FUN = function(a, b, c, d) OneArmPhaseTwoStudy::get_CI(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 3))
+               FUN = function(a, b, c, d) getCI_Koyama(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 3))
   res$CI_low  <- 100 * unlist(CI[rownames(CI) == "CI_low", ])
   res$CI_high <- 100 * unlist(CI[rownames(CI) == "CI_high", ])
   res <- data.table::setnames(res,

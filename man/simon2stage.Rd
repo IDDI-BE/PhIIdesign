@@ -44,8 +44,8 @@ a data.frame with elements
 \item r1: threshold for "rejecting" Ha: if x1<=r1 --> stop for futility at first stage
 \item r2: threshold for "rejecting" Ha: if x1+x2<=r2 --> futility at second stage
 \item eff: (r2 + 1)/N
-\item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
-\item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama and Chen (1989)
+\item 90%CI_low: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989)
+\item 90%CI_high: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989)
 \item EN.p0: expected sample size under H0
 \item PET.p0: probability of terminating the trial at the end of the first stage under H0
 \item MIN: column indicating if the design is the minimal design

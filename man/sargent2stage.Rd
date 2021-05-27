@@ -50,8 +50,8 @@ a data.frame with elements
 \item r1: critical value for the first stage
 \item r2: critical value for the second stage
 \item eff: s/N
-\item 90%CI_low: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
-\item 90%CI_high: Result of call to OneArmPhaseTwoStudy::get_CI. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
+\item 90%CI_low: Result of call to getCI_Koyama. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
+\item 90%CI_high: Result of call to getCI_Koyama. Confidence interval according to Koyama T, Chen H. Proper inference from simon?s two-stage designs. Stat Med. 2008; 27:3145?154;
 \item EN.p0: expected sample size under H0
 \item PET.p0: probability of terminating the trial at the end of the first stage under H0
 \item MIN: column indicating if the design is the minimal design
