@@ -1,5 +1,7 @@
 set.seed(123)
-x <- list(design_nr=1,r = 32, s = 34, N = 57, alpha = 0.0924252412082096, beta = 0.104393155688326,
+
+x <- list(design_nr=1, N = 57, r = 32, s = 34, eff= "34/57 (59.6%)", CI_low= 50.29, CI_high=68.47,
+          alpha = 0.0924252412082096, beta = 0.104393155688326,
           eta = 0.855378126445489, pi = 0.838046143845541, p0 = 0.5,
           pa = 0.65, alpha_param = 0.1, beta_param = 0.1, eta_param = 0.8,
           pi_param = 0.8)

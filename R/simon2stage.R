@@ -255,7 +255,7 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=
 
   res$eff <- paste0(res$r2 + 1, "/", res$N, " (", 100 * round((res$r2 + 1) / res$N, 3), "%)")
   CI <- mapply(a = res$r2 + 1, b = res$r1, c = res$n1, d = res$N,
-               FUN = function(a, b, c, d) getCI_Koyama(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 3))
+               FUN = function(a, b, c, d) getCI_Koyama(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 4))
   res$CI_low  <- 100 * unlist(CI[rownames(CI) == "CI_low", ])
   res$CI_high <- 100 * unlist(CI[rownames(CI) == "CI_high", ])
 

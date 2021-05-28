@@ -290,7 +290,7 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, 
 
   res$eff <- paste0(res$s, "/", res$N, " (", 100 * round((res$s) / res$N, 3), "%)")
   CI <- mapply(a = res$s, b = res$r1, c = res$n1, d = res$N,
-               FUN = function(a, b, c, d) getCI_Koyama(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 3))
+               FUN = function(a, b, c, d) getCI_Koyama(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 4))
   res$CI_low  <- 100 * unlist(CI[rownames(CI) == "CI_low", ])
   res$CI_high <- 100 * unlist(CI[rownames(CI) == "CI_high", ])
   res <- data.table::setnames(res,

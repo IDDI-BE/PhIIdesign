@@ -30,9 +30,12 @@ sargent1stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, ...)
 \value{
 a data.frame with elements
 \itemize{
-\item n: total number of patients
+\item N: total number of patients
 \item r: cutoff point r. Note if \code{n <= r} --> futility.
 \item s: cutoff point s. Note if \code{n >= s} --> efficacy.
+\item eff: r/N
+\item 90%CI_low: exact 1-2*alpha confidence interval lower limit
+\item 90%CI_high: exact 1-2*alpha confidence interval upper limit
 \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
 \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
 \item eta: the actual eta value which is smaller than \code{eta_param - eps}

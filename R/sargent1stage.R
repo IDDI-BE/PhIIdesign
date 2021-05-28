@@ -17,9 +17,12 @@
 #' @param ... further arguments passed on to the methods
 #' @return a data.frame with elements
 #' \itemize{
-#' \item n: total number of patients
+#' \item N: total number of patients
 #' \item r: cutoff point r. Note if \code{n <= r} --> futility.
 #' \item s: cutoff point s. Note if \code{n >= s} --> efficacy.
+#' \item eff: r/N
+#' \item 90%CI_low: exact 1-2*alpha confidence interval lower limit
+#' \item 90%CI_high: exact 1-2*alpha confidence interval upper limit
 #' \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
 #' \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
 #' \item eta: the actual eta value which is smaller than \code{eta_param - eps}
@@ -151,6 +154,16 @@ sargent1stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
                p0 = p0,
                pa = pa,
                res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])
+
+  # Calculate exact 1-2*alpha confidence interval
+
+  res$eff <- paste0(res$s, "/", res$N, " (", 100 * round((res$s) / res$N, 3), "%)")
+  CI <- mapply(a = res$s, b = res$N, FUN = function(a, b) binom::binom.confint(a,b,conf.level=1-2*alpha,methods="exact"))
+  res$CI_low  <- round(100 * unlist(CI[rownames(CI) == "lower", ]),2)
+  res$CI_high <- round(100 * unlist(CI[rownames(CI) == "upper", ]),2)
+
+  res<-res[, c("design_nr","N","r","s","eff","CI_low","CI_high","alpha","beta","eta","pi","p0","pa","alpha_param","beta_param","eta_param","pi_param")]
+
   class(res) <- c("sargent", "data.frame")
   res
 }
