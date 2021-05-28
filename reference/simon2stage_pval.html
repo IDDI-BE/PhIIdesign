@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Koyama confidence interval. — getCI_Koyama • PhIIdesign</title>
+<title>p-value for a 2-stage PhII single arm Simon design — simon2stage_pval • PhIIdesign</title>
 
 
 <!-- jquery -->
@@ -39,11 +39,8 @@
 
 
 
-<meta property="og:title" content="Koyama confidence interval. — getCI_Koyama" />
-<meta property="og:description" content="Calculates the two sided 1-2*alpha confidence interval based, by inverting the &quot;rejection probability
-function&quot; (or the &quot;p value function&quot;) at every possible value for the null hypothesis between [0,1].
-A two-sided (1 − 2*alpha) CI interval includes then all values of binomial proportions for
-which the p value for testing H0, lays within the interval [alpha, 1 − alpha]" />
+<meta property="og:title" content="p-value for a 2-stage PhII single arm Simon design — simon2stage_pval" />
+<meta property="og:description" content="This function calculates the p-value for a 2-stage PhII single arm Simon design" />
 
 
 
@@ -112,60 +109,57 @@ which the p value for testing H0, lays within the interval [alpha, 1 − alpha]"
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Koyama confidence interval.</h1>
+    <h1>p-value for a 2-stage PhII single arm Simon design</h1>
     
-    <div class="hidden name"><code>getCI_Koyama.Rd</code></div>
+    <div class="hidden name"><code>simon2stage_pval.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Calculates the two sided 1-2*alpha confidence interval based, by inverting the "rejection probability
-function" (or the "p value function") at every possible value for the null hypothesis between [0,1].
-A two-sided (1 − 2*alpha) CI interval includes then all values of binomial proportions for
-which the p value for testing H0, lays within the interval [alpha, 1 − alpha]</p>
+    <p>This function calculates the p-value for a 2-stage PhII single arm Simon design</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>getCI_Koyama</span><span class='op'>(</span><span class='va'>k</span>, <span class='va'>r1</span>, <span class='va'>n1</span>, <span class='va'>n</span>, <span class='va'>alpha</span>, precision <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span></code></pre></div>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>simon2stage_pval</span><span class='op'>(</span><span class='va'>n1</span>, <span class='va'>n2</span>, <span class='va'>r1</span>, <span class='va'>k</span>, <span class='va'>p0</span><span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>k</th>
-      <td><p>overall observed responses (must be larger than r1).</p></td>
+      <th>n1</th>
+      <td><p>total number of patients in stage1</p></td>
+    </tr>
+    <tr>
+      <th>n2</th>
+      <td><p>total number of patients in stage2</p></td>
     </tr>
     <tr>
       <th>r1</th>
-      <td><p>critical value for the first stage.</p></td>
+      <td><p>critical value for the first stage</p></td>
     </tr>
     <tr>
-      <th>n1</th>
-      <td><p>sample size for the first stage.</p></td>
+      <th>k</th>
+      <td><p>overall observed responses (must be larger than r1)</p></td>
     </tr>
     <tr>
-      <th>n</th>
-      <td><p>overall sample size.</p></td>
-    </tr>
-    <tr>
-      <th>alpha</th>
-      <td><p>determining the two sided 1-2*alpha confidence interval.</p></td>
-    </tr>
-    <tr>
-      <th>precision</th>
-      <td><p>gives the precision (in decimal numbers) to which the confidence interval should be calculated (should be less than 10).</p></td>
+      <th>p0</th>
+      <td><p>true success probability under H0</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>p-value</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Koyama T and Chen H (2008): Proper inference from Simon's two-stage designs. Statistics in Medicine, 27(16):3145-3154.
-corresponds with the "R" approach in Chan et al.</p>
+    <p>Simon R. Optimal two-Stage Designs for Phase II Clinical Trials. <br />
+Control Clin Trials. 1989;10:1-10; Koyama T and Chen H (2008): Proper inference from Simon's two-stage designs. <br />
+Statistics in Medicine, 27(16):3145-3154.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='co'>#Calculate a Simon's two-stage design</span></span>
-<span class='r-in'><span class='va'>res</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simon2stage.html'>simon2stage</a></span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,eps <span class='op'>=</span> <span class='fl'>0.005</span>,</span>
-<span class='r-in'>N_min <span class='op'>=</span> <span class='fl'>1</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span></span>
-<span class='r-in'><span class='va'>CI</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mapply.html'>mapply</a></span><span class='op'>(</span>a <span class='op'>=</span> <span class='va'>res</span><span class='op'>$</span><span class='va'>r2</span> <span class='op'>+</span> <span class='fl'>1</span>, b <span class='op'>=</span> <span class='va'>res</span><span class='op'>$</span><span class='va'>r1</span>, c <span class='op'>=</span> <span class='va'>res</span><span class='op'>$</span><span class='va'>n1</span>, d <span class='op'>=</span> <span class='va'>res</span><span class='op'>$</span><span class='va'>N</span>, FUN <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>a</span>, <span class='va'>b</span>, <span class='va'>c</span>, <span class='va'>d</span><span class='op'>)</span></span>
-<span class='r-in'><span class='fu'>getCI_Koyama</span><span class='op'>(</span>k <span class='op'>=</span> <span class='va'>a</span>, r1 <span class='op'>=</span> <span class='va'>b</span>, n1 <span class='op'>=</span> <span class='va'>c</span>, n <span class='op'>=</span> <span class='va'>d</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, precision <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='fu'>simon2stage_pval</span><span class='op'>(</span>n1<span class='op'>=</span><span class='fl'>15</span>, n2<span class='op'>=</span><span class='fl'>10</span>, r1<span class='op'>=</span><span class='fl'>1</span>, k<span class='op'>=</span><span class='fl'>6</span>, p0<span class='op'>=</span><span class='fl'>0.1</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 0.03280867</span>
+<span class='r-in'><span class='co'>#Note: same result with:</span></span>
+<span class='r-in'><span class='fl'>1</span><span class='op'>-</span><span class='fu'><a href='simon2stage_prob_reject_Ha.html'>simon2stage_prob_reject_Ha</a></span><span class='op'>(</span>n1<span class='op'>=</span><span class='fl'>15</span>, n2<span class='op'>=</span><span class='fl'>10</span>, r1<span class='op'>=</span><span class='fl'>1</span>, r<span class='op'>=</span><span class='fl'>5</span>, p<span class='op'>=</span><span class='fl'>0.1</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] 0.03280867</span>
 </code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
