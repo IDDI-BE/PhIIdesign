@@ -38,6 +38,7 @@ P_Fleming2st_reject_Ha <- function(n1, n2, r, a, b_p0, B_p0, b_pa, B_pa){
   list(N = n1 + n2, n1 = n1, r1 = r_1, a=a, n2 = n2, r2 = r, alpha_temp = 1 - eta_temp, beta_temp = beta_temp)
 }
 
+
 #' @title Fleming 2-stage function
 #' @description
 #' The primary objective of a phase II clinical trial of a new drug or regimen is to determine whether it has sufficient biological activity
@@ -56,6 +57,7 @@ P_Fleming2st_reject_Ha <- function(n1, n2, r, a, b_p0, B_p0, b_pa, B_pa){
 #' @param N_max maximum sample size value for grid search
 #' @param int pre-specified interim analysis percentage information
 #' @param int_window window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value
+#' @param opt_under optimality under "H0" or "Ha"
 #' @return a data.frame with elements
 #' \itemize{
 #' \item n1: total number of patients in stage1
@@ -93,69 +95,56 @@ P_Fleming2st_reject_Ha <- function(n1, n2, r, a, b_p0, B_p0, b_pa, B_pa){
 #'     Qin F et al. Optimal, minimax and admissible two-stage design for phase II oncology clinical trials. BMC Medical Research Methodology 2020;20:126
 #' @export
 #' @examples
-#' samplesize <- fleming2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
-#'                           eps = 0.005, N_min = 1, N_max = 50)
+#' result_H0 <-fleming2stage(p0 = 0.3, pa = 0.5, alpha = 0.1, beta = 0.1, eps = 0, N_min = 3,
+#' N_max = 50, opt_under="H0")
+#' result_Ha <-fleming2stage(p0 = 0.3, pa = 0.5, alpha = 0.1, beta = 0.1, eps = 0, N_min = 3,
+#' N_max = 50, opt_under="Ha")
 
-fleming2stage <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025){
+fleming2stage <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025, opt_under="H0"){
 
   if(length(p0) > 1 && length(pa) > 1){
-    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
+    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, opt_under = opt_under,
                       FUN = function(null, alternative, alpha, beta, eps, N_min, N_max, int, int_window){
-                        fleming2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window)
+                        fleming2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, opt_under = opt_under)
                       }, SIMPLIFY = FALSE)
   }else{
-    results <- fleming2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window)
+    results <- fleming2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, opt_under = opt_under)
   }
 }
 
-# p0 = 0.1; pa = 0.3; alpha = 0.05; beta = 0.2; eps = 0.005; N_min = 20; N_max = 21; int=0.5
-
-fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025) {
+fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025, opt_under="H0") {
 
   # WARNING MESSAGES
+
   if (pa < p0) {
     stop("p0 should be smaller than pa")
   }
 
-  if (N_min <1 ) {
-    stop("N_min should be >=1")
+  if (N_min <3 ) {
+    stop("N_min should be >=3")
   }
 
-  EN.p0 <- EN.p0_N_min <- EN.p0_N_n1_min <- EN.p0_min <- EN.p0_N_min_int <- EN.pa <- MIN <- N <- OPT <- NULL
+  EN.p0 <- EN.p <- EN.p_N_min <- EN.p_N_n1_min <- EN.p_min <- EN.p_N_min_int <- EN.pa <- MIN <- N <- OPT <- NULL
   rowid <- n1 <- n2 <- r <- r2 <- a <- NULL
 
+  fullresult<-list()
   #----------------------------------------------------------------------------------------------------------#
   # Get all possible scenarios for N, n1, r1, r2 and n2                                                      #
   # Note that this is the possible range of values: 0 <=r1<n1; r1+1<=r; r<=n1+n2                             #
   #----------------------------------------------------------------------------------------------------------#
 
-  # Get all N's for which there is a max r (1:N) for which P(X<=r|Ha)<=beta+eps, and select that max r
-  # Note that this is not taking into account first stage. However, the probability of rejecting Ha
-  # should be lower in the second stage, compared to a 1-stage design, as some cases already rejected at first stage,
-  # meaning that an rmax, calculated using a 1-stage design, is a good maximum (the higher r, the higher the probability to reject Ha)
-  #-----------------------------------------------------------------------------------------------------------------------------------
-
-  res0 <- lapply(N_min:N_max, FUN=function(N) cbind(N = N, rtemp = 1:N))
-  res0 <- do.call(rbind, res0)
-  res0 <- data.frame(res0)
-  res0$betamax <- pbinom(q = res0$rtemp, size = res0$N, prob = pa, lower.tail = TRUE)
-  res0 <- res0[!is.na(res0$betamax) & res0$betamax <= (beta + eps), ]
-  # Select all possible N"s: there needs to be
-  # at least one r with P(X<=r|Ha)<=beta+eps
-  res0 <- aggregate(res0$rtemp, by = list(res0$N), max)
-  names(res0) <- c("N", "rmax")
-
   # Get for selected N's all possible n1's (2:N-1)  # there should be x's for which r1<x1<a, so minimum for a should be 2, and thus minimum for n1 should be 2
   #------------------------------------------------------------------------------------------------------------------------------------------------------------
-  res1 <- mapply(N = res0$N, rmax = res0$rmax,
-                 FUN = function(N, rmax) cbind(N = N, n1 = (2:(N - 1)), rmax = rmax), SIMPLIFY = FALSE)
-  res1 <- do.call(rbind, res1)
-  res1 <- data.frame(res1)
+  res1 <- lapply(N_min:N_max, FUN=function(N) cbind(N = N, n1 = (2:(N - 1))))
+  res1 <- do.call(rbind,  res1)
+  res1 <- data.frame( res1)
+  names(res1) <- c("N","n1")
 
-  # Get for selected N's and n1's: r's (1:rmax)
+  # Get for selected N's and n1's: r's (1:N-1)
   #--------------------------------------------
-  res2 <- mapply(N = res1$N, n1 = res1$n1, rmax = res1$rmax,
-                 FUN = function(N, n1, rmax) cbind(N = N, n1 = n1, rmax = rmax, r = (1:rmax)), SIMPLIFY = FALSE)
+  res2 <- mapply(N=res1$N,n1=res1$n1,
+                 FUN=function(N, n1) cbind(N=N,n1=n1,r=(1:(N-1))),
+                 SIMPLIFY=FALSE)
   res2 <- do.call(rbind, res2)
   res2 <- data.frame(res2)
   res2$n2 <- res2$N - res2$n1
@@ -169,8 +158,8 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
   #                                                                            for max: a<=n1 that's logical
   #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  res3 <- mapply(N = res2$N, n1 = res2$n1, rmax = res2$rmax, r=res2$r, n2=res2$n2,
-                 FUN = function(N, n1, rmax, r, n2) cbind(N = N, n1 = n1, rmax = rmax, r = r, n2 = n2, a=(max(2,r-n2+2)):n1),
+  res3 <- mapply(N = res2$N, n1 = res2$n1,r=res2$r, n2=res2$n2,
+                 FUN = function(N, n1, r, n2) cbind(N = N, n1 = n1, r = r, n2 = n2, a=(max(2,r-n2+2)):n1),
                  SIMPLIFY = FALSE)
   res3 <- do.call(rbind, res3)
   res2 <- data.frame(res3)
@@ -214,35 +203,52 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
   res5$EN.pa  <- res5$N - ((res5$N - res5$n1) * res5$PET.pa)
 
   res5 <- data.table::setDT(res5)
+  fullresult<<-res5 # 'Output' full result dataset
 
-  res5 <- res5[, N_min          := min(N)]
-  res5 <- res5[, EN.p0_min      := min(EN.p0)]
-  res5 <- res5[, EN.p0_N_min    := min(EN.p0) , by = list(N)]
-  res5 <- res5[, EN.p0_N_n1_min := min(EN.p0) , by = list(N,n1)]
+  #---------------------------#
+  # Which outcome is optimal? #
+  #---------------------------#
+  if (opt_under=="H0"){
+    res5$EN.p<-res5$EN.p0
+    res5 <- res5[, N_min         := min(N)]
+    res5 <- res5[, EN.p_min      := min(EN.p0)]
+    res5 <- res5[, EN.p_N_min    := min(EN.p0) , by = list(N)]
+    res5 <- res5[, EN.p_N_n1_min := min(EN.p0) , by = list(N,n1)]
+  }
+
+  if (opt_under=="Ha"){
+    res5$EN.p<-res5$EN.pa
+    res5 <- res5[, N_min         := min(N)]
+    res5 <- res5[, EN.p_min      := min(EN.pa)]
+    res5 <- res5[, EN.p_N_min    := min(EN.pa) , by = list(N)]
+    res5 <- res5[, EN.p_N_n1_min := min(EN.pa) , by = list(N,n1)]
+  }
 
   if (int>0){
-    res6_int <- res5[EN.p0 == EN.p0_N_n1_min & floor((int-int_window)*N)<=n1 & n1<=ceiling((int+int_window)*N), ]
-    res6_int <- res6_int[, EN.p0_N_min_int := min(EN.p0) , by = list(N)]
-    res6_int <- res6_int[EN.p0 == EN.p0_N_min_int   , ]
+    res6_int <- res5[EN.p == EN.p_N_n1_min & floor((int-int_window)*N)<=n1 & n1<=ceiling((int+int_window)*N), ]
+    res6_int <- res6_int[, EN.p_N_min_int := min(EN.p) , by = list(N)]
+    res6_int <- res6_int[EN.p == EN.p_N_min_int   , ]
     res6_int$INTERIM=int;
   }
 
-  res6         <- res5[EN.p0 == EN.p0_N_min   , ]
+  res6         <- res5[EN.p == EN.p_N_min   , ]
   res6$OPT     <- res6$MIN <- res6$ADMISS <- c("")
-  res6$OPT[which(res6$EN.p0 == res6$EN.p0_min)] <- "Optimal"
+  res6$OPT[which(res6$EN.p == res6$EN.p_min)] <- "Optimal"
   res6$MIN[which(res6$N == res6$N_min)] <- "Minimax" # Note: if multiple designs that meet the criteria for minimax:choose
   # design with minimal expected sample size under H0: "Optimal minimax design"
 
   res6 <- data.table::setDF(res6)
 
   # Get admissible designs
-  y <- res6[, c("N", "EN.p0")]
+  y <- res6[, c("N", "EN.p")]
   con.ind <- chull(y)[chull((y)) == cummin(chull((y)))]
   res <- res6[res6$N >= min(res6$N[res6$MIN == "Minimax"]) & res6$N <= max(res6$N[res6$OPT == "Optimal"]), ]
-  res$ADMISS[which((rownames(res) %in% c(con.ind)) & (res$N > res$N_min) & (res$EN.p0 > res$EN.p0_min) & (res$N < res$N[res$OPT == "Optimal"]))] <- "Admissible"
+  res$ADMISS[which((rownames(res) %in% c(con.ind)) & (res$N > res$N_min) & (res$EN.p > res$EN.p_min) & (res$N < res$N[res$OPT == "Optimal"]))] <- "Admissible"
 
   if (int>0){
-    res$EN_opt  <- "EN.p0_optimal"
+    if (opt_under=="H0"){res$EN_opt  <- "EN.p0_optimal"}
+    if (opt_under=="Ha"){res$EN_opt  <- "EN.pa_optimal"}
+
     res6_int<-res6_int[res6_int$N >= min(res6$N[res6$MIN == "Minimax"]) & res6_int$N <= max(res6$N[res6$OPT == "Optimal"]), ]
     res<-merge(x = res, y = res6_int, by = c("N","n1","n2","r1","a","r2","alpha_temp","beta_temp","diff_beta","diff_alpha","alpha","beta","PET.p0","EN.p0","PET.pa","EN.pa","N_min","EN.p0_min","EN.p0_N_min","EN.p0_N_n1_min","rowid"), all = TRUE)
 
@@ -286,5 +292,3 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
   class(res) <- c("2stage", "simon", "data.frame")
   res
 }
-
-result<-fleming2stage(p0 = 0.3, pa = 0.5, alpha = 0.1, beta = 0.1, eps = 0, N_min = 1, N_max = 50)

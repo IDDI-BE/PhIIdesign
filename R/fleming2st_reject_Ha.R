@@ -8,7 +8,7 @@
 #' @param a critical value efficacy for the first stage
 #' @param r2 critical value futility/efficacy for the second stage
 #' @param p0 true success probability under H0
-#' @param p0 true success probability under Ha
+#' @param pa true success probability under Ha
 #' @details
 #' if x1<=r1 --> stop futility \cr
 #' if x1>=a --> stop efficacy \cr

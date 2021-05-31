@@ -13,7 +13,8 @@ fleming2stage(
   N_min,
   N_max,
   int = 0,
-  int_window = 0.025
+  int_window = 0.025,
+  opt_under = "H0"
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ fleming2stage(
 \item{int}{pre-specified interim analysis percentage information}
 
 \item{int_window}{window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value}
+
+\item{opt_under}{optimality under "H0" or "Ha"}
 }
 \value{
 a data.frame with elements
@@ -80,8 +83,10 @@ if (x1+x2)> r2 --> efficacy at second stage \cr
 So PET.H0=P_H0(X1<=r1)+P_H0(X1>=a1)
 }
 \examples{
-samplesize <- fleming2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,
-                          eps = 0.005, N_min = 1, N_max = 50)
+result_H0 <-fleming2stage(p0 = 0.3, pa = 0.5, alpha = 0.1, beta = 0.1, eps = 0, N_min = 3,
+N_max = 50, opt_under="H0")
+result_Ha <-fleming2stage(p0 = 0.3, pa = 0.5, alpha = 0.1, beta = 0.1, eps = 0, N_min = 3,
+N_max = 50, opt_under="Ha")
 }
 \references{
 Mander AP, Thompson SG. Two-stage designs optimal under the alternative hypothesis for phase II cancer clinical trials.
