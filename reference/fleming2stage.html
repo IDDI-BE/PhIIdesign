@@ -139,7 +139,8 @@ This type of design also allows stopping for efficacy</p>
   <span class='va'>N_min</span>,
   <span class='va'>N_max</span>,
   int <span class='op'>=</span> <span class='fl'>0</span>,
-  int_window <span class='op'>=</span> <span class='fl'>0.025</span>
+  int_window <span class='op'>=</span> <span class='fl'>0.025</span>,
+  opt_under <span class='op'>=</span> <span class='st'>"H0"</span>
 <span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -180,6 +181,10 @@ This type of design also allows stopping for efficacy</p>
     <tr>
       <th>int_window</th>
       <td><p>window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value</p></td>
+    </tr>
+    <tr>
+      <th>opt_under</th>
+      <td><p>optimality under "H0" or "Ha"</p></td>
     </tr>
     </table>
 
@@ -225,8 +230,10 @@ So PET.H0=P_H0(X1&lt;=r1)+P_H0(X1&gt;=a1)</p>
     Qin F et al. Optimal, minimax and admissible two-stage design for phase II oncology clinical trials. BMC Medical Research Methodology 2020;20:126</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='va'>samplesize</span> <span class='op'>&lt;-</span> <span class='fu'>fleming2stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.1</span>, pa <span class='op'>=</span> <span class='fl'>0.3</span>, alpha <span class='op'>=</span> <span class='fl'>0.05</span>, beta <span class='op'>=</span> <span class='fl'>0.2</span>,</span>
-<span class='r-in'>                          eps <span class='op'>=</span> <span class='fl'>0.005</span>, N_min <span class='op'>=</span> <span class='fl'>1</span>, N_max <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span></span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='va'>result_H0</span> <span class='op'>&lt;-</span><span class='fu'>fleming2stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.3</span>, pa <span class='op'>=</span> <span class='fl'>0.5</span>, alpha <span class='op'>=</span> <span class='fl'>0.1</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0</span>, N_min <span class='op'>=</span> <span class='fl'>3</span>,</span>
+<span class='r-in'>N_max <span class='op'>=</span> <span class='fl'>50</span>, opt_under<span class='op'>=</span><span class='st'>"H0"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='va'>result_Ha</span> <span class='op'>&lt;-</span><span class='fu'>fleming2stage</span><span class='op'>(</span>p0 <span class='op'>=</span> <span class='fl'>0.3</span>, pa <span class='op'>=</span> <span class='fl'>0.5</span>, alpha <span class='op'>=</span> <span class='fl'>0.1</span>, beta <span class='op'>=</span> <span class='fl'>0.1</span>, eps <span class='op'>=</span> <span class='fl'>0</span>, N_min <span class='op'>=</span> <span class='fl'>3</span>,</span>
+<span class='r-in'>N_max <span class='op'>=</span> <span class='fl'>50</span>, opt_under<span class='op'>=</span><span class='st'>"Ha"</span><span class='op'>)</span></span>
 </code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
