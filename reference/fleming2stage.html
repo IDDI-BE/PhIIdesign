@@ -140,7 +140,8 @@ This type of design also allows stopping for efficacy</p>
   <span class='va'>N_max</span>,
   int <span class='op'>=</span> <span class='fl'>0</span>,
   int_window <span class='op'>=</span> <span class='fl'>0.025</span>,
-  opt_under <span class='op'>=</span> <span class='st'>"H0"</span>
+  opt_under <span class='op'>=</span> <span class='st'>"H0"</span>,
+  CI_type <span class='op'>=</span> <span class='st'>"Koyama"</span>
 <span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -186,6 +187,10 @@ This type of design also allows stopping for efficacy</p>
       <th>opt_under</th>
       <td><p>optimality under "H0" or "Ha"</p></td>
     </tr>
+    <tr>
+      <th>CI_type</th>
+      <td><p>"Koyama", see <code><a href='getCI_Koyama.html'>getCI_Koyama</a></code>, or any type for <a href='https://rdrr.io/pkg/binom/man/binom.confint.html'>binom.confint</a></p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -198,8 +203,8 @@ This type of design also allows stopping for efficacy</p>
 <li><p>r2: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1+x2&lt;=r --&gt; futility at second stage</p></li>
 <li><p>a: ("a" for "acceptance") threshold for "accepting" Ha= stop for efficacy at first stage</p></li>
 <li><p>eff: (r2 + 1)/N</p></li>
-<li><p>90<!-- %CI_low: exact 1-2*alpha confidence interval lower limit --></p></li>
-<li><p>90<!-- %CI_high: exact 1-2*alpha confidence interval upper limit --></p></li>
+<li><p>CI_LL: (1-2*alpha) CI lower limit</p></li>
+<li><p>CI_UL: (1-2*alpha) CI upper limit</p></li>
 <li><p>EN.p0: expected sample size under H0</p></li>
 <li><p>PET.p0: probability of terminating the trial for futility at the end of the first stage under H0</p></li>
 <li><p>EN.pa: expected sample size under Ha</p></li>

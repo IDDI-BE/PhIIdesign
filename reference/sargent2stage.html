@@ -139,7 +139,8 @@ three-outcome design that allows for three outcomes: reject \(H(0)\), reject \(H
   <span class='va'>N_min</span>,
   <span class='va'>N_max</span>,
   int <span class='op'>=</span> <span class='fl'>0</span>,
-  int_window <span class='op'>=</span> <span class='fl'>0.025</span>
+  int_window <span class='op'>=</span> <span class='fl'>0.025</span>,
+  CI_type <span class='op'>=</span> <span class='st'>"Koyama"</span>
 <span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -189,6 +190,10 @@ three-outcome design that allows for three outcomes: reject \(H(0)\), reject \(H
       <th>int_window</th>
       <td><p>window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value</p></td>
     </tr>
+    <tr>
+      <th>CI_type</th>
+      <td><p>"Koyama", see <code><a href='getCI_Koyama.html'>getCI_Koyama</a></code>, or any type for <a href='https://rdrr.io/pkg/binom/man/binom.confint.html'>binom.confint</a></p></td>
+    </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -200,8 +205,8 @@ three-outcome design that allows for three outcomes: reject \(H(0)\), reject \(H
 <li><p>r1: critical value for the first stage</p></li>
 <li><p>r2: critical value for the second stage</p></li>
 <li><p>eff: s/N</p></li>
-<li><p>90<!-- %CI_low: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989) --></p></li>
-<li><p>90<!-- %CI_high: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989) --></p></li>
+<li><p>CI_LL: (1-2*alpha) CI lower limit</p></li>
+<li><p>CI_UL: (1-2*alpha) CI upper limit</p></li>
 <li><p>EN.p0: expected sample size under H0</p></li>
 <li><p>PET.p0: probability of terminating the trial at the end of the first stage under H0</p></li>
 <li><p>MIN: column indicating if the design is the minimal design</p></li>
@@ -245,10 +250,10 @@ if (x1+x2)&gt;=s --&gt; efficacy <br /></p>
 <span class='r-in'>                            N_min <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>N_min</span>, N_max <span class='op'>=</span> <span class='va'>test</span><span class='op'>$</span><span class='va'>N_max</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>optimal</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>samplesize</span>, FUN<span class='op'>=</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>OPT</span> <span class='op'>==</span> <span class='st'>"Optimal"</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>optimal</span> <span class='op'>&lt;-</span> <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span><span class='op'>(</span><span class='va'>optimal</span><span class='op'>)</span></span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> Column 9 ['90%CI_low'] of item 2 is missing in item 1. Use fill=TRUE to fill with NA (NULL for list columns), or use.names=FALSE to ignore column names. use.names='check' (default from v1.12.2) emits this message and proceeds as if use.names=FALSE for  backwards compatibility. See news item 5 in v1.12.2 for options to control this message.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Column 9 ['90%CI_LL'] of item 2 is missing in item 1. Use fill=TRUE to fill with NA (NULL for list columns), or use.names=FALSE to ignore column names. use.names='check' (default from v1.12.2) emits this message and proceeds as if use.names=FALSE for  backwards compatibility. See news item 5 in v1.12.2 for options to control this message.</span>
 <span class='r-in'><span class='va'>minimax</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>lapply</a></span><span class='op'>(</span><span class='va'>samplesize</span>, FUN<span class='op'>=</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='fu'><a href='https://rdrr.io/r/base/subset.html'>subset</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>MIN</span> <span class='op'>==</span> <span class='st'>"Minimax"</span><span class='op'>)</span><span class='op'>)</span></span>
 <span class='r-in'><span class='va'>minimax</span> <span class='op'>&lt;-</span> <span class='fu'>data.table</span><span class='fu'>::</span><span class='fu'><a href='https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html'>rbindlist</a></span><span class='op'>(</span><span class='va'>minimax</span><span class='op'>)</span></span>
-<span class='r-msg co'><span class='r-pr'>#&gt;</span> Column 9 ['90%CI_low'] of item 2 is missing in item 1. Use fill=TRUE to fill with NA (NULL for list columns), or use.names=FALSE to ignore column names. use.names='check' (default from v1.12.2) emits this message and proceeds as if use.names=FALSE for  backwards compatibility. See news item 5 in v1.12.2 for options to control this message.</span>
+<span class='r-msg co'><span class='r-pr'>#&gt;</span> Column 9 ['90%CI_LL'] of item 2 is missing in item 1. Use fill=TRUE to fill with NA (NULL for list columns), or use.names=FALSE to ignore column names. use.names='check' (default from v1.12.2) emits this message and proceeds as if use.names=FALSE for  backwards compatibility. See news item 5 in v1.12.2 for options to control this message.</span>
 <span class='r-in'><span class='co'># }</span></span>
 </code></pre></div>
   </div>

@@ -31,6 +31,9 @@
     <loc>/reference/fleming2stage.html</loc>
   </url>
   <url>
+    <loc>/reference/fleming2stage_pval.html</loc>
+  </url>
+  <url>
     <loc>/reference/getCI_Koyama.html</loc>
   </url>
   <url>
@@ -53,6 +56,9 @@
   </url>
   <url>
     <loc>/reference/sargent2stage_prob_reject_Ha.html</loc>
+  </url>
+  <url>
+    <loc>/reference/sargent2stage_pval.html</loc>
   </url>
   <url>
     <loc>/reference/simon2stage.html</loc>
