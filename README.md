@@ -5,12 +5,13 @@
 
 Sample size calculations for Phase II clinical trials. With functionalities for
 
-- Fleming stage 1 sample size calculation
-- Sargent stage 1 sample size calculation
-- Exact stage 1 sample size calculation
-- Simon stage 2 sample size calculation
-- Sargent stage 2 sample size calculation
-- Sargent stage 2 sample size calculation for two randomized arms
+- Fleming 1-stage
+- Sargent 1-stage
+- Simon 2-stage
+- Fleming 2-stage
+- Sargent 2-stage
+
+sample size calculation + calculation of p-value and confidence interval
 
 ## Installation & License
 
