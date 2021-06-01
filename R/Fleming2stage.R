@@ -303,3 +303,68 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
   class(res) <- c("2stage", "simon", "data.frame")
   res
 }
+
+
+# Validation vs (Mander, Thompson SG. Contemporary Clinical Trials 2010;31:572–578 : Table 1,2 and 3 (only with stop efficacy)
+#--------------------------------------------------------------------------------------------------------------------
+
+# Table 1
+# test_1_0  <- data.frame(cbind(p0=0.05,pa=0.25,alpha=c(0.1,0.05,0.05),beta=c(0.1,0.2,0.1)))
+# for(i in 1:dim(test_1_0)[1]){
+#  nmax   <- fleming1stage(p0=test_1_0[i,]$p0,pa=test_1_0[i,]$pa,alpha=test_1_0[i,]$alpha,beta=test_1_0[i,]$beta,eps=0)$N+15
+#  res    <- fleming2stage(p0=test_1_0[i,]$p0,pa=test_1_0[i,]$pa,alpha=test_1_0[i,]$alpha,beta=test_1_0[i,]$beta,eps=0   ,N_min=10, N_max=nmax,opt_under="H0")
+#  res_dt <- cbind(res[res$OPT=="Optimal",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")],res[res$MIN=="Minimax",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")])
+#  if (i==1) {test1_list      <- list(res_dt)}
+#  if (i!=1) {test1_list[[i]] <- res_dt }
+# }
+# test_1_H0 <- cbind(test_1_0,data.frame(do.call("rbind",test1_list)))
+#
+# for(i in 1:dim(test_1_0)[1]){
+#   nmax   <- fleming1stage(p0=test_1_0[i,]$p0,pa=test_1_0[i,]$pa,alpha=test_1_0[i,]$alpha,beta=test_1_0[i,]$beta,eps=0)$N+15
+#   res    <- fleming2stage(p0=test_1_0[i,]$p0,pa=test_1_0[i,]$pa,alpha=test_1_0[i,]$alpha,beta=test_1_0[i,]$beta,eps=0   ,N_min=10, N_max=nmax,opt_under="Ha")
+#   res_dt <- cbind(res[res$OPT=="Optimal",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")],res[res$MIN=="Minimax",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")])
+#   if (i==1) {test1_list      <- list(res_dt)}
+#   if (i!=1) {test1_list[[i]] <- res_dt }
+# }
+# test_1_Ha <- cbind(test_1_0,data.frame(do.call("rbind",test1_list)))
+#
+# # Table 2
+# test_2_0  <- data.frame(cbind(p0=0.1,pa=0.3,alpha=c(0.1,0.05,0.05),beta=c(0.1,0.2,0.1)))
+# for(i in 1:dim(test_2_0)[1]){
+#   nmax   <- fleming1stage(p0=test_2_0[i,]$p0,pa=test_2_0[i,]$pa,alpha=test_2_0[i,]$alpha,beta=test_2_0[i,]$beta,eps=0)$N+15
+#   res    <- fleming2stage(p0=test_2_0[i,]$p0,pa=test_2_0[i,]$pa,alpha=test_2_0[i,]$alpha,beta=test_2_0[i,]$beta,eps=0   ,N_min=10, N_max=nmax,opt_under="H0")
+#   res_dt <- cbind(res[res$OPT=="Optimal",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")],res[res$MIN=="Minimax",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")])
+#   if (i==1) {test1_list      <- list(res_dt)}
+#   if (i!=1) {test1_list[[i]] <- res_dt }
+# }
+# test_2_H0 <- cbind(test_2_0,data.frame(do.call("rbind",test1_list)))
+#
+# for(i in 1:dim(test_2_0)[1]){
+#   nmax   <- fleming1stage(p0=test_2_0[i,]$p0,pa=test_2_0[i,]$pa,alpha=test_2_0[i,]$alpha,beta=test_2_0[i,]$beta,eps=0)$N+15
+#   res    <- fleming2stage(p0=test_2_0[i,]$p0,pa=test_2_0[i,]$pa,alpha=test_2_0[i,]$alpha,beta=test_2_0[i,]$beta,eps=0   ,N_min=10, N_max=nmax,opt_under="Ha")
+#   res_dt <- cbind(res[res$OPT=="Optimal",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")],res[res$MIN=="Minimax",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")])
+#   if (i==1) {test1_list      <- list(res_dt)}
+#   if (i!=1) {test1_list[[i]] <- res_dt }
+# }
+# test_2_Ha <- cbind(test_2_0,data.frame(do.call("rbind",test1_list)))
+#
+#
+# # Table 3
+# test_3_0  <- data.frame(cbind(p0=0.3,pa=0.5,alpha=c(0.1,0.05,0.05),beta=c(0.1,0.2,0.1)))
+# for(i in 1:dim(test_3_0)[1]){
+#   nmax   <- fleming1stage(p0=test_3_0[i,]$p0,pa=test_3_0[i,]$pa,alpha=test_3_0[i,]$alpha,beta=test_3_0[i,]$beta,eps=0)$N+15
+#   res    <- fleming2stage(p0=test_3_0[i,]$p0,pa=test_3_0[i,]$pa,alpha=test_3_0[i,]$alpha,beta=test_3_0[i,]$beta,eps=0   ,N_min=10, N_max=nmax,opt_under="H0")
+#   res_dt <- cbind(res[res$OPT=="Optimal",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")],res[res$MIN=="Minimax",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")])
+#   if (i==1) {test1_list      <- list(res_dt)}
+#   if (i!=1) {test1_list[[i]] <- res_dt }
+# }
+# test_3_H0 <- cbind(test_3_0,data.frame(do.call("rbind",test1_list)))
+#
+# for(i in 1:dim(test_3_0)[1]){
+#   nmax   <- fleming1stage(p0=test_3_0[i,]$p0,pa=test_3_0[i,]$pa,alpha=test_3_0[i,]$alpha,beta=test_3_0[i,]$beta,eps=0)$N+15
+#   res    <- fleming2stage(p0=test_3_0[i,]$p0,pa=test_3_0[i,]$pa,alpha=test_3_0[i,]$alpha,beta=test_3_0[i,]$beta,eps=0   ,N_min=10, N_max=nmax,opt_under="Ha")
+#   res_dt <- cbind(res[res$OPT=="Optimal",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")],res[res$MIN=="Minimax",c("r1","a","n1","r2","N","EN.p0","EN.pa","PET.p0","PET.pa")])
+#   if (i==1) {test1_list      <- list(res_dt)}
+#   if (i!=1) {test1_list[[i]] <- res_dt }
+# }
+# test_3_Ha <- cbind(test_3_0,data.frame(do.call("rbind",test1_list)))

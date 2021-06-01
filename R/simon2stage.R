@@ -306,9 +306,9 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=
 #-------------------------------------------------------------------------------------------------------------------------------
 # test_1_0  <- data.frame(do.call("rbind", mapply(function(a,b) cbind(p0=rep(a,3),pa=rep((a+0.2),3),alpha=c(0.1,0.05,0.05),beta=c(0.1,0.2,0.1)),a=c(0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.7),SIMPLIFY=F)))
 # for(i in 1:dim(test_1_0)[1]){
-#  nmax   <- PhIIdesign::fleming1stage(p0=test_1_0[i,]$p0,pa=test_1_0[i,]$pa,alpha=test_1_0[i,]$alpha,beta=test_1_0[i,]$beta,eps=0)$n+15
+#  nmax   <- PhIIdesign::fleming1stage(p0=test_1_0[i,]$p0,pa=test_1_0[i,]$pa,alpha=test_1_0[i,]$alpha,beta=test_1_0[i,]$beta,eps=0)$N+15
 #  res    <- simon2stage  (p0=test_1_0[i,]$p0,pa=test_1_0[i,]$pa,alpha=test_1_0[i,]$alpha,beta=test_1_0[i,]$beta,eps=0,N_min=10,N_max=nmax)
-#  res_dt <- cbind(res[OPT=="Optimal",c("r1","n1","r2","N","EN.p0","PET.p0")],res[MIN=="Minimax",c("r1","n1","r2","N","EN.p0","PET.p0")])
+#  res_dt <- cbind(res[res$OPT=="Optimal",c("r1","n1","r2","N","EN.p0","PET.p0")],res[res$MIN=="Minimax",c("r1","n1","r2","N","EN.p0","PET.p0")])
 #  if (i==1) {test1_list      <- list(res_dt)}
 #  if (i!=1) {test1_list[[i]] <- res_dt }
 # }
@@ -316,9 +316,9 @@ simon2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=
 #
 # test_2_0  <- data.frame(do.call("rbind", mapply(function(a,b) cbind(p0=rep(a,3),pa=rep((a+0.15),3),alpha=c(0.1,0.05,0.05),beta=c(0.1,0.2,0.1)),a=c(0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8),SIMPLIFY=F)))
 # for(i in 1:dim(test_2_0)[1]){
-#  nmax   <- PhIIdesign::fleming1stage(p0=test_2_0[i,]$p0,pa=test_2_0[i,]$pa,alpha=test_2_0[i,]$alpha,beta=test_2_0[i,]$beta,eps=0)$n+20
+#  nmax   <- PhIIdesign::fleming1stage(p0=test_2_0[i,]$p0,pa=test_2_0[i,]$pa,alpha=test_2_0[i,]$alpha,beta=test_2_0[i,]$beta,eps=0)$N+20
 #  res    <- PhIIdesign::simon2stage  (p0=test_2_0[i,]$p0,pa=test_2_0[i,]$pa,alpha=test_2_0[i,]$alpha,beta=test_2_0[i,]$beta,eps=0,N_min=25,N_max=nmax)
-#  res_dt <- cbind(res[OPT=="Optimal",c("r1","n1","r2","N","EN.p0","PET.p0")],res[MIN=="Minimax",c("r1","n1","r2","N","EN.p0","PET.p0")])
+#  res_dt <- cbind(res[res$OPT=="Optimal",c("r1","n1","r2","N","EN.p0","PET.p0")],res[res$MIN=="Minimax",c("r1","n1","r2","N","EN.p0","PET.p0")])
 #  if (i==1) {test2_list      <- list(res_dt)}
 #  if (i!=1) {test2_list[[i]] <- res_dt }
 # }
