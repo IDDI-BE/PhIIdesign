@@ -7,7 +7,7 @@ Sample size calculations for Phase II clinical trials. With functionalities for
 
 - Fleming 1-stage
 - Sargent 1-stage
-- Simon 2-stage 2
+- Simon 2-stage
 - Fleming 2-stage
 - Sargent 2-stage
 
