@@ -15,7 +15,7 @@ allsinglearm(p0, pa, alpha, beta, alpha2 = alpha, beta2, pi, eta, eps = 0.005)
 
 \item{beta}{P(reject Ha|Ha)  for Fleming and Simon designs, can be a vector}
 
-\item{alpha2}{P(reject H0|H0) for Sargent designs, can be a vector, same lenth as alpha}
+\item{alpha2}{P(reject H0|H0) for Sargent designs, can be a vector, same length as alpha}
 
 \item{beta2}{P(reject Ha|Ha)  for Sargent designs, can be a vector, same length as beta}
 
@@ -30,5 +30,5 @@ This function calculates sample sizes of the Fleming 1-stage , Simon-2stage, Sar
 }
 \examples{
 allsinglearm(p0 = 0.1, pa = 0.7,
-             alpha = 0.05, beta = 0.2, beta2 = 0.1, pi = 0.8, eta = 0.8)
+             alpha = 0.05, alpha2 = 0.05, beta = 0.2, beta2 = 0.1, pi = 0.8, eta = 0.8)
 }

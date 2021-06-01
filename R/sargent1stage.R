@@ -14,6 +14,7 @@
 #' @param eps tolerance default value = 0.005
 #' @param N_min minimum sample size value for grid search
 #' @param N_max maximum sample size value for grid search
+#' @param CI_type any type for \link[binom]{binom.confint}
 #' @param ... further arguments passed on to the methods
 #' @return a data.frame with elements
 #' \itemize{
@@ -21,8 +22,8 @@
 #' \item r: cutoff point r. Note if \code{n <= r} --> futility.
 #' \item s: cutoff point s. Note if \code{n >= s} --> efficacy.
 #' \item eff: r/N
-#' \item 90%CI_low: exact 1-2*alpha confidence interval lower limit
-#' \item 90%CI_high: exact 1-2*alpha confidence interval upper limit
+#' \item CI_LL: exact 1-2*alpha confidence interval lower limit
+#' \item CI_UL: exact 1-2*alpha confidence interval upper limit
 #' \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
 #' \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
 #' \item eta: the actual eta value which is smaller than \code{eta_param - eps}
@@ -45,7 +46,7 @@
 #' test <- data.frame(p0 = c(0.05,0.1,0.2,0.3,0.4,0.5),
 #'                    pa = c(0.05,0.1,0.2,0.3,0.4,0.5) + 0.15)
 #' test <- merge(test,
-#'               expand.grid(alpha = c(0.1,0.05), beta = 0.1, eta = 0.8, pi = 0.8))
+#'               expand.grid(alpha = 0.05, beta = 0.1, eta = 0.8, pi = 0.8))
 #' samplesize <- sargent1stage(p0 = test$p0, pa = test$pa,
 #'                             alpha = test$alpha, beta = test$beta,
 #'                             eta = test$eta, pi = test$pi,
@@ -57,24 +58,26 @@
 #'                 eps = 0.005, N_min = 20, N_max = 70)
 #' })
 #' samplesize <- do.call(rbind, samplesize)
-sargent1stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, ...) {
+
+
+sargent1stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max,  CI_type="exact", ...) {
   if(length(p0) > 1 && length(pa) > 1){
     ## Use Rcpp implementation
-    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eta = eta, pi = pi,
-                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max){
-                        sargent1stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, rcpp = TRUE)
+    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, CI_type=CI_type,
+                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max, CI_type){
+                        sargent1stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, CI_type=CI_type, rcpp = TRUE)
                       }, eps = eps, N_min = N_min, N_max = N_max,
                       SIMPLIFY = FALSE)
     results <- data.table::rbindlist(results)
     results <- data.table::setDF(results)
   }else{
     ## Use plain R implementation
-    results <- sargent1stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, ...)
+    results <- sargent1stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, CI_type=CI_type, ...)
   }
   results
 }
 
-sargent1stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, rcpp = TRUE) {
+sargent1stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, CI_type="exact", rcpp = TRUE) {
   # R CMD check happiness
   N <- NULL
   if (pa < p0) {
@@ -158,11 +161,15 @@ sargent1stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_m
   # Calculate exact 1-2*alpha confidence interval
 
   res$eff <- paste0(res$s, "/", res$N, " (", 100 * round((res$s) / res$N, 3), "%)")
-  CI <- mapply(a = res$s, b = res$N, FUN = function(a, b) binom::binom.confint(a,b,conf.level=1-2*alpha,methods="exact"))
-  res$CI_low  <- round(100 * unlist(CI[rownames(CI) == "lower", ]),2)
-  res$CI_high <- round(100 * unlist(CI[rownames(CI) == "upper", ]),2)
+  CI <- mapply(a = res$s, b = res$N, FUN = function(a, b) binom::binom.confint(a,b,conf.level=1-2*alpha,methods=CI_type))
+  res$CI_LL  <- round(100 * unlist(CI[rownames(CI) == "lower", ]),2)
+  res$CI_UL  <- round(100 * unlist(CI[rownames(CI) == "upper", ]),2)
 
-  res<-res[, c("design_nr","N","r","s","eff","CI_low","CI_high","alpha","beta","eta","pi","p0","pa","alpha_param","beta_param","eta_param","pi_param")]
+  res<-res[, c("design_nr","N","r","s","eff","CI_LL","CI_UL","alpha","beta","eta","pi","p0","pa","alpha_param","beta_param","eta_param","pi_param")]
+
+  res <- data.table::setnames(res,
+                              old = c("CI_LL", "CI_UL"),
+                              new = c(paste0(100 - 2 * 100 * alpha, "%CI_LL"), paste0(100 - 2 * 100 * alpha, "%CI_UL")))
 
   class(res) <- c("sargent", "data.frame")
   res

@@ -58,6 +58,7 @@ P_Fleming2st_reject_Ha <- function(n1, n2, r, a, b_p0, B_p0, b_pa, B_pa){
 #' @param int pre-specified interim analysis percentage information
 #' @param int_window window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value
 #' @param opt_under optimality under "H0" or "Ha"
+#' @param CI_type "Koyama", see \code{\link{getCI_Koyama}}, or any type for \link[binom]{binom.confint}
 #' @return a data.frame with elements
 #' \itemize{
 #' \item n1: total number of patients in stage1
@@ -67,8 +68,8 @@ P_Fleming2st_reject_Ha <- function(n1, n2, r, a, b_p0, B_p0, b_pa, B_pa){
 #' \item r2: ("r" stands for "rejection") threshold for "rejecting" Ha: if x1+x2<=r --> futility at second stage
 #' \item a: ("a" for "acceptance") threshold for "accepting" Ha= stop for efficacy at first stage
 #' \item eff: (r2 + 1)/N
-#' \item 90%CI_low: exact 1-2*alpha confidence interval lower limit
-#' \item 90%CI_high: exact 1-2*alpha confidence interval upper limit
+#' \item CI_LL: (1-2*alpha) CI lower limit
+#' \item CI_UL: (1-2*alpha) CI upper limit
 #' \item EN.p0: expected sample size under H0
 #' \item PET.p0: probability of terminating the trial for futility at the end of the first stage under H0
 #' \item EN.pa: expected sample size under Ha
@@ -100,19 +101,19 @@ P_Fleming2st_reject_Ha <- function(n1, n2, r, a, b_p0, B_p0, b_pa, B_pa){
 #' result_Ha <-fleming2stage(p0 = 0.3, pa = 0.5, alpha = 0.1, beta = 0.1, eps = 0, N_min = 3,
 #' N_max = 50, opt_under="Ha")
 
-fleming2stage <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025, opt_under="H0"){
+fleming2stage <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025, opt_under="H0", CI_type="Koyama"){
 
   if(length(p0) > 1 && length(pa) > 1){
-    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, opt_under = opt_under,
+    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, opt_under = opt_under, CI_type=CI_type,
                       FUN = function(null, alternative, alpha, beta, eps, N_min, N_max, int, int_window){
-                        fleming2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, opt_under = opt_under)
+                        fleming2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, opt_under = opt_under, CI_type=CI_type)
                       }, SIMPLIFY = FALSE)
   }else{
-    results <- fleming2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, opt_under = opt_under)
+    results <- fleming2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, opt_under = opt_under, CI_type=CI_type)
   }
 }
 
-fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025, opt_under="H0") {
+fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, int=0, int_window=0.025, opt_under="H0", CI_type="Koyama") {
 
   # WARNING MESSAGES
 
@@ -262,9 +263,19 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
   # Calculate exact 1-2*alpha confidence interval
 
   res$eff <- paste0(res$r2 + 1, "/", res$N, " (", 100 * round((res$r2 + 1) / res$N, 3), "%)")
-  CI <- mapply(a = res$r2 + 1, b = res$N, FUN = function(a, b) binom::binom.confint(a,b,conf.level=1-2*alpha,methods="exact"))
-  res$CI_low  <- round(100 * unlist(CI[rownames(CI) == "lower", ]),2)
-  res$CI_high <- round(100 * unlist(CI[rownames(CI) == "upper", ]),2)
+
+  if (CI_type=="Koyama"){
+    CI <- mapply(a_=res$N, b_=res$n1, c_=res$r1, d_=res$a, e_=res$r2 + 1,
+                 FUN = function(a_,b_,c_,d_,e_) getCI_Koyama(N=a_, n1=b_, r1=c_, a=d_, k=e_, alpha=alpha, design="Fleming", precision=4))
+    res$CI_LL <- 100 * unlist(CI[rownames(CI) == "CI_LL", ])
+    res$CI_UL <- 100 * unlist(CI[rownames(CI) == "CI_UL", ])
+  }
+
+  else {
+    CI <- mapply(a = res$r2 + 1, b = res$N, FUN = function(a, b) binom::binom.confint(a,b,conf.level=1-2*alpha,methods=CI_type))
+      res$CI_LL <- round(100 * unlist(CI[rownames(CI) == "lower", ]),2)
+      res$CI_UL <- round(100 * unlist(CI[rownames(CI) == "upper", ]),2)
+  }
 
   res <- data.table::setnames(res,
                               old = c("alpha", "beta"),
@@ -275,19 +286,19 @@ fleming2stage.default <- function(p0, pa, alpha, beta, eps = 0, N_min, N_max, in
 
   if (int>0){
   res <- cbind(design_nr=1:dim(res)[1],
-               res[, c("r1", "a", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "EN.pa", "PET.pa", "MIN", "OPT", "ADMISS","EN_opt","INTERIM", "alpha", "beta")],
+               res[, c("r1", "a", "n1", "r2", "n2", "N", "eff", "CI_LL", "CI_UL", "EN.p0", "PET.p0", "EN.pa", "PET.pa", "MIN", "OPT", "ADMISS","EN_opt","INTERIM", "alpha", "beta")],
                p0 = p0, pa = pa,
                res[, c("alpha_param", "beta_param")])
   }
   if (int==0){
     res <- cbind(design_nr=1:dim(res)[1],
-                 res[, c("r1", "a", "n1", "r2", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "EN.pa", "PET.pa", "MIN", "OPT", "ADMISS","alpha", "beta")],
+                 res[, c("r1", "a", "n1", "r2", "n2", "N", "eff", "CI_LL", "CI_UL", "EN.p0", "PET.p0", "EN.pa", "PET.pa", "MIN", "OPT", "ADMISS","alpha", "beta")],
                  p0 = p0, pa = pa,
                  res[, c("alpha_param", "beta_param")])
   }
   res <- data.table::setnames(res,
-                              old = c("CI_low", "CI_high"),
-                              new = c(paste0(100 - 2 * 100 * alpha, "%CI_low"), paste0(100 - 2 * 100 * alpha, "%CI_high")))
+                              old = c("CI_LL", "CI_UL"),
+                              new = c(paste0(100 - 2 * 100 * alpha, "%CI_LL"), paste0(100 - 2 * 100 * alpha, "%CI_UL")))
   attr(res, "inputs") <- list(p0 = p0, pa = pa, alpha = alpha, beta = beta, eps = eps, N_min = N_min, N_max = N_max)
   class(res) <- c("2stage", "simon", "data.frame")
   res

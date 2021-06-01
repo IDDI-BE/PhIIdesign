@@ -13,7 +13,8 @@ simon2stage(
   N_min,
   N_max,
   int = 0,
-  int_window = 0.025
+  int_window = 0.025,
+  CI_type = "Koyama"
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ simon2stage(
 \item{int}{pre-specified interim analysis percentage information}
 
 \item{int_window}{window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value}
+
+\item{CI_type}{"Koyama", see \code{\link{getCI_Koyama}}, or any type for \link[binom]{binom.confint}}
 }
 \value{
 a data.frame with elements
@@ -44,8 +47,8 @@ a data.frame with elements
 \item r1: threshold for "rejecting" Ha: if x1<=r1 --> stop for futility at first stage
 \item r2: threshold for "rejecting" Ha: if x1+x2<=r2 --> futility at second stage
 \item eff: (r2 + 1)/N
-\item 90%CI_low: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989)
-\item 90%CI_high: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989)
+\item CI_LL: (1-2*alpha) CI lower limit
+\item CI_UL: (1-2*alpha) CI upper limit
 \item EN.p0: expected sample size under H0
 \item PET.p0: probability of terminating the trial at the end of the first stage under H0
 \item MIN: column indicating if the design is the minimal design

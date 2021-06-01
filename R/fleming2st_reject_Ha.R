@@ -21,6 +21,7 @@
 #' @examples
 #' fleming2st_reject_Ha(n1=13, n2=7, r1=0, a=3, r2=2, p0=0.05, pa=0.25)
 
+
 fleming2st_reject_Ha <- function(n1, n2, r1, a, r2, p0, pa){
   ## r2 is the total number of seen cases on both n1 and n2 together
   ## Calculate alpha/beta for all values up to r2

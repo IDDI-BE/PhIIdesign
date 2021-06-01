@@ -4,7 +4,7 @@
 \alias{fleming1stage}
 \title{The Fleming 1-stage function}
 \usage{
-fleming1stage(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005)
+fleming1stage(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005, CI_type = "exact")
 }
 \arguments{
 \item{p0}{probability of the uninteresting response (null hypothesis H0)}
@@ -16,6 +16,8 @@ fleming1stage(p0, pa, alpha = 0.05, beta = 0.2, eps = 0.005)
 \item{beta}{Type II error rate \eqn{P(reject Ha|Ha)}}
 
 \item{eps}{tolerance default value = 0.005}
+
+\item{CI_type}{any type for \link[binom]{binom.confint}}
 }
 \value{
 a data.frame with elements
@@ -23,8 +25,8 @@ a data.frame with elements
 \item n: total number of patients
 \item r: quantile function of \code{1 - (alpha + eps)} at \code{n} under \code{p0}. Note if \code{n <= r} --> futility
 \item eff: r/N
-\item 90%CI_low: exact 1-2*alpha confidence interval lower limit
-\item 90%CI_high: exact 1-2*alpha confidence interval upper limit
+\item CI_LL: exact 1-2*alpha confidence interval lower limit
+\item CI_UL: exact 1-2*alpha confidence interval upper limit
 \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
 \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
 \item p0: your provided \code{p0} value

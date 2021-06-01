@@ -5,7 +5,7 @@
 #' @param pa interesting response (alternative hypothesis Ha), can be a vector, always same length as p0. The corresponding elements of p0 and pa are taken as a set of proportions
 #' @param alpha P(reject H0|H0) for Fleming and Simon designs, can be a vector
 #' @param beta P(reject Ha|Ha)  for Fleming and Simon designs, can be a vector
-#' @param alpha2 P(reject H0|H0) for Sargent designs, can be a vector, same lenth as alpha
+#' @param alpha2 P(reject H0|H0) for Sargent designs, can be a vector, same length as alpha
 #' @param beta2 P(reject Ha|Ha)  for Sargent designs, can be a vector, same length as beta
 #' @param eta P(reject Ha|H0) for Sargent designs, can be a vector, same length as alpha2
 #' @param pi P(reject H0|Ha) for Sargent designs, can be a vector, same length as beta2
@@ -13,7 +13,10 @@
 #' @export
 #' @examples
 #' allsinglearm(p0 = 0.1, pa = 0.7,
-#'              alpha = 0.05, beta = 0.2, beta2 = 0.1, pi = 0.8, eta = 0.8)
+#'              alpha = 0.05, alpha2 = 0.05, beta = 0.2, beta2 = 0.1, pi = 0.8, eta = 0.8)
+
+# p0 = 0.1; pa = 0.7; alpha = 0.05; alpha2=0.05; beta = 0.2; beta2 = 0.1; pi = 0.8; eta = 0.8; p=1; a=1; b=1
+
 allsinglearm<-function (p0,pa,alpha,beta,alpha2=alpha,beta2,pi,eta,eps=0.005){
 
 onestage<-NULL
@@ -62,3 +65,9 @@ res<-list(onestage,twostage)
 return(res)
 
 }
+
+#allsinglearm(p0 = 0.1, pa = 0.7, alpha = 0.05, beta = 0.2, beta2 = 0.1, pi = 0.8, eta = 0.8)
+#flem<-fleming1stage(p0 = 0.1, pa = 0.7, alpha = 0.05, beta = 0.2, eps = 0)
+#sim<-simon2stage(p0 = 0.1, pa = 0.7, alpha = 0.05, beta = 0.2, eps = 0, N_min=4, N_max=15)
+#sar1<-(sargent1stage(p0 = 0.1, pa = 0.7, alpha = 0.05, beta = 0.2,pi=0.7,eta=0.7,eps = 0, N_min=max(3,(flem$N-15)), N_max=(flem$N+15)))
+#sar2<-sargent2stage(p0=0.1,pa=0.7, alpha=0.05, beta=0.1,pi=0.8,eta=0.8,eps = 0, N_min=3, N_max=19)

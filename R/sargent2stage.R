@@ -72,6 +72,7 @@ P_Sargent_reject_H0 <- function(n1, n2, r1min, s, b_p0, B_p0, b_pa, B_pa){
 #' @param N_max maximum sample size value for grid search
 #' @param int pre-specified interim analysis percentage information
 #' @param int_window window around interim analysis percentage (e.g. 0.5 +- 0.025). 0.025 is default value
+#' @param CI_type "Koyama", see \code{\link{getCI_Koyama}}, or any type for \link[binom]{binom.confint}
 #' @return a data.frame with elements
 #' \itemize{
 #' \item n1: total number of patients in stage1
@@ -80,8 +81,8 @@ P_Sargent_reject_H0 <- function(n1, n2, r1min, s, b_p0, B_p0, b_pa, B_pa){
 #' \item r1: critical value for the first stage
 #' \item r2: critical value for the second stage
 #' \item eff: s/N
-#' \item 90%CI_low: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989)
-#' \item 90%CI_high: Result of call to getCI_Koyama. Confidence interval according to Koyama and Chen (1989)
+#' \item CI_LL: (1-2*alpha) CI lower limit
+#' \item CI_UL: (1-2*alpha) CI upper limit
 #' \item EN.p0: expected sample size under H0
 #' \item PET.p0: probability of terminating the trial at the end of the first stage under H0
 #' \item MIN: column indicating if the design is the minimal design
@@ -124,19 +125,19 @@ P_Sargent_reject_H0 <- function(n1, n2, r1min, s, b_p0, B_p0, b_pa, B_pa){
 #' minimax <- data.table::rbindlist(minimax)
 #' }
 
-sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, N_max, int=0, int_window=0.025){
+sargent2stage <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, N_max, int=0, int_window=0.025, CI_type="Koyama"){
 
   if(length(p0) > 1 && length(pa) > 1){
-    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window,
-                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max, int, int_window){
-                        sargent2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window)
+    results <- mapply(null = p0, alternative = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, CI_type=CI_type,
+                      FUN = function(null, alternative, alpha, beta, eta, pi, eps, N_min, N_max, int, int_window, CI_type){
+                        sargent2stage.default(p0 = null, pa = alternative, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, CI_type=CI_type)
                       }, SIMPLIFY = FALSE)
   }else{
-    results <- sargent2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window)
+    results <- sargent2stage.default(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max, int = int, int_window = int_window, CI_type=CI_type)
   }
 }
 
-sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, N_max, int=0, int_window=0.025) {
+sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, N_max, int=0, int_window=0.025, CI_type="Koyama") {
 
   # WARNING MESSAGES
   if (pa < p0) {
@@ -289,10 +290,20 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, 
   # Calculate 1-2*alpha confidence interval, based on Koyama, Statistics in Medicine 2008
 
   res$eff <- paste0(res$s, "/", res$N, " (", 100 * round((res$s) / res$N, 3), "%)")
-  CI <- mapply(a = res$s, b = res$r1, c = res$n1, d = res$N,
-               FUN = function(a, b, c, d) getCI_Koyama(k = a, r1 = b, n1 = c, n = d, alpha = alpha, precision = 4))
-  res$CI_low  <- 100 * unlist(CI[rownames(CI) == "CI_low", ])
-  res$CI_high <- 100 * unlist(CI[rownames(CI) == "CI_high", ])
+
+  if (CI_type=="Koyama"){
+    CI <- mapply(a_ = res$N, b_ = res$n1, c_ = res$r1, d_ = res$s,
+                 FUN = function(a_, b_, c_, d_) getCI_Koyama(N=a_, n1=b_, r1=c_, k=d_, alpha=alpha, design="Sargent", precision=4))
+    res$CI_LL <- 100 * unlist(CI[rownames(CI) == "CI_LL", ])
+    res$CI_UL <- 100 * unlist(CI[rownames(CI) == "CI_UL", ])
+  }
+
+  else {
+    CI <- mapply(a = res$s, b = res$N, FUN = function(a, b) binom::binom.confint(a,b,conf.level=1-2*alpha,methods=CI_type))
+    res$CI_LL <- round(100 * unlist(CI[rownames(CI) == "lower", ]),2)
+    res$CI_UL <- round(100 * unlist(CI[rownames(CI) == "upper", ]),2)
+  }
+
   res <- data.table::setnames(res,
                               old = c("alpha", "beta", "eta", "pi"),
                               new = c("alpha_param", "beta_param", "eta_param", "pi_param"))
@@ -305,21 +316,21 @@ sargent2stage.default <- function(p0, pa, alpha, beta, eta, pi, eps = 0, N_min, 
 
   if (int>0){
 	  res <- cbind(design_nr=1:dim(res)[1],
-	               res[, c("r1", "n1", "r2", "s", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "EN_opt","INTERIM", "alpha", "beta", "eta", "pi", "lambda", "delta")],
+	               res[, c("r1", "n1", "r2", "s", "n2", "N", "eff", "CI_LL", "CI_UL", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "EN_opt","INTERIM", "alpha", "beta", "eta", "pi", "lambda", "delta")],
 	               p0 = p0, pa = pa,
 	               res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])
 	  }
 
   if (int==0){
 	  res <- cbind(design_nr=1:dim(res)[1],
-	               res[, c("r1", "n1", "r2", "s", "n2", "N", "eff", "CI_low", "CI_high", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta", "eta", "pi", "lambda", "delta")],
+	               res[, c("r1", "n1", "r2", "s", "n2", "N", "eff", "CI_LL", "CI_UL", "EN.p0", "PET.p0", "MIN", "OPT", "ADMISS", "alpha", "beta", "eta", "pi", "lambda", "delta")],
 	               p0 = p0, pa = pa,
 	               res[, c("alpha_param", "beta_param", "eta_param", "pi_param")])
 	  }
 
   res <- data.table::setnames(res,
-                              old = c("CI_low", "CI_high"),
-                              new = c(paste0(100 - 2 * 100 * alpha, "%CI_low"), paste0(100 - 2 * 100 * alpha, "%CI_high")))
+                              old = c("CI_LL", "CI_UL"),
+                              new = c(paste0(100 - 2 * 100 * alpha, "%CI_LL"), paste0(100 - 2 * 100 * alpha, "%CI_UL")))
   attr(res, "inputs") <- list(p0 = p0, pa = pa, alpha = alpha, beta = beta, eta = eta, pi = pi, eps = eps, N_min = N_min, N_max = N_max)
   class(res) <- c("2stage", "sargent", "data.frame")
   res

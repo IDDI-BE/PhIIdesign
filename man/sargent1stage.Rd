@@ -4,7 +4,19 @@
 \alias{sargent1stage}
 \title{The Sargent 1-stage function}
 \usage{
-sargent1stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, ...)
+sargent1stage(
+  p0,
+  pa,
+  alpha,
+  beta,
+  eta,
+  pi,
+  eps = 0.005,
+  N_min,
+  N_max,
+  CI_type = "exact",
+  ...
+)
 }
 \arguments{
 \item{p0}{probability of the uninteresting response (null hypothesis \eqn{H0})}
@@ -25,6 +37,8 @@ sargent1stage(p0, pa, alpha, beta, eta, pi, eps = 0.005, N_min, N_max, ...)
 
 \item{N_max}{maximum sample size value for grid search}
 
+\item{CI_type}{any type for \link[binom]{binom.confint}}
+
 \item{...}{further arguments passed on to the methods}
 }
 \value{
@@ -34,8 +48,8 @@ a data.frame with elements
 \item r: cutoff point r. Note if \code{n <= r} --> futility.
 \item s: cutoff point s. Note if \code{n >= s} --> efficacy.
 \item eff: r/N
-\item 90%CI_low: exact 1-2*alpha confidence interval lower limit
-\item 90%CI_high: exact 1-2*alpha confidence interval upper limit
+\item CI_LL: exact 1-2*alpha confidence interval lower limit
+\item CI_UL: exact 1-2*alpha confidence interval upper limit
 \item alpha: the actual alpha value which is smaller than \code{alpha_param + eps}
 \item beta: the actual beta value where which is smaller than \code{beta_param + eps}
 \item eta: the actual eta value which is smaller than \code{eta_param - eps}
@@ -64,7 +78,7 @@ sargent1stage(p0 = 0.2, pa = 0.35, alpha = 0.1, beta = 0.1, eta = 0.8, pi = 0.8,
 test <- data.frame(p0 = c(0.05,0.1,0.2,0.3,0.4,0.5),
                    pa = c(0.05,0.1,0.2,0.3,0.4,0.5) + 0.15)
 test <- merge(test,
-              expand.grid(alpha = c(0.1,0.05), beta = 0.1, eta = 0.8, pi = 0.8))
+              expand.grid(alpha = 0.05, beta = 0.1, eta = 0.8, pi = 0.8))
 samplesize <- sargent1stage(p0 = test$p0, pa = test$pa,
                             alpha = test$alpha, beta = test$beta,
                             eta = test$eta, pi = test$pi,

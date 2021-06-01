@@ -4,18 +4,22 @@
 \alias{getCI_Koyama}
 \title{Koyama confidence interval.}
 \usage{
-getCI_Koyama(k, r1, n1, n, alpha, precision = 3)
+getCI_Koyama(N, n1, r1, a = NULL, k, alpha, design, precision = 3)
 }
 \arguments{
-\item{k}{overall observed responses (must be larger than r1).}
-
-\item{r1}{critical value for the first stage.}
+\item{N}{overall sample size.}
 
 \item{n1}{sample size for the first stage.}
 
-\item{n}{overall sample size.}
+\item{r1}{critical value for futility decision first stage (Simon's or Sargent's 2-stage)}
+
+\item{a}{critical value for efficacy decision first stage (Fleming's 2-stage)}
+
+\item{k}{overall observed responses (must be larger than r1).}
 
 \item{alpha}{determining the two sided 1-2*alpha confidence interval.}
+
+\item{design}{3 choices for 2-stage design: "Simon","Sargent" or "Fleming"}
 
 \item{precision}{gives the precision (in decimal numbers) to which the confidence interval should be calculated (should be less than 10).}
 }
@@ -24,15 +28,25 @@ Calculates the two sided 1-2*alpha confidence interval based, by inverting the "
 function" (or the "p value function") at every possible value for the null hypothesis between [0,1].
 A two-sided (1 − 2*alpha) CI interval includes then all values of binomial proportions for
 which the p value for testing H0, lays within the interval [alpha, 1 − alpha]
+A stage-wise ordering of the sample space is used:
+Let m be the stopping stage and x the total number of responses. A trial outcome (m'; x') is at least as
+extreme (against H0) as the observed trial outcome (m; x), if one of the 3 following conditions is met:
+(A) m' = m and x'>=x
+(B) m' = 1, m = 2 and x'>=a
+(C) m' = 2, m = 1 and x <=r1
+In the case of Simon’s and Fleming's 2-stage design, stage-wise ordering means that outcomes observed in
+the second stage of the trial are more extreme than outcomes observed in the first stage of the trial.
+In the case of Fleming's 2-stage design, stage-wise ordering means that rejection of H0
+in the first stage is more extreme than rejection in the second stage
 }
 \examples{
 #Calculate a Simon's two-stage design
-res <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,eps = 0.005,
-N_min = 1, N_max = 50)
-CI <- mapply(a = res$r2 + 1, b = res$r1, c = res$n1, d = res$N, FUN = function(a, b, c, d)
-getCI_Koyama(k = a, r1 = b, n1 = c, n = d, alpha = 0.05, precision = 3))
+res <- simon2stage(p0 = 0.1, pa = 0.3, alpha = 0.05, beta = 0.2,eps = 0.005, N_min = 1, N_max = 50)
+CI <- mapply(a_ = res$N, b_ = res$n1 , c_ = res$r1, d_ = res$r2 + 1, FUN = function(a_, b_, c_, d_)
+getCI_Koyama(N = a_,  n1 = b_, r1 = c_, k = d_, a=NULL, alpha = 0.05, design="Simon",precision = 3))
+getCI_Koyama(N = 21,  n1 = 14, r1 = 1, k = 5, a=NULL, alpha = 0.05, design="Simon",precision = 3)
 }
 \references{
 Koyama T and Chen H (2008): Proper inference from Simon's two-stage designs. Statistics in Medicine, 27(16):3145-3154.
-corresponds with the "R" approach in Chan et al.
+    Nhacolo A, Brannath W. Interval and point estimation in adaptive Phase II trials with binary endpoint. Stat Methods Med Res 2019;28:2635-2648
 }
